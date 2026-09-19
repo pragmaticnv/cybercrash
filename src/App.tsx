@@ -4,6 +4,7 @@ import { Login } from './pages/Login';
 import { LEACaseCommand } from './pages/LEACaseCommand';
 import { CaseInvestigation } from './pages/CaseInvestigation';
 import { I4CCommand } from './pages/I4CCommand';
+import { AdminDashboard } from './pages/AdminDashboard';
 
 export const App: React.FC = () => {
   return (
@@ -23,6 +24,9 @@ export const App: React.FC = () => {
         {/* Route 4: I4C National Intelligence Command Center */}
         <Route path="/i4c" element={<I4CCommand />} />
         <Route path="/i4c/intelligence" element={<I4CCommand />} />
+
+        {/* Route 5: Admin Demo Workspace */}
+        <Route path="/admin" element={<AdminDashboard />} />
 
         {/* Catch-all fallback */}
         <Route path="*" element={<Navigate to="/cases" replace />} />

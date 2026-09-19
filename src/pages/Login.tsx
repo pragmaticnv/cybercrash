@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const [portalRole, setPortalRole] = useState<'lea' | 'i4c'>('lea');
+  const [portalRole, setPortalRole] = useState<'lea' | 'i4c' | 'admin'>('lea');
   const [userId, setUserId] = useState('lea_demo');
   const [password, setPassword] = useState('••••••••••••');
   const [showPassword, setShowPassword] = useState(false);
@@ -11,10 +11,12 @@ export const Login: React.FC = () => {
   const [authSuccess, setAuthSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const handlePortalSwitch = (role: 'lea' | 'i4c') => {
+  const handlePortalSwitch = (role: 'lea' | 'i4c' | 'admin') => {
     setPortalRole(role);
     if (role === 'i4c') {
       setUserId('i4c_national');
+    } else if (role === 'admin') {
+      setUserId('admin_demo');
     } else {
       setUserId('lea_demo');
     }
@@ -133,11 +135,11 @@ export const Login: React.FC = () => {
             </div>
 
             {/* Portal Switcher Tabs */}
-            <div className="mt-5 p-1 bg-[#091220] rounded-xl border border-white/[0.08] grid grid-cols-2 gap-1 font-mono text-xs">
+            <div className="mt-5 p-1 bg-[#091220] rounded-xl border border-white/[0.08] grid grid-cols-3 gap-1 font-mono text-[10px] sm:text-xs">
               <button
                 type="button"
                 onClick={() => handlePortalSwitch('lea')}
-                className={`py-2 px-2 rounded-lg font-bold transition-all text-center ${
+                className={`py-2 px-1 rounded-lg font-bold transition-all text-center ${
                   portalRole === 'lea'
                     ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
@@ -148,13 +150,24 @@ export const Login: React.FC = () => {
               <button
                 type="button"
                 onClick={() => handlePortalSwitch('i4c')}
-                className={`py-2 px-2 rounded-lg font-bold transition-all text-center ${
+                className={`py-2 px-1 rounded-lg font-bold transition-all text-center ${
                   portalRole === 'i4c'
                     ? 'bg-red-500/25 text-red-300 border border-red-500/40 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
                 I4C NATIONAL
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePortalSwitch('admin')}
+                className={`py-2 px-1 rounded-lg font-bold transition-all text-center ${
+                  portalRole === 'admin'
+                    ? 'bg-purple-500/25 text-purple-300 border border-purple-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                ADMIN DEMO
               </button>
             </div>
 
@@ -165,7 +178,7 @@ export const Login: React.FC = () => {
                   type="text"
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  placeholder={portalRole === 'i4c' ? 'User ID (e.g. i4c_national)' : 'User ID (e.g. lea_demo)'}
+                  placeholder={portalRole === 'admin' ? 'User ID (e.g. admin_demo)' : portalRole === 'i4c' ? 'User ID (e.g. i4c_national)' : 'User ID (e.g. lea_demo)'}
                   className="w-full h-full bg-transparent pl-[52px] pr-4 text-[15px] text-white placeholder-[#7C8794] focus:outline-none"
                 />
               </div>
@@ -194,6 +207,8 @@ export const Login: React.FC = () => {
                 className={`w-full h-[50px] rounded-[10px] text-white font-semibold text-[15px] flex items-center justify-center gap-2 transition-all mt-2 shadow-lg ${
                   authSuccess
                     ? 'bg-emerald-600 border border-emerald-400'
+                    : portalRole === 'admin'
+                    ? 'bg-gradient-to-b from-[#9333EA] via-[#7E22CE] to-[#581C87] hover:brightness-110 shadow-purple-900/50'
                     : portalRole === 'i4c'
                     ? 'bg-gradient-to-b from-[#EF4444] via-[#DC2626] to-[#991B1B] hover:brightness-110 shadow-red-900/50'
                     : 'bg-gradient-to-b from-[#2F80C8] via-[#1D60A5] to-[#123E6E] hover:brightness-110 shadow-blue-900/50'
@@ -205,7 +220,7 @@ export const Login: React.FC = () => {
                   <span>Access Granted · Entering Workspace</span>
                 ) : (
                   <>
-                    <span>{portalRole === 'i4c' ? 'Enter I4C Command' : 'Enter Case Command'}</span>
+                    <span>{portalRole === 'admin' ? 'Enter Admin Console' : portalRole === 'i4c' ? 'Enter I4C Command' : 'Enter Case Command'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}

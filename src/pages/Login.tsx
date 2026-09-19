@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export const Login: React.FC = () => {
-  const [portalRole, setPortalRole] = useState<'lea' | 'i4c' | 'admin'>('lea');
+  const [portalRole, setPortalRole] = useState<'lea' | 'i4c' | 'bank' | 'admin'>('lea');
   const [userId, setUserId] = useState('lea_demo');
   const [password, setPassword] = useState('••••••••••••');
   const [showPassword, setShowPassword] = useState(false);
@@ -11,9 +11,11 @@ export const Login: React.FC = () => {
   const [authSuccess, setAuthSuccess] = useState(false);
   const navigate = useNavigate();
 
-  const handlePortalSwitch = (role: 'lea' | 'i4c' | 'admin') => {
+  const handlePortalSwitch = (role: 'lea' | 'i4c' | 'bank' | 'admin') => {
     setPortalRole(role);
-    if (role === 'i4c') {
+    if (role === 'bank') {
+      setUserId('bank_security');
+    } else if (role === 'i4c') {
       setUserId('i4c_national');
     } else if (role === 'admin') {
       setUserId('admin_demo');
@@ -26,6 +28,14 @@ export const Login: React.FC = () => {
     e.preventDefault();
     setIsAuthenticating(true);
 
+    const isAdmin =
+      portalRole === 'admin' ||
+      userId.trim().toLowerCase() === 'admin_demo';
+
+    const isBank =
+      portalRole === 'bank' ||
+      userId.toLowerCase().includes('bank');
+
     const isI4C =
       portalRole === 'i4c' ||
       userId.toLowerCase().includes('i4c') ||
@@ -35,8 +45,10 @@ export const Login: React.FC = () => {
       setIsAuthenticating(false);
       setAuthSuccess(true);
       setTimeout(() => {
-        if (userId.trim().toLowerCase() === 'admin_demo') {
+        if (isAdmin) {
           navigate('/admin');
+        } else if (isBank) {
+          navigate('/bank');
         } else if (isI4C) {
           navigate('/i4c');
         } else {
@@ -135,7 +147,7 @@ export const Login: React.FC = () => {
             </div>
 
             {/* Portal Switcher Tabs */}
-            <div className="mt-5 p-1 bg-[#091220] rounded-xl border border-white/[0.08] grid grid-cols-3 gap-1 font-mono text-[10px] sm:text-xs">
+            <div className="mt-5 p-1 bg-[#091220] rounded-xl border border-white/[0.08] grid grid-cols-4 gap-1 font-mono text-[9.5px] sm:text-[10.5px]">
               <button
                 type="button"
                 onClick={() => handlePortalSwitch('lea')}
@@ -145,7 +157,7 @@ export const Login: React.FC = () => {
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                LEA INVESTIGATION
+                LEA CASES
               </button>
               <button
                 type="button"
@@ -160,6 +172,17 @@ export const Login: React.FC = () => {
               </button>
               <button
                 type="button"
+                onClick={() => handlePortalSwitch('bank')}
+                className={`py-2 px-1 rounded-lg font-bold transition-all text-center ${
+                  portalRole === 'bank'
+                    ? 'bg-amber-500/25 text-amber-300 border border-amber-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                BANK05
+              </button>
+              <button
+                type="button"
                 onClick={() => handlePortalSwitch('admin')}
                 className={`py-2 px-1 rounded-lg font-bold transition-all text-center ${
                   portalRole === 'admin'
@@ -167,7 +190,7 @@ export const Login: React.FC = () => {
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
-                ADMIN DEMO
+                ADMIN
               </button>
             </div>
 
@@ -178,7 +201,15 @@ export const Login: React.FC = () => {
                   type="text"
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  placeholder={portalRole === 'admin' ? 'User ID (e.g. admin_demo)' : portalRole === 'i4c' ? 'User ID (e.g. i4c_national)' : 'User ID (e.g. lea_demo)'}
+                  placeholder={
+                    portalRole === 'admin'
+                      ? 'User ID (e.g. admin_demo)'
+                      : portalRole === 'bank'
+                      ? 'User ID (e.g. bank_security)'
+                      : portalRole === 'i4c'
+                      ? 'User ID (e.g. i4c_national)'
+                      : 'User ID (e.g. lea_demo)'
+                  }
                   className="w-full h-full bg-transparent pl-[52px] pr-4 text-[15px] text-white placeholder-[#7C8794] focus:outline-none"
                 />
               </div>
@@ -209,6 +240,8 @@ export const Login: React.FC = () => {
                     ? 'bg-emerald-600 border border-emerald-400'
                     : portalRole === 'admin'
                     ? 'bg-gradient-to-b from-[#9333EA] via-[#7E22CE] to-[#581C87] hover:brightness-110 shadow-purple-900/50'
+                    : portalRole === 'bank'
+                    ? 'bg-gradient-to-b from-[#F59E0B] via-[#D97706] to-[#92400E] hover:brightness-110 shadow-amber-900/50'
                     : portalRole === 'i4c'
                     ? 'bg-gradient-to-b from-[#EF4444] via-[#DC2626] to-[#991B1B] hover:brightness-110 shadow-red-900/50'
                     : 'bg-gradient-to-b from-[#2F80C8] via-[#1D60A5] to-[#123E6E] hover:brightness-110 shadow-blue-900/50'
@@ -220,7 +253,15 @@ export const Login: React.FC = () => {
                   <span>Access Granted · Entering Workspace</span>
                 ) : (
                   <>
-                    <span>{portalRole === 'admin' ? 'Enter Admin Console' : portalRole === 'i4c' ? 'Enter I4C Command' : 'Enter Case Command'}</span>
+                    <span>
+                      {portalRole === 'admin'
+                        ? 'Enter Admin Console'
+                        : portalRole === 'bank'
+                        ? 'Enter Bank Operations'
+                        : portalRole === 'i4c'
+                        ? 'Enter I4C Command'
+                        : 'Enter Case Command'}
+                    </span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -229,34 +270,41 @@ export const Login: React.FC = () => {
 
             <div className="mt-6 pt-5 border-t border-white/[0.08] text-center">
               <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-2.5">
-                Quick Demo Authentication
+                Quick Multi-Agency Portals
               </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+              <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
                 <button
                   type="button"
                   onClick={() => navigate('/cases')}
-                  className="py-2 px-2 rounded-lg bg-white/[0.04] hover:bg-cyan-500/15 border border-white/[0.08] hover:border-cyan-500/40 text-[10.5px] font-mono text-cyan-300 font-semibold uppercase transition-colors"
+                  className="py-2 px-1.5 rounded-lg bg-white/[0.04] hover:bg-cyan-500/15 border border-white/[0.08] hover:border-cyan-500/40 text-[10px] font-mono text-cyan-300 font-semibold uppercase transition-colors"
                 >
                   LEA Cases
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate('/i4c')}
-                  className="py-2 px-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 hover:border-red-500/60 text-[10.5px] font-mono text-red-300 font-semibold uppercase transition-colors"
+                  className="py-2 px-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 hover:border-red-500/60 text-[10px] font-mono text-red-300 font-semibold uppercase transition-colors"
                 >
                   I4C Command
                 </button>
                 <button
                   type="button"
+                  onClick={() => navigate('/bank')}
+                  className="py-2 px-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-[10px] font-mono text-amber-300 font-semibold uppercase transition-colors"
+                >
+                  Bank Security
+                </button>
+                <button
+                  type="button"
                   onClick={() => navigate('/admin')}
-                  className="py-2 px-2 rounded-lg bg-red-600/20 hover:bg-red-600/30 border border-red-500/40 hover:border-red-500/70 text-[10.5px] font-mono text-[#FF6B72] font-bold uppercase transition-colors shadow-sm"
+                  className="py-2 px-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/40 hover:border-purple-500/70 text-[10px] font-mono text-purple-300 font-semibold uppercase transition-colors shadow-sm"
                 >
                   Admin Demo
                 </button>
                 <button
                   type="button"
                   onClick={() => navigate('/investigation/CASE_007001')}
-                  className="py-2 px-2 rounded-lg bg-white/[0.04] hover:bg-amber-500/15 border border-white/[0.08] hover:border-amber-500/40 text-[10.5px] font-mono text-amber-300 font-semibold uppercase transition-colors"
+                  className="py-2 px-1.5 rounded-lg bg-white/[0.04] hover:bg-purple-500/15 border border-white/[0.08] hover:border-purple-500/40 text-[10px] font-mono text-slate-300 font-semibold uppercase transition-colors"
                 >
                   CASE_007001
                 </button>

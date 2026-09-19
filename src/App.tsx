@@ -5,6 +5,8 @@ import { LEACaseCommand } from './pages/LEACaseCommand';
 import { CaseInvestigation } from './pages/CaseInvestigation';
 import { I4CCommand } from './pages/I4CCommand';
 import { AdminDashboard } from './pages/AdminDashboard';
+import { BankHome } from './pages/BankHome';
+import { BankAccountInvestigation } from './pages/BankAccountInvestigation';
 
 export const App: React.FC = () => {
   return (
@@ -27,6 +29,11 @@ export const App: React.FC = () => {
 
         {/* Route 5: Admin Demo Workspace */}
         <Route path="/admin" element={<AdminDashboard />} />
+
+        {/* Route 6: Bank Security & Fraud Operations Workstation */}
+        <Route path="/bank" element={<BankHome />} />
+        <Route path="/bank/security" element={<BankHome />} />
+        <Route path="/bank/account/:accountId" element={<BankAccountInvestigation />} />
 
         {/* Catch-all fallback */}
         <Route path="*" element={<Navigate to="/cases" replace />} />

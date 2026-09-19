@@ -39,11 +39,17 @@ export const AccountNode = memo(({ data }: { data: AccountNodeData }) => {
     <div
       className={`rounded-xl p-3 min-w-[200px] max-w-[240px] text-xs transition-transform hover:scale-[1.03] select-none cursor-pointer ${borderStyle}`}
     >
-      {/* Target handle for incoming edges */}
+      {/* Target handle for incoming edges (Top for vertical flow, Left fallback) */}
+      <Handle
+        type="target"
+        position={Position.Top}
+        className="!w-2.5 !h-2.5 !bg-cyan-400 !border-2 !border-[#02060D]"
+      />
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-2 !h-2 !bg-cyan-400 !border-2 !border-[#02060D]"
+        id="target-left"
+        className="!w-2 !h-2 !bg-cyan-400 !border-2 !border-[#02060D] opacity-0"
       />
 
       {/* Header Tag */}
@@ -82,11 +88,17 @@ export const AccountNode = memo(({ data }: { data: AccountNodeData }) => {
         </span>
       </div>
 
-      {/* Source handle for outgoing edges */}
+      {/* Source handle for outgoing edges (Bottom for vertical flow, Right fallback) */}
+      <Handle
+        type="source"
+        position={Position.Bottom}
+        className="!w-2.5 !h-2.5 !bg-red-400 !border-2 !border-[#02060D]"
+      />
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-2 !h-2 !bg-red-400 !border-2 !border-[#02060D]"
+        id="source-right"
+        className="!w-2 !h-2 !bg-red-400 !border-2 !border-[#02060D] opacity-0"
       />
     </div>
   );

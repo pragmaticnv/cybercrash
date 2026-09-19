@@ -8,7 +8,6 @@ import {
   Edge,
   useNodesState,
   useEdgesState,
-  Position,
   MarkerType
 } from '@xyflow/react';
 import { AccountNode } from './AccountNode';
@@ -27,13 +26,13 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
 
   const nodeTypes = useMemo(() => ({ accountNode: AccountNode }), []);
 
-  // Construct nodes layout for CASE_007001
+  // Vertical Top-to-Bottom Hierarchical Layout
   const initialNodes: Node[] = useMemo(() => [
-    // Column 0: Victim
+    // Level 0: Top - Complainant Victim
     {
       id: 'VICTIM',
       type: 'accountNode',
-      position: { x: 30, y: 160 },
+      position: { x: 420, y: 15 },
       data: {
         id: caseData.victim.account,
         label: 'COMPLAINANT VICTIM',
@@ -43,11 +42,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         nodeType: 'victim',
       },
     },
-    // Column 1: Primary Mule
+    // Level 1: Primary Mule Hub (directly below Victim)
     {
       id: 'ACC_013041',
       type: 'accountNode',
-      position: { x: 320, y: 160 },
+      position: { x: 420, y: 155 },
       data: {
         id: 'ACC_013041',
         label: 'PRIMARY MULE HUB',
@@ -58,11 +57,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         isHistorical: true,
       },
     },
-    // Column 2: Connected Split Accounts & Layer 2 Hub
+    // Level 2: Connected Split Accounts & Layer 2 Hub (Row below Primary Mule)
     {
       id: 'ACC_008833',
       type: 'accountNode',
-      position: { x: 640, y: 20 },
+      position: { x: 0, y: 310 },
       data: {
         id: 'ACC_008833',
         label: 'LAYER 2 SPLIT',
@@ -75,7 +74,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_012691',
       type: 'accountNode',
-      position: { x: 640, y: 140 },
+      position: { x: 210, y: 310 },
       data: {
         id: 'ACC_012691',
         label: 'LAYER 2 SPLIT',
@@ -88,7 +87,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_001097',
       type: 'accountNode',
-      position: { x: 640, y: 260 },
+      position: { x: 420, y: 310 },
       data: {
         id: 'ACC_001097',
         label: 'LAYER 2 FAST FUNNEL',
@@ -101,7 +100,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_003639',
       type: 'accountNode',
-      position: { x: 640, y: 380 },
+      position: { x: 630, y: 310 },
       data: {
         id: 'ACC_003639',
         label: 'LAYER 2 MICRO SPLIT',
@@ -114,7 +113,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_008564',
       type: 'accountNode',
-      position: { x: 640, y: 500 },
+      position: { x: 840, y: 310 },
       data: {
         id: 'ACC_008564',
         label: 'LAYER 2 MULE HUB',
@@ -125,11 +124,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         isHistorical: true,
       },
     },
-    // Column 3: Downstream accounts
+    // Level 3: Downstream Layer 3 Split (below Layer 2 Hub)
     {
       id: 'ACC_001276',
       type: 'accountNode',
-      position: { x: 960, y: 440 },
+      position: { x: 840, y: 450 },
       data: {
         id: 'ACC_001276',
         label: 'LAYER 3 SPLIT MULE',
@@ -139,10 +138,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         nodeType: 'connected',
       },
     },
+    // Level 4: Final Cash-out Mule (below Layer 3)
     {
       id: 'ACC_006877',
       type: 'accountNode',
-      position: { x: 1260, y: 440 },
+      position: { x: 840, y: 590 },
       data: {
         id: 'ACC_006877',
         label: 'CASH-OUT MULE',
@@ -155,7 +155,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     },
   ], [caseData]);
 
-  // Construct edges layout
+  // Downward Vertical Directional Edges
   const initialEdges: Edge[] = useMemo(() => [
     {
       id: 'e-victim-mule',
@@ -266,7 +266,6 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
   const [nodes] = useNodesState(initialNodes);
   const [edges] = useEdgesState(initialEdges);
 
-  // Click on account node -> opens Account Drawer
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {
       setSelectedAccountId(node.id);
@@ -274,7 +273,6 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     [setSelectedAccountId]
   );
 
-  // Click on edge -> opens Transaction Drawer
   const onEdgeClick = useCallback(
     (_: React.MouseEvent, edge: Edge) => {
       setSelectedTransactionId(edge.id);
@@ -292,8 +290,8 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         downstreamAmount={caseData.downstreamAmount || '₹53,439'}
       />
 
-      {/* React Flow Interactive Graph */}
-      <div className="w-full h-[320px] relative bg-[#02050B]">
+      {/* Vertical Interactive Canvas */}
+      <div className="w-full h-[400px] relative bg-[#02050B]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -301,7 +299,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
           onNodeClick={onNodeClick}
           onEdgeClick={onEdgeClick}
           fitView
-          fitViewOptions={{ padding: 0.15 }}
+          fitViewOptions={{ padding: 0.12 }}
           minZoom={0.3}
           maxZoom={1.8}
         >

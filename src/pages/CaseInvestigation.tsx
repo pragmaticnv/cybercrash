@@ -51,7 +51,6 @@ export const CaseInvestigation: React.FC = () => {
       ]);
 
       if (!cData) {
-        // If not found, fallback to CASE_007001
         navigate('/investigation/CASE_007001', { replace: true });
         return;
       }
@@ -90,32 +89,53 @@ export const CaseInvestigation: React.FC = () => {
       <CaseHeader caseData={caseData} />
 
       {/* 3. Main Investigation Workspace */}
-      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 lg:px-8 py-5 space-y-6">
+      <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 lg:px-8 py-5">
         
-        {/* VIEW MODE 1: OVERVIEW (Default - Map + Dossier) */}
+        {/* VIEW MODE 1: OVERVIEW (Extended Map + Vertical Money Flow directly below) */}
         {activeMode === 'overview' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            {/* Left / Center (65-70% = 8 cols): MAP INTELLIGENCE */}
-            <div className="lg:col-span-8 flex flex-col gap-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-                  <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
-                    GEOSPATIAL THREAT & CASHOUT INTELLIGENCE
-                  </h2>
+            {/* Left / Center (8 cols): Extended Map View + Vertical Money Flow */}
+            <div className="lg:col-span-8 flex flex-col gap-6">
+              {/* 1. Extended Map View */}
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+                    <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
+                      GEOSPATIAL THREAT & CASHOUT INTELLIGENCE
+                    </h2>
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    Live Cartographic Correlation · {prediction.predictedZone}
+                  </span>
                 </div>
-                <span className="text-[11px] font-mono text-slate-400">
-                  Live Cartographic Correlation · {prediction.predictedZone}
-                </span>
+
+                {/* Extended Map View Height (560px) */}
+                <div className="h-[560px] w-full">
+                  <MapInvestigation prediction={prediction} caseData={caseData} />
+                </div>
               </div>
 
-              {/* Real Leaflet Map */}
-              <div className="h-[480px] w-full">
-                <MapInvestigation prediction={prediction} caseData={caseData} />
+              {/* 2. Vertical Money Flow Network - positioned just below the map view! */}
+              <div className="flex flex-col gap-2.5">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-cyan-400" />
+                    <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
+                      MONEY-FLOW NETWORK & ACCOUNT TOPOLOGY
+                    </h2>
+                  </div>
+                  <span className="text-[11px] font-mono text-slate-400">
+                    Vertical forensic flow · Click nodes or edges to audit
+                  </span>
+                </div>
+
+                {/* React Flow Canvas with Vertical Layout */}
+                <MoneyFlowGraph caseData={caseData} transactions={transactions} />
               </div>
             </div>
 
-            {/* Right (30-35% = 4 cols): CASE INTELLIGENCE DOSSIER */}
+            {/* Right (4 cols): CASE INTELLIGENCE DOSSIER */}
             <div className="lg:col-span-4 flex flex-col gap-4">
               <CaseSummary caseData={caseData} />
               <PrimaryMuleCard account={primaryMule} />
@@ -126,7 +146,7 @@ export const CaseInvestigation: React.FC = () => {
           </div>
         )}
 
-        {/* VIEW MODE 2: TRACE (Dedicated expanded money movement focus) */}
+        {/* VIEW MODE 2: TRACE (Dedicated expanded trace) */}
         {activeMode === 'trace' && (
           <div className="space-y-4">
             <div className="flex items-center justify-between">
@@ -137,15 +157,15 @@ export const CaseInvestigation: React.FC = () => {
                 Max Layering Depth: 4 Hops
               </span>
             </div>
-            {/* Rendered below as primary full-width element */}
+            <MoneyFlowGraph caseData={caseData} transactions={transactions} />
           </div>
         )}
 
         {/* VIEW MODE 3: NETWORK (Mule syndicate topology) */}
         {activeMode === 'network' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div className="lg:col-span-8">
-              {/* Money flow graph takes prominence */}
+              <MoneyFlowGraph caseData={caseData} transactions={transactions} />
             </div>
             <div className="lg:col-span-4 flex flex-col gap-4">
               <PrimaryMuleCard account={primaryMule} />
@@ -154,9 +174,9 @@ export const CaseInvestigation: React.FC = () => {
           </div>
         )}
 
-        {/* VIEW MODE 4: HISTORY (Full historical case breakdown) */}
+        {/* VIEW MODE 4: HISTORY (Historical case breakdown) */}
         {activeMode === 'history' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div className="lg:col-span-7">
               <HistoricalLinksCard cases={historicalCases} />
             </div>
@@ -166,24 +186,6 @@ export const CaseInvestigation: React.FC = () => {
             </div>
           </div>
         )}
-
-        {/* 4. MONEY FLOW SECTION (Belongs ONLY to the selected case, below Map/Intelligence) */}
-        <section className="space-y-3 pt-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-cyan-400" />
-              <h2 className="font-mono text-xs font-bold uppercase tracking-wider text-slate-200">
-                MONEY-FLOW NETWORK & ACCOUNT TOPOLOGY
-              </h2>
-            </div>
-            <span className="text-[11px] font-mono text-slate-400">
-              Click any account node or transaction edge to inspect forensic telemetry
-            </span>
-          </div>
-
-          {/* Interactive React Flow Diagram */}
-          <MoneyFlowGraph caseData={caseData} transactions={transactions} />
-        </section>
       </main>
 
       {/* Slide-in Forensics Drawers & Modals */}

@@ -5,7 +5,8 @@ import { useI4CStore } from '../../store/useI4CStore';
 import { i4cStatesData, i4cHotspots, i4cStateFlows } from '../../data/i4cMockData';
 import { MapLayers } from './MapLayers';
 import { I4CStateSummary, I4CHotspot } from '../../types/i4c';
-import { ArrowRight, Crosshair, ShieldAlert, Sparkles, Navigation } from 'lucide-react';
+import { ArrowRight, Crosshair, ShieldAlert, Sparkles, Navigation, Globe, Eye } from 'lucide-react';
+import { GOOGLE_MAP_TILE_URLS } from '../../config/maps';
 
 // Subcomponent to project SVG curved bezier flow lines directly on top of Leaflet
 const CrossStateFlowOverlay: React.FC = () => {
@@ -92,6 +93,8 @@ export const NationalMap: React.FC = () => {
     selectedFraudType
   } = useI4CStore();
 
+  const [baseTheme, setBaseTheme] = useState<'tactical' | 'satellite' | 'roadmap'>('tactical');
+
   // Filter states if a fraud type filter is active
   const filteredStates = selectedFraudType
     ? i4cStatesData.filter((s) => s.topFraudType === selectedFraudType || s.fraudBreakdown.some((b) => b.type === selectedFraudType))
@@ -103,12 +106,49 @@ export const NationalMap: React.FC = () => {
 
   return (
     <div className="relative w-full h-[520px] lg:h-[560px] bg-[#02060D] rounded-xl overflow-hidden border border-white/[0.08] shadow-2xl flex flex-col">
-      {/* Top Banner with Layer Controls */}
-      <div className="absolute top-3 left-3 z-[1000] flex items-center gap-2 bg-[#070E1A]/90 backdrop-blur-md border border-white/[0.1] px-3 py-1.5 rounded-lg shadow-lg">
-        <Navigation className="w-3.5 h-3.5 text-cyan-400" />
-        <span className="text-[11px] font-mono uppercase text-slate-300 font-semibold tracking-wider">
-          INDIA THEATER INTELLIGENCE PICTURE
-        </span>
+      {/* Top Banner with Theme Switcher & Filter Status */}
+      <div className="absolute top-3 left-3 z-[1000] flex flex-wrap items-center gap-2 bg-[#070E1A]/95 backdrop-blur-md border border-white/[0.12] px-3 py-1.5 rounded-lg shadow-xl">
+        <div className="flex items-center gap-1.5 pr-2 border-r border-white/[0.1]">
+          <Navigation className="w-3.5 h-3.5 text-cyan-400" />
+          <span className="text-[11px] font-mono uppercase text-white font-semibold tracking-wider">
+            INDIA THEATER INTELLIGENCE
+          </span>
+        </div>
+
+        {/* Google Maps Theme Switcher Pills */}
+        <div className="flex items-center bg-[#030712] p-0.5 rounded-md border border-white/[0.08] text-[10px] font-mono font-semibold">
+          <button
+            onClick={() => setBaseTheme('tactical')}
+            className={`px-2 py-0.5 rounded transition-all ${
+              baseTheme === 'tactical'
+                ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Tactical Dark
+          </button>
+          <button
+            onClick={() => setBaseTheme('satellite')}
+            className={`px-2 py-0.5 rounded transition-all ${
+              baseTheme === 'satellite'
+                ? 'bg-red-500/20 text-red-300 border border-red-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            4K Satellite
+          </button>
+          <button
+            onClick={() => setBaseTheme('roadmap')}
+            className={`px-2 py-0.5 rounded transition-all ${
+              baseTheme === 'roadmap'
+                ? 'bg-amber-500/20 text-amber-300 border border-amber-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Roadmap HD
+          </button>
+        </div>
+
         {selectedFraudType && (
           <span className="text-[10px] font-mono bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30">
             FILTER: {selectedFraudType}
@@ -129,11 +169,19 @@ export const NationalMap: React.FC = () => {
           className="w-full h-full"
           attributionControl={false}
         >
-          {/* Tactical Dark Tile Layer */}
+          {/* Google Maps Base Tile Layer Powered by User API Key */}
           <TileLayer
-            url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-            subdomains="abcd"
-            maxZoom={19}
+            key={baseTheme}
+            url={
+              baseTheme === 'satellite'
+                ? GOOGLE_MAP_TILE_URLS.satellite
+                : baseTheme === 'roadmap'
+                ? GOOGLE_MAP_TILE_URLS.roadmap
+                : GOOGLE_MAP_TILE_URLS.tacticalDark
+            }
+            className={baseTheme === 'tactical' ? 'tactical-dark-tiles' : ''}
+            maxZoom={20}
+            attribution="&copy; Google Maps"
           />
 
           {/* D3/SVG Flow Overlay for Cross-State Suspicious Fund Movements */}

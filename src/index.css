@@ -129,4 +129,10 @@ body {
   border-radius: 12px !important;
 }
 
+/* Tactical Dark Google Maps Filter */
+.tactical-dark-tiles {
+  filter: invert(100%) hue-rotate(180deg) brightness(88%) contrast(118%) saturate(40%) !important;
+}
+
+
 

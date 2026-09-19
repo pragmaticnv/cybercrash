@@ -37,18 +37,17 @@ export const AccountNode = memo(({ data }: { data: AccountNodeData }) => {
 
   return (
     <div
-      className={`rounded-xl p-3 min-w-[200px] max-w-[240px] text-xs transition-transform hover:scale-[1.03] select-none cursor-pointer ${borderStyle}`}
+      className={`rounded-xl p-3 min-w-[190px] max-w-[220px] text-xs transition-transform hover:scale-[1.03] select-none cursor-pointer ${borderStyle}`}
     >
-      {/* Target handle for incoming edges (Top for vertical flow, Left fallback) */}
+      {/* Target handle for incoming parent edges on Left */}
       <Handle
         type="target"
-        position={Position.Top}
+        position={Position.Left}
         className="!w-2.5 !h-2.5 !bg-cyan-400 !border-2 !border-[#02060D]"
       />
       <Handle
         type="target"
-        position={Position.Left}
-        id="target-left"
+        position={Position.Top}
         className="!w-2 !h-2 !bg-cyan-400 !border-2 !border-[#02060D] opacity-0"
       />
 
@@ -88,16 +87,15 @@ export const AccountNode = memo(({ data }: { data: AccountNodeData }) => {
         </span>
       </div>
 
-      {/* Source handle for outgoing edges (Bottom for vertical flow, Right fallback) */}
+      {/* Source handle for outgoing child branch edges on Right */}
       <Handle
         type="source"
-        position={Position.Bottom}
+        position={Position.Right}
         className="!w-2.5 !h-2.5 !bg-red-400 !border-2 !border-[#02060D]"
       />
       <Handle
         type="source"
-        position={Position.Right}
-        id="source-right"
+        position={Position.Bottom}
         className="!w-2 !h-2 !bg-red-400 !border-2 !border-[#02060D] opacity-0"
       />
     </div>

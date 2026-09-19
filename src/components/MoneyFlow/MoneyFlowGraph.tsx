@@ -26,13 +26,13 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
 
   const nodeTypes = useMemo(() => ({ accountNode: AccountNode }), []);
 
-  // Vertical Top-to-Bottom Hierarchical Layout
+  // Horizontal Tree Branching Layout (Left to Right)
   const initialNodes: Node[] = useMemo(() => [
-    // Level 0: Top - Complainant Victim
+    // Column 0: Complainant Victim (Root of Money Trail)
     {
       id: 'VICTIM',
       type: 'accountNode',
-      position: { x: 420, y: 15 },
+      position: { x: 30, y: 250 },
       data: {
         id: caseData.victim.account,
         label: 'COMPLAINANT VICTIM',
@@ -42,11 +42,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         nodeType: 'victim',
       },
     },
-    // Level 1: Primary Mule Hub (directly below Victim)
+    // Column 1: Primary Mule Hub (Main Trunk)
     {
       id: 'ACC_013041',
       type: 'accountNode',
-      position: { x: 420, y: 155 },
+      position: { x: 310, y: 250 },
       data: {
         id: 'ACC_013041',
         label: 'PRIMARY MULE HUB',
@@ -57,11 +57,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         isHistorical: true,
       },
     },
-    // Level 2: Connected Split Accounts & Layer 2 Hub (Row below Primary Mule)
+    // Column 2: Connected Mules (5 Outgoing Horizontal Tree Branches)
     {
       id: 'ACC_008833',
       type: 'accountNode',
-      position: { x: 0, y: 310 },
+      position: { x: 620, y: 20 },
       data: {
         id: 'ACC_008833',
         label: 'LAYER 2 SPLIT',
@@ -74,7 +74,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_012691',
       type: 'accountNode',
-      position: { x: 210, y: 310 },
+      position: { x: 620, y: 135 },
       data: {
         id: 'ACC_012691',
         label: 'LAYER 2 SPLIT',
@@ -87,7 +87,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_001097',
       type: 'accountNode',
-      position: { x: 420, y: 310 },
+      position: { x: 620, y: 250 },
       data: {
         id: 'ACC_001097',
         label: 'LAYER 2 FAST FUNNEL',
@@ -100,7 +100,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_003639',
       type: 'accountNode',
-      position: { x: 630, y: 310 },
+      position: { x: 620, y: 365 },
       data: {
         id: 'ACC_003639',
         label: 'LAYER 2 MICRO SPLIT',
@@ -113,7 +113,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_008564',
       type: 'accountNode',
-      position: { x: 840, y: 310 },
+      position: { x: 620, y: 480 },
       data: {
         id: 'ACC_008564',
         label: 'LAYER 2 MULE HUB',
@@ -124,11 +124,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         isHistorical: true,
       },
     },
-    // Level 3: Downstream Layer 3 Split (below Layer 2 Hub)
+    // Column 3: Downstream Sub-Branch from Layer 2 Mule Hub
     {
       id: 'ACC_001276',
       type: 'accountNode',
-      position: { x: 840, y: 450 },
+      position: { x: 920, y: 480 },
       data: {
         id: 'ACC_001276',
         label: 'LAYER 3 SPLIT MULE',
@@ -138,11 +138,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         nodeType: 'connected',
       },
     },
-    // Level 4: Final Cash-out Mule (below Layer 3)
+    // Column 4: Final Cashout Mule Node
     {
       id: 'ACC_006877',
       type: 'accountNode',
-      position: { x: 840, y: 590 },
+      position: { x: 1220, y: 480 },
       data: {
         id: 'ACC_006877',
         label: 'CASH-OUT MULE',
@@ -155,12 +155,13 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     },
   ], [caseData]);
 
-  // Downward Vertical Directional Edges
+  // Curved Tree Branching Edges with SmoothStep Flow
   const initialEdges: Edge[] = useMemo(() => [
     {
       id: 'e-victim-mule',
       source: 'VICTIM',
       target: 'ACC_013041',
+      type: 'smoothstep',
       animated: true,
       label: '₹1,00,250 · IMPS',
       style: { stroke: '#38BDF8', strokeWidth: 2.5 },
@@ -174,6 +175,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-mule-split1',
       source: 'ACC_013041',
       target: 'ACC_008833',
+      type: 'smoothstep',
       animated: true,
       label: '₹12,751 · UPI',
       style: { stroke: '#EF4444', strokeWidth: 1.8 },
@@ -187,6 +189,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-mule-split2',
       source: 'ACC_013041',
       target: 'ACC_012691',
+      type: 'smoothstep',
       animated: true,
       label: '₹3,427 · UPI',
       style: { stroke: '#EF4444', strokeWidth: 1.8 },
@@ -200,6 +203,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-mule-split3',
       source: 'ACC_013041',
       target: 'ACC_001097',
+      type: 'smoothstep',
       animated: true,
       label: '₹18,070 · IMPS',
       style: { stroke: '#EF4444', strokeWidth: 2 },
@@ -213,6 +217,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-mule-split4',
       source: 'ACC_013041',
       target: 'ACC_003639',
+      type: 'smoothstep',
       animated: true,
       label: '₹3,704 · UPI',
       style: { stroke: '#EF4444', strokeWidth: 1.8 },
@@ -226,6 +231,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-mule-hub2',
       source: 'ACC_013041',
       target: 'ACC_008564',
+      type: 'smoothstep',
       animated: true,
       label: '₹98,000 · NEFT',
       style: { stroke: '#EF4444', strokeWidth: 2.5 },
@@ -239,6 +245,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-hub2-split3',
       source: 'ACC_008564',
       target: 'ACC_001276',
+      type: 'smoothstep',
       animated: true,
       label: '₹64,000 · RTGS',
       style: { stroke: '#F59E0B', strokeWidth: 2 },
@@ -252,6 +259,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-split3-cashout',
       source: 'ACC_001276',
       target: 'ACC_006877',
+      type: 'smoothstep',
       animated: true,
       label: '₹60,000 · IMPS',
       style: { stroke: '#EF4444', strokeWidth: 2.2 },
@@ -290,8 +298,8 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         downstreamAmount={caseData.downstreamAmount || '₹53,439'}
       />
 
-      {/* Vertical Interactive Canvas */}
-      <div className="w-full h-[400px] relative bg-[#02050B]">
+      {/* Horizontal Branching Tree Canvas with SmoothStep curves */}
+      <div className="w-full h-[460px] relative bg-[#02050B]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -299,8 +307,8 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
           onNodeClick={onNodeClick}
           onEdgeClick={onEdgeClick}
           fitView
-          fitViewOptions={{ padding: 0.12 }}
-          minZoom={0.3}
+          fitViewOptions={{ padding: 0.1 }}
+          minZoom={0.25}
           maxZoom={1.8}
         >
           <Background color="#101F34" gap={20} size={1.2} />

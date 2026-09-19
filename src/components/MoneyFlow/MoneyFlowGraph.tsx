@@ -26,13 +26,13 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
 
   const nodeTypes = useMemo(() => ({ accountNode: AccountNode }), []);
 
-  // Horizontal Tree Branching Layout (Left to Right)
+  // Gracefully spaced tree branching layout
   const initialNodes: Node[] = useMemo(() => [
     // Column 0: Complainant Victim (Root of Money Trail)
     {
       id: 'VICTIM',
       type: 'accountNode',
-      position: { x: 30, y: 250 },
+      position: { x: 30, y: 280 },
       data: {
         id: caseData.victim.account,
         label: 'COMPLAINANT VICTIM',
@@ -42,11 +42,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         nodeType: 'victim',
       },
     },
-    // Column 1: Primary Mule Hub (Main Trunk)
+    // Column 1: Primary Mule Hub (Main Central Trunk)
     {
       id: 'ACC_013041',
       type: 'accountNode',
-      position: { x: 310, y: 250 },
+      position: { x: 320, y: 280 },
       data: {
         id: 'ACC_013041',
         label: 'PRIMARY MULE HUB',
@@ -57,11 +57,11 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         isHistorical: true,
       },
     },
-    // Column 2: Connected Mules (5 Outgoing Horizontal Tree Branches)
+    // Column 2: Connected Mules (5 Outgoing Curving Tree Branches)
     {
       id: 'ACC_008833',
       type: 'accountNode',
-      position: { x: 620, y: 20 },
+      position: { x: 650, y: 30 },
       data: {
         id: 'ACC_008833',
         label: 'LAYER 2 SPLIT',
@@ -74,7 +74,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_012691',
       type: 'accountNode',
-      position: { x: 620, y: 135 },
+      position: { x: 650, y: 155 },
       data: {
         id: 'ACC_012691',
         label: 'LAYER 2 SPLIT',
@@ -87,7 +87,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_001097',
       type: 'accountNode',
-      position: { x: 620, y: 250 },
+      position: { x: 650, y: 280 },
       data: {
         id: 'ACC_001097',
         label: 'LAYER 2 FAST FUNNEL',
@@ -100,7 +100,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_003639',
       type: 'accountNode',
-      position: { x: 620, y: 365 },
+      position: { x: 650, y: 405 },
       data: {
         id: 'ACC_003639',
         label: 'LAYER 2 MICRO SPLIT',
@@ -113,7 +113,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_008564',
       type: 'accountNode',
-      position: { x: 620, y: 480 },
+      position: { x: 650, y: 530 },
       data: {
         id: 'ACC_008564',
         label: 'LAYER 2 MULE HUB',
@@ -128,7 +128,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_001276',
       type: 'accountNode',
-      position: { x: 920, y: 480 },
+      position: { x: 970, y: 530 },
       data: {
         id: 'ACC_001276',
         label: 'LAYER 3 SPLIT MULE',
@@ -142,7 +142,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     {
       id: 'ACC_006877',
       type: 'accountNode',
-      position: { x: 1220, y: 480 },
+      position: { x: 1280, y: 530 },
       data: {
         id: 'ACC_006877',
         label: 'CASH-OUT MULE',
@@ -155,16 +155,20 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
     },
   ], [caseData]);
 
-  // Curved Tree Branching Edges with SmoothStep Flow
+  // Curvy Organic Bezier Tree Branches with Luminous Glowing Gradients
   const initialEdges: Edge[] = useMemo(() => [
     {
       id: 'e-victim-mule',
       source: 'VICTIM',
       target: 'ACC_013041',
-      type: 'smoothstep',
+      type: 'default', // Smooth organic cubic bezier curve
       animated: true,
       label: '₹1,00,250 · IMPS',
-      style: { stroke: '#38BDF8', strokeWidth: 2.5 },
+      style: {
+        stroke: '#38BDF8',
+        strokeWidth: 2.8,
+        filter: 'drop-shadow(0 0 6px rgba(56, 189, 248, 0.75))',
+      },
       labelStyle: { fill: '#FFFFFF', fontWeight: 700, fontFamily: 'monospace', fontSize: 11 },
       labelBgStyle: { fill: '#081426', fillOpacity: 0.95 },
       labelBgPadding: [6, 4],
@@ -175,38 +179,50 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-mule-split1',
       source: 'ACC_013041',
       target: 'ACC_008833',
-      type: 'smoothstep',
+      type: 'default', // Curvy upward branch
       animated: true,
       label: '₹12,751 · UPI',
-      style: { stroke: '#EF4444', strokeWidth: 1.8 },
+      style: {
+        stroke: '#FF4552',
+        strokeWidth: 2,
+        filter: 'drop-shadow(0 0 5px rgba(255, 69, 82, 0.6))',
+      },
       labelStyle: { fill: '#FCA5A5', fontFamily: 'monospace', fontSize: 10.5 },
       labelBgStyle: { fill: '#140608', fillOpacity: 0.95 },
       labelBgPadding: [5, 3],
       labelBgBorderRadius: 4,
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#EF4444' },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#FF4552' },
     },
     {
       id: 'e-mule-split2',
       source: 'ACC_013041',
       target: 'ACC_012691',
-      type: 'smoothstep',
+      type: 'default', // Gentle upward curve
       animated: true,
       label: '₹3,427 · UPI',
-      style: { stroke: '#EF4444', strokeWidth: 1.8 },
+      style: {
+        stroke: '#FF4552',
+        strokeWidth: 2,
+        filter: 'drop-shadow(0 0 5px rgba(255, 69, 82, 0.6))',
+      },
       labelStyle: { fill: '#FCA5A5', fontFamily: 'monospace', fontSize: 10.5 },
       labelBgStyle: { fill: '#140608', fillOpacity: 0.95 },
       labelBgPadding: [5, 3],
       labelBgBorderRadius: 4,
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#EF4444' },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#FF4552' },
     },
     {
       id: 'e-mule-split3',
       source: 'ACC_013041',
       target: 'ACC_001097',
-      type: 'smoothstep',
+      type: 'default', // Direct horizontal spine
       animated: true,
       label: '₹18,070 · IMPS',
-      style: { stroke: '#EF4444', strokeWidth: 2 },
+      style: {
+        stroke: '#EF4444',
+        strokeWidth: 2.2,
+        filter: 'drop-shadow(0 0 6px rgba(239, 68, 68, 0.7))',
+      },
       labelStyle: { fill: '#FCA5A5', fontFamily: 'monospace', fontSize: 10.5 },
       labelBgStyle: { fill: '#140608', fillOpacity: 0.95 },
       labelBgPadding: [5, 3],
@@ -217,24 +233,32 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-mule-split4',
       source: 'ACC_013041',
       target: 'ACC_003639',
-      type: 'smoothstep',
+      type: 'default', // Gentle downward curve
       animated: true,
       label: '₹3,704 · UPI',
-      style: { stroke: '#EF4444', strokeWidth: 1.8 },
+      style: {
+        stroke: '#FF4552',
+        strokeWidth: 2,
+        filter: 'drop-shadow(0 0 5px rgba(255, 69, 82, 0.6))',
+      },
       labelStyle: { fill: '#FCA5A5', fontFamily: 'monospace', fontSize: 10.5 },
       labelBgStyle: { fill: '#140608', fillOpacity: 0.95 },
       labelBgPadding: [5, 3],
       labelBgBorderRadius: 4,
-      markerEnd: { type: MarkerType.ArrowClosed, color: '#EF4444' },
+      markerEnd: { type: MarkerType.ArrowClosed, color: '#FF4552' },
     },
     {
       id: 'e-mule-hub2',
       source: 'ACC_013041',
       target: 'ACC_008564',
-      type: 'smoothstep',
+      type: 'default', // Deep downward curve to main hub
       animated: true,
       label: '₹98,000 · NEFT',
-      style: { stroke: '#EF4444', strokeWidth: 2.5 },
+      style: {
+        stroke: '#EF4444',
+        strokeWidth: 2.8,
+        filter: 'drop-shadow(0 0 8px rgba(239, 68, 68, 0.8))',
+      },
       labelStyle: { fill: '#FFFFFF', fontWeight: 700, fontFamily: 'monospace', fontSize: 11 },
       labelBgStyle: { fill: '#1E060A', fillOpacity: 0.95 },
       labelBgPadding: [6, 4],
@@ -245,10 +269,14 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-hub2-split3',
       source: 'ACC_008564',
       target: 'ACC_001276',
-      type: 'smoothstep',
+      type: 'default', // Sub-branch curve
       animated: true,
       label: '₹64,000 · RTGS',
-      style: { stroke: '#F59E0B', strokeWidth: 2 },
+      style: {
+        stroke: '#F59E0B',
+        strokeWidth: 2.4,
+        filter: 'drop-shadow(0 0 6px rgba(245, 158, 11, 0.7))',
+      },
       labelStyle: { fill: '#FCD34D', fontFamily: 'monospace', fontSize: 10.5 },
       labelBgStyle: { fill: '#160E04', fillOpacity: 0.95 },
       labelBgPadding: [5, 3],
@@ -259,10 +287,14 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
       id: 'e-split3-cashout',
       source: 'ACC_001276',
       target: 'ACC_006877',
-      type: 'smoothstep',
+      type: 'default', // Terminal extraction curve
       animated: true,
       label: '₹60,000 · IMPS',
-      style: { stroke: '#EF4444', strokeWidth: 2.2 },
+      style: {
+        stroke: '#EF4444',
+        strokeWidth: 2.6,
+        filter: 'drop-shadow(0 0 7px rgba(239, 68, 68, 0.85))',
+      },
       labelStyle: { fill: '#FCA5A5', fontWeight: 700, fontFamily: 'monospace', fontSize: 10.5 },
       labelBgStyle: { fill: '#1E060A', fillOpacity: 0.95 },
       labelBgPadding: [5, 3],
@@ -289,7 +321,7 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
   );
 
   return (
-    <div className="w-full bg-[#030712] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col">
+    <div className="w-full bg-[#030712] border border-white/[0.08] rounded-xl overflow-hidden shadow-2xl flex flex-col flex-1">
       {/* Forensic Summary Bar */}
       <MoneyFlowSummary
         incomingTx={1}
@@ -298,8 +330,8 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
         downstreamAmount={caseData.downstreamAmount || '₹53,439'}
       />
 
-      {/* Horizontal Branching Tree Canvas with SmoothStep curves */}
-      <div className="w-full h-[460px] relative bg-[#02050B]">
+      {/* Stretched Vertical Canvas with Curvy Branching Tree */}
+      <div className="w-full h-[580px] lg:h-[600px] relative bg-[#02050B]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -307,14 +339,14 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
           onNodeClick={onNodeClick}
           onEdgeClick={onEdgeClick}
           fitView
-          fitViewOptions={{ padding: 0.1 }}
-          minZoom={0.25}
+          fitViewOptions={{ padding: 0.08 }}
+          minZoom={0.2}
           maxZoom={1.8}
         >
-          <Background color="#101F34" gap={20} size={1.2} />
+          <Background color="#101F34" gap={22} size={1.2} />
           <Controls showInteractive={false} className="!bottom-3 !left-3" />
           <MiniMap
-            className="!bottom-3 !right-3 !h-20 !w-32"
+            className="!bottom-3 !right-3 !h-24 !w-36"
             nodeColor={(n) => {
               if (n.id === 'ACC_013041') return '#EF4444';
               if (n.id === 'VICTIM') return '#38BDF8';

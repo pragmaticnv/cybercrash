@@ -126,7 +126,7 @@ export const CaseInvestigation: React.FC = () => {
                     </h2>
                   </div>
                   <span className="text-[11px] font-mono text-slate-400">
-                    Vertical forensic flow · Click nodes or edges to audit
+                    Branching forensic money trail · Click nodes or edges to audit
                   </span>
                 </div>
 

@@ -12,6 +12,8 @@ interface MapInvestigationProps {
   caseData: Case;
 }
 
+import { GOOGLE_MAP_TILE_URLS } from '../../config/maps';
+
 // Controller to smoothly pan/fit bounds
 const MapController: React.FC<{ center: [number, number]; zoom: number }> = ({ center, zoom }) => {
   const map = useMap();
@@ -22,10 +24,33 @@ const MapController: React.FC<{ center: [number, number]; zoom: number }> = ({ c
 };
 
 export const MapInvestigation: React.FC<MapInvestigationProps> = ({ prediction, caseData }) => {
-  const { mapFilters, setTechnicalDrawerOpen } = useInvestigationStore();
+  const { mapFilters, setTechnicalDrawerOpen, selectedBaseLayer } = useInvestigationStore();
 
   const centerLat = prediction.centerCoordinates.lat;
   const centerLng = prediction.centerCoordinates.lng;
+
+  // Determine active tile configuration from Google Maps API
+  let activeTileUrl = GOOGLE_MAP_TILE_URLS.tacticalDark;
+  let activeTileClass = 'tactical-dark-tiles';
+  let activeAttribution = '&copy; Google Maps';
+  let maxZoomLevel = 20;
+
+  if (selectedBaseLayer === 'google-satellite') {
+    activeTileUrl = GOOGLE_MAP_TILE_URLS.satellite;
+    activeTileClass = '';
+    activeAttribution = '&copy; Google Satellite 4K';
+    maxZoomLevel = 21;
+  } else if (selectedBaseLayer === 'google-roadmap') {
+    activeTileUrl = GOOGLE_MAP_TILE_URLS.roadmap;
+    activeTileClass = '';
+    activeAttribution = '&copy; Google Maps';
+    maxZoomLevel = 20;
+  } else if (selectedBaseLayer === 'carto-dark') {
+    activeTileUrl = GOOGLE_MAP_TILE_URLS.cartoDark;
+    activeTileClass = '';
+    activeAttribution = '&copy; CARTO &copy; OpenStreetMap';
+    maxZoomLevel = 19;
+  }
 
   // Custom DOM-rendered icons to guarantee 0 asset 404s and ultra-high fidelity cyber aesthetics
   const predictedZoneIcon = L.divIcon({
@@ -93,11 +118,13 @@ export const MapInvestigation: React.FC<MapInvestigationProps> = ({ prediction, 
       >
         <MapController center={[centerLat, centerLng]} zoom={12} />
 
-        {/* Tactical Dark Matter Tiles */}
+        {/* Google Maps Base Tile Layer */}
         <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-          maxZoom={19}
+          key={selectedBaseLayer}
+          attribution={activeAttribution}
+          url={activeTileUrl}
+          className={activeTileClass}
+          maxZoom={maxZoomLevel}
         />
 
         {/* Predicted Zone Circumference */}

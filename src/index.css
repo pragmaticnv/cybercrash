@@ -108,8 +108,11 @@ body {
   fill: #FFFFFF !important;
 }
 
+.react-flow__attribution,
 .react-flow__minimap {
-  background: #02060D !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 8px !important;
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
 }
+

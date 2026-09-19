@@ -3,7 +3,6 @@ import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
   Node,
   Edge,
   useNodesState,
@@ -342,17 +341,10 @@ export const MoneyFlowGraph: React.FC<MoneyFlowGraphProps> = ({ caseData, transa
           fitViewOptions={{ padding: 0.08 }}
           minZoom={0.2}
           maxZoom={1.8}
+          proOptions={{ hideAttribution: true }}
         >
           <Background color="#101F34" gap={22} size={1.2} />
           <Controls showInteractive={false} className="!bottom-3 !left-3" />
-          <MiniMap
-            className="!bottom-3 !right-3 !h-24 !w-36"
-            nodeColor={(n) => {
-              if (n.id === 'ACC_013041') return '#EF4444';
-              if (n.id === 'VICTIM') return '#38BDF8';
-              return '#1E293B';
-            }}
-          />
         </ReactFlow>
       </div>
     </div>

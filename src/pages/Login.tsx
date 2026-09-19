@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Shield, Lock, User, ArrowRight, Eye, EyeOff } from 'lucide-react';
 
 export const Login: React.FC = () => {
+  const [portalRole, setPortalRole] = useState<'lea' | 'i4c'>('lea');
   const [userId, setUserId] = useState('lea_demo');
   const [password, setPassword] = useState('••••••••••••');
   const [showPassword, setShowPassword] = useState(false);
@@ -10,15 +11,33 @@ export const Login: React.FC = () => {
   const [authSuccess, setAuthSuccess] = useState(false);
   const navigate = useNavigate();
 
+  const handlePortalSwitch = (role: 'lea' | 'i4c') => {
+    setPortalRole(role);
+    if (role === 'i4c') {
+      setUserId('i4c_national');
+    } else {
+      setUserId('lea_demo');
+    }
+  };
+
   const handleSignIn = (e: React.FormEvent) => {
     e.preventDefault();
     setIsAuthenticating(true);
+
+    const isI4C =
+      portalRole === 'i4c' ||
+      userId.toLowerCase().includes('i4c') ||
+      userId.toLowerCase().includes('national');
 
     setTimeout(() => {
       setIsAuthenticating(false);
       setAuthSuccess(true);
       setTimeout(() => {
-        navigate('/cases');
+        if (isI4C) {
+          navigate('/i4c');
+        } else {
+          navigate('/cases');
+        }
       }, 500);
     }, 600);
   };
@@ -111,14 +130,40 @@ export const Login: React.FC = () => {
               </div>
             </div>
 
-            <form onSubmit={handleSignIn} className="mt-6 flex flex-col space-y-3.5">
+            {/* Portal Switcher Tabs */}
+            <div className="mt-5 p-1 bg-[#091220] rounded-xl border border-white/[0.08] grid grid-cols-2 gap-1 font-mono text-xs">
+              <button
+                type="button"
+                onClick={() => handlePortalSwitch('lea')}
+                className={`py-2 px-2 rounded-lg font-bold transition-all text-center ${
+                  portalRole === 'lea'
+                    ? 'bg-cyan-500/20 text-cyan-300 border border-cyan-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                LEA INVESTIGATION
+              </button>
+              <button
+                type="button"
+                onClick={() => handlePortalSwitch('i4c')}
+                className={`py-2 px-2 rounded-lg font-bold transition-all text-center ${
+                  portalRole === 'i4c'
+                    ? 'bg-red-500/25 text-red-300 border border-red-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
+              >
+                I4C NATIONAL
+              </button>
+            </div>
+
+            <form onSubmit={handleSignIn} className="mt-4 flex flex-col space-y-3.5">
               <div className="relative flex items-center h-[50px] rounded-[10px] bg-white/[0.045] border border-white/[0.13]">
                 <User className="absolute left-[18px] w-5 h-5 text-[#C9D1DA]" />
                 <input
                   type="text"
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  placeholder="User ID (e.g. lea_demo)"
+                  placeholder={portalRole === 'i4c' ? 'User ID (e.g. i4c_national)' : 'User ID (e.g. lea_demo)'}
                   className="w-full h-full bg-transparent pl-[52px] pr-4 text-[15px] text-white placeholder-[#7C8794] focus:outline-none"
                 />
               </div>
@@ -147,7 +192,9 @@ export const Login: React.FC = () => {
                 className={`w-full h-[50px] rounded-[10px] text-white font-semibold text-[15px] flex items-center justify-center gap-2 transition-all mt-2 shadow-lg ${
                   authSuccess
                     ? 'bg-emerald-600 border border-emerald-400'
-                    : 'bg-gradient-to-b from-[#F0323C] via-[#C4161F] to-[#9E0F18] hover:brightness-110 shadow-red-900/50'
+                    : portalRole === 'i4c'
+                    ? 'bg-gradient-to-b from-[#EF4444] via-[#DC2626] to-[#991B1B] hover:brightness-110 shadow-red-900/50'
+                    : 'bg-gradient-to-b from-[#2F80C8] via-[#1D60A5] to-[#123E6E] hover:brightness-110 shadow-blue-900/50'
                 }`}
               >
                 {isAuthenticating ? (
@@ -156,7 +203,7 @@ export const Login: React.FC = () => {
                   <span>Access Granted · Entering Workspace</span>
                 ) : (
                   <>
-                    <span>Enter Case Command</span>
+                    <span>{portalRole === 'i4c' ? 'Enter I4C Command' : 'Enter Case Command'}</span>
                     <ArrowRight className="w-4 h-4" />
                   </>
                 )}
@@ -167,18 +214,24 @@ export const Login: React.FC = () => {
               <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-2.5">
                 Quick Demo Authentication
               </span>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-1.5">
                 <button
                   onClick={() => navigate('/cases')}
-                  className="py-2 px-3 rounded-lg bg-white/[0.04] hover:bg-cyan-500/15 border border-white/[0.08] hover:border-cyan-500/40 text-[11px] font-mono text-cyan-300 font-semibold uppercase transition-colors"
+                  className="py-2 px-2 rounded-lg bg-white/[0.04] hover:bg-cyan-500/15 border border-white/[0.08] hover:border-cyan-500/40 text-[10.5px] font-mono text-cyan-300 font-semibold uppercase transition-colors"
                 >
-                  LEA Investigator
+                  LEA Cases
+                </button>
+                <button
+                  onClick={() => navigate('/i4c')}
+                  className="py-2 px-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 hover:border-red-500/60 text-[10.5px] font-mono text-red-300 font-semibold uppercase transition-colors"
+                >
+                  I4C Command
                 </button>
                 <button
                   onClick={() => navigate('/investigation/CASE_007001')}
-                  className="py-2 px-3 rounded-lg bg-white/[0.04] hover:bg-red-500/15 border border-white/[0.08] hover:border-red-500/40 text-[11px] font-mono text-red-300 font-semibold uppercase transition-colors"
+                  className="py-2 px-2 rounded-lg bg-white/[0.04] hover:bg-amber-500/15 border border-white/[0.08] hover:border-amber-500/40 text-[10.5px] font-mono text-amber-300 font-semibold uppercase transition-colors"
                 >
-                  Inspect CASE_007001
+                  CASE_007001
                 </button>
               </div>
             </div>

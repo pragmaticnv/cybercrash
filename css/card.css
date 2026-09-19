@@ -1,0 +1,158 @@
+/* =====================================================
+   CYBERCRASH — Login Card
+   Compact, sophisticated — NOT a dominant SaaS card
+   ===================================================== */
+
+/* Card wrapper — centers the card absolutely */
+.card-wrapper {
+  /* Position set in main.css */
+  width: 420px;
+}
+
+/* The card itself */
+.login-card {
+  width: 100%;
+  background: rgba(4, 14, 28, 0.90);
+  backdrop-filter: blur(22px) saturate(1.2);
+  -webkit-backdrop-filter: blur(22px) saturate(1.2);
+  border: 1px solid rgba(78, 140, 200, 0.20);
+  border-radius: 14px;
+  padding: 26px 28px 24px;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(53, 169, 255, 0.04),
+    0 24px 80px rgba(2, 9, 18, 0.80),
+    0 0 60px rgba(5, 20, 45, 0.60),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  animation: cardEntrance 0.6s ease-out both;
+}
+
+/* Subtle top border accent */
+.login-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 12%; right: 12%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(53,169,255,0.35), rgba(53,169,255,0.15), transparent);
+}
+
+/* Inner edge shine */
+.login-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 40% at 50% 0%, rgba(53,169,255,0.04), transparent 55%);
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Shake animation */
+.login-card.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* ── Card Header ─────────────────────────────────────── */
+.card-header {
+  margin-bottom: 18px;
+  text-align: center;
+}
+
+.card-welcome {
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 3px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-bottom: 5px;
+}
+
+.card-brand {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: 4px;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+
+.card-brand .cyber { color: var(--text-primary); }
+.card-brand .crash { color: var(--threat-red); }
+
+.card-subtitle {
+  font-size: 10px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+  line-height: 1.5;
+  opacity: 0.7;
+}
+
+/* ── Divider ─────────────────────────────────────────── */
+.card-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(78,140,200,0.18), transparent);
+  margin: 16px 0;
+}
+
+/* ── Error State ─────────────────────────────────────── */
+.card-error-msg {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(215, 25, 32, 0.10);
+  border: 1px solid rgba(215, 25, 32, 0.28);
+  border-radius: var(--radius-sm);
+  padding: 8px 10px;
+  margin-bottom: 12px;
+  font-size: 11px;
+  color: rgba(255, 90, 90, 0.95);
+  letter-spacing: 0.3px;
+  animation: fadeIn 0.2s ease;
+}
+
+.card-error-msg.hidden { display: none; }
+
+/* ── Success State ───────────────────────────────────── */
+.card-success-overlay {
+  position: absolute; inset: 0;
+  background: rgba(4, 14, 28, 0.95);
+  backdrop-filter: blur(8px);
+  border-radius: inherit;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 50;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.card-success-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.success-icon {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.12);
+  border: 1px solid rgba(34, 197, 94, 0.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+}
+
+.success-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #22c55e;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.success-sub {
+  font-size: 11px;
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}

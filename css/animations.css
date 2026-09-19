@@ -1,0 +1,152 @@
+/* =====================================================
+   CYBERCRASH — Animation Keyframes
+   ===================================================== */
+
+/* Threat node pulse (core dot) */
+@keyframes threatPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.7);
+    opacity: 0.6;
+  }
+}
+
+@keyframes threatRingPulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+}
+
+/* Arc particle movement */
+@keyframes arcParticle {
+  0%   { stroke-dashoffset: 300; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { stroke-dashoffset: 0; opacity: 0; }
+}
+
+/* Map glow breath */
+@keyframes mapGlow {
+  0%, 100% { filter: drop-shadow(0 0 6px rgba(53,169,255,0.5)) drop-shadow(0 0 20px rgba(53,169,255,0.15)); }
+  50%       { filter: drop-shadow(0 0 10px rgba(53,169,255,0.8)) drop-shadow(0 0 30px rgba(53,169,255,0.25)); }
+}
+
+/* Card entrance */
+@keyframes cardEntrance {
+  0% {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scan line sweep */
+@keyframes scanSweep {
+  0%   { transform: translateY(-100%); opacity: 0; }
+  10%  { opacity: 0.06; }
+  90%  { opacity: 0.03; }
+  100% { transform: translateY(200vh); opacity: 0; }
+}
+
+/* Grid drift */
+@keyframes gridDrift {
+  0%   { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+/* Atmospheric pulse */
+@keyframes atmoPulse {
+  0%, 100% { opacity: 0.25; }
+  50%       { opacity: 0.40; }
+}
+
+/* ACTIVE indicator blink */
+@keyframes activeBlink {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.3; }
+}
+
+/* Hero text entrance */
+@keyframes heroEntrance {
+  0% { opacity: 0; transform: translateX(-20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Subtle floating */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+/* Panel entrance from right */
+@keyframes panelSlideIn {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Threat graph line animation */
+@keyframes graphScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Particle float */
+@keyframes particleDrift {
+  0%   { transform: translateY(0) translateX(0); opacity: 0; }
+  10%  { opacity: 0.6; }
+  90%  { opacity: 0.4; }
+  100% { transform: translateY(-80px) translateX(20px); opacity: 0; }
+}
+
+/* Button arrow bounce */
+@keyframes arrowBounce {
+  0%, 100% { transform: translateX(0); }
+  50%       { transform: translateX(4px); }
+}
+
+/* Red accent line */
+@keyframes accentExpand {
+  0%   { width: 0; opacity: 0; }
+  100% { width: 40px; opacity: 1; }
+}
+
+/* Fade in generic */
+@keyframes fadeIn {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Node ping ripple */
+@keyframes nodePing {
+  0%   { transform: scale(1); opacity: 0.8; }
+  100% { transform: scale(3); opacity: 0; }
+}
+
+/* Data stream */
+@keyframes dataStream {
+  0%   { stroke-dashoffset: 200; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* Slow rotate for background elements */
+@keyframes slowRotate {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Monitor flicker */
+@keyframes monitorFlicker {
+  0%, 98%, 100% { opacity: 1; }
+  99% { opacity: 0.7; }
+}

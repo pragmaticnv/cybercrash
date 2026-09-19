@@ -1,0 +1,269 @@
+/* =====================================================
+   CYBERCRASH — Background, India Threat Map, Atmosphere
+   ===================================================== */
+
+/* ── Base background ─────────────────────────────────── */
+#cyber-background {
+  background:
+    radial-gradient(ellipse 85% 70% at 68% 45%, rgba(10, 28, 58, 0.95) 0%, transparent 65%),
+    radial-gradient(ellipse 50% 60% at 15% 50%, rgba(5, 16, 32, 0.80) 0%, transparent 65%),
+    radial-gradient(ellipse 70% 45% at 50% 105%, rgba(2, 8, 18, 1.0) 0%, transparent 60%),
+    linear-gradient(155deg, #020912 0%, #030E1A 30%, #04111D 60%, #020912 100%);
+  overflow: hidden;
+}
+
+/* Subtle CRT scanline texture on entire background */
+#cyber-background::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 3px,
+    rgba(53, 169, 255, 0.009) 3px,
+    rgba(53, 169, 255, 0.009) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Animated grid overlay ──────────────────────────── */
+.bg-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(53, 169, 255, 0.038) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 169, 255, 0.038) 1px, transparent 1px);
+  background-size: 55px 55px;
+  animation: gridDrift 28s linear infinite;
+  z-index: 1;
+}
+
+/* ── Scan sweep line ─────────────────────────────────── */
+.bg-scan-line {
+  position: absolute;
+  left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(53,169,255,0.18) 40%, rgba(53,169,255,0.10) 60%, transparent 100%);
+  animation: scanSweep 9s linear infinite;
+  z-index: 2;
+}
+
+/* ── INDIA MAP — dominant background element ─────────── */
+/* Positioned large, right-center, extends behind card */
+#india-map-container {
+  position: absolute;
+  right: -6%;
+  top: 48%;
+  transform: translateY(-50%);
+  width: 75%;
+  height: 105%;
+  z-index: 3;
+  pointer-events: none;
+}
+
+#india-threat-map {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  animation: mapGlow 5s ease-in-out infinite;
+}
+
+/* Map paths */
+.india-outline {
+  fill: none;
+  stroke: rgba(53, 169, 255, 0.65);
+  stroke-width: 1.4;
+  filter: drop-shadow(0 0 6px rgba(53,169,255,0.75)) drop-shadow(0 0 20px rgba(53,169,255,0.3));
+}
+
+.india-outline-inner {
+  fill: rgba(8, 25, 52, 0.28);
+  stroke: none;
+}
+
+.india-states {
+  fill: none;
+  stroke: rgba(53, 169, 255, 0.10);
+  stroke-width: 0.5;
+}
+
+.india-label {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 10px;
+  fill: rgba(53, 169, 255, 0.20);
+}
+
+/* ── Threat nodes ────────────────────────────────────── */
+.threat-node-core {
+  fill: var(--threat-red);
+  filter: drop-shadow(0 0 5px rgba(255,45,45,0.9));
+}
+
+.threat-node-ring {
+  fill: none;
+  stroke: var(--threat-red);
+  stroke-width: 1.2;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: threatRingPulse 2.8s ease-out infinite;
+}
+
+.threat-node-ring-2 {
+  fill: none;
+  stroke: rgba(255, 80, 80, 0.7);
+  stroke-width: 0.8;
+  opacity: 0;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: threatRingPulse 2.8s ease-out infinite 1.0s;
+}
+
+/* Stagger node pulses */
+.node-pulse-1 { transform-box: fill-box; transform-origin: center; animation: threatPulse 2.8s ease-in-out infinite 0.0s; }
+.node-pulse-2 { transform-box: fill-box; transform-origin: center; animation: threatPulse 3.2s ease-in-out infinite 0.4s; }
+.node-pulse-3 { transform-box: fill-box; transform-origin: center; animation: threatPulse 2.5s ease-in-out infinite 0.9s; }
+.node-pulse-4 { transform-box: fill-box; transform-origin: center; animation: threatPulse 3.0s ease-in-out infinite 1.3s; }
+.node-pulse-5 { transform-box: fill-box; transform-origin: center; animation: threatPulse 2.7s ease-in-out infinite 0.6s; }
+.node-pulse-6 { transform-box: fill-box; transform-origin: center; animation: threatPulse 3.1s ease-in-out infinite 1.8s; }
+.node-pulse-7 { transform-box: fill-box; transform-origin: center; animation: threatPulse 2.9s ease-in-out infinite 0.2s; }
+.node-pulse-8 { transform-box: fill-box; transform-origin: center; animation: threatPulse 2.6s ease-in-out infinite 1.1s; }
+.node-pulse-9 { transform-box: fill-box; transform-origin: center; animation: threatPulse 3.3s ease-in-out infinite 2.0s; }
+
+/* ── Connection arcs ─────────────────────────────────── */
+.threat-arc {
+  fill: none;
+  stroke: rgba(255, 60, 60, 0.30);
+  stroke-width: 0.9;
+}
+
+.arc-particle {
+  fill: none;
+  stroke: rgba(255, 45, 45, 0.92);
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 4px rgba(255,45,45,0.85));
+}
+
+.arc-p1 { animation: arcParticle 5s linear infinite 0s; }
+.arc-p2 { animation: arcParticle 6s linear infinite 1.5s; }
+.arc-p3 { animation: arcParticle 4.5s linear infinite 0.8s; }
+.arc-p4 { animation: arcParticle 7s linear infinite 2.2s; }
+.arc-p5 { animation: arcParticle 5.5s linear infinite 3.0s; }
+.arc-p6 { animation: arcParticle 6.5s linear infinite 0.3s; }
+.arc-p7 { animation: arcParticle 4.8s linear infinite 1.9s; }
+
+/* ── Atmospheric glow spots ─────────────────────────── */
+.atmo-glow {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Main blue intelligence center glow — large, behind the map */
+.atmo-glow-blue-1 {
+  width: 750px; height: 600px;
+  right: 0%; top: 5%;
+  background: radial-gradient(ellipse, rgba(18, 60, 120, 0.22) 0%, rgba(10, 30, 65, 0.12) 40%, transparent 70%);
+  animation: atmoPulse 7s ease-in-out infinite;
+}
+
+/* Secondary blue glow near card area */
+.atmo-glow-blue-2 {
+  width: 400px; height: 350px;
+  left: 35%; top: 20%;
+  background: radial-gradient(ellipse, rgba(30, 80, 150, 0.12) 0%, transparent 70%);
+  animation: atmoPulse 9s ease-in-out infinite 3s;
+}
+
+/* Red threat glow — GOA region area */
+.atmo-glow-red {
+  width: 280px; height: 240px;
+  right: 28%; top: 42%;
+  background: radial-gradient(ellipse, rgba(215, 25, 32, 0.12) 0%, transparent 70%);
+  animation: atmoPulse 5s ease-in-out infinite 1s;
+}
+
+/* Deep left atmospheric glow */
+.atmo-glow-left {
+  width: 350px; height: 450px;
+  left: -5%; top: 15%;
+  background: radial-gradient(ellipse, rgba(8, 25, 55, 0.45) 0%, transparent 65%);
+  pointer-events: none;
+  position: absolute;
+  border-radius: 50%;
+  z-index: 2;
+}
+
+/* ── Bottom operations center ────────────────────────── */
+.ops-center-strip {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 200px;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(to top, rgba(2, 9, 18, 0.98) 0%, rgba(2, 9, 18, 0.6) 60%, transparent 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: 0 0 38px 0;
+  gap: 0;
+  overflow: hidden;
+}
+
+.ops-monitor {
+  flex: 1;
+  height: 130px;
+  background: rgba(4, 12, 24, 0.80);
+  border: 1px solid rgba(53, 169, 255, 0.10);
+  border-top: 1px solid rgba(53, 169, 255, 0.15);
+  border-radius: 3px;
+  margin: 0 3px;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: blur(0.4px);
+  animation: monitorFlicker 18s ease-in-out infinite;
+}
+
+.ops-monitor::before {
+  content: '';
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 40%, rgba(12, 35, 70, 0.65), transparent),
+    repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(53,169,255,0.025) 2px, rgba(53,169,255,0.025) 3px);
+}
+
+.ops-monitor-text {
+  font-family: var(--font-primary);
+  font-size: 8.5px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: rgba(53, 169, 255, 0.42);
+  text-transform: uppercase;
+  text-align: center;
+  line-height: 2;
+  position: relative;
+  z-index: 1;
+}
+
+.ops-monitor-map {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(ellipse 55% 55% at 50% 40%, rgba(12, 50, 100, 0.50), transparent 70%),
+    linear-gradient(180deg, transparent, rgba(2, 9, 18, 0.3));
+}
+
+/* ── Floating data particles ─────────────────────────── */
+.bg-particle {
+  position: absolute;
+  width: 2px; height: 2px;
+  border-radius: 50%;
+  background: rgba(53, 169, 255, 0.55);
+  z-index: 2;
+  animation: particleDrift linear infinite;
+}

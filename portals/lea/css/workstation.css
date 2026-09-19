@@ -1,0 +1,732 @@
+/* =====================================================
+   CYBERCRASH LEA — Digital Forensic Workstation CSS
+   Dominant Investigation Canvas Architecture
+   ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+/* ── Design Tokens ──────────────────────────────────── */
+:root {
+  --bg-deepest:   #020912;
+  --bg-dark:      #04111C;
+  --bg-mid:       #071522;
+  --bg-surface:   #0A1E30;
+  --bg-glass:     rgba(4, 14, 28, 0.92);
+
+  --text-primary: #F3F7FA;
+  --text-muted:   #8EA5B8;
+  --text-dim:     #3E5468;
+
+  --cyber-blue:   #27A9FF;
+  --cyan:         #4EDBFF;
+  --threat-red:   #FF2D2D;
+  --threat-glow:  rgba(255, 45, 45, 0.4);
+  --blue-glow:    rgba(39, 169, 255, 0.35);
+
+  --glass-border: rgba(78, 140, 200, 0.18);
+  --glass-blur:   20px;
+
+  --font-primary: 'Space Grotesk', system-ui, sans-serif;
+  --font-mono:    'Space Grotesk', monospace;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+
+/* ── Global Reset ───────────────────────────────────── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--font-primary);
+  background: var(--bg-deepest);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+}
+
+/* ── Workstation Shell ──────────────────────────────── */
+#lea-app {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-deepest);
+}
+
+/* ── Background Atmosphere & Cyber Grids ────────────── */
+#ws-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 45%, rgba(12, 32, 60, 0.7) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 45% at 20% 80%, rgba(6, 18, 36, 0.9) 0%, transparent 60%),
+    linear-gradient(160deg, #020912 0%, #030F1C 40%, #051525 80%, #020912 100%);
+}
+
+.ws-bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(53, 169, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(53, 169, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+.ws-scan-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(53, 169, 255, 0.15), transparent);
+  animation: scanSweep 10s linear infinite;
+}
+
+/* =====================================================
+   PERMANENT HUD HEADER
+   Only keep: Branding, Case ID, 4 Mode Controls, Status, User
+   ===================================================== */
+#top-hud-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 56px;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  background: rgba(3, 10, 22, 0.92);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border-bottom: 1px solid rgba(53, 169, 255, 0.14);
+  box-shadow: 0 4px 24px rgba(2, 9, 18, 0.85);
+}
+
+/* Left: Branding + Case Object */
+.hud-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.top-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.top-logo-icon {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.top-logo-text {
+  font-size: 16px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+
+.top-logo-text .cyber { color: var(--text-primary); }
+.top-logo-text .crash { color: var(--threat-red); }
+
+.hud-divider {
+  width: 1px;
+  height: 24px;
+  background: rgba(53, 169, 255, 0.16);
+}
+
+/* Active Case Identifier Badge */
+.case-badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(6, 20, 38, 0.85);
+  border: 1px solid rgba(53, 169, 255, 0.25);
+  border-radius: var(--radius-md);
+  padding: 5px 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.case-badge-pill:hover {
+  border-color: var(--cyber-blue);
+  background: rgba(8, 28, 52, 0.9);
+  box-shadow: 0 0 14px rgba(53, 169, 255, 0.15);
+}
+
+.case-badge-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--threat-red);
+  box-shadow: 0 0 8px var(--threat-red);
+  animation: pulseDot 2s ease-in-out infinite;
+}
+
+.case-badge-id {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+}
+
+.case-badge-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.case-badge-meta .sep {
+  opacity: 0.4;
+}
+
+.case-badge-meta .red {
+  color: var(--threat-red);
+  font-weight: 700;
+}
+
+.case-badge-meta strong {
+  color: var(--text-primary);
+}
+
+.case-badge-caret {
+  width: 14px;
+  height: 14px;
+  stroke: var(--text-muted);
+  fill: none;
+  stroke-width: 2;
+  transition: transform 0.2s;
+}
+
+/* Case Dropdown Popover */
+#case-selector-dropdown {
+  position: absolute;
+  top: 60px;
+  left: 170px;
+  width: 320px;
+  background: rgba(4, 14, 28, 0.96);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(53, 169, 255, 0.28);
+  border-radius: var(--radius-md);
+  padding: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.85);
+  display: none;
+  z-index: 200;
+}
+
+#case-selector-dropdown.visible {
+  display: block;
+  animation: dropdownIn 0.2s ease-out;
+}
+
+.case-dropdown-item {
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s;
+  border-bottom: 1px solid rgba(53, 169, 255, 0.06);
+}
+
+.case-dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.case-dropdown-item:hover,
+.case-dropdown-item.active {
+  background: rgba(53, 169, 255, 0.1);
+}
+
+.case-dropdown-item.active .cd-id {
+  color: var(--threat-red);
+}
+
+.cd-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.cd-id {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--cyber-blue);
+}
+
+.cd-amount {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--threat-red);
+}
+
+.cd-sub {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Center: 4 Investigation Mode Controls */
+.hud-center {
+  display: flex;
+  align-items: center;
+}
+
+.mode-controller-pills {
+  display: flex;
+  background: rgba(5, 18, 36, 0.9);
+  border: 1px solid rgba(53, 169, 255, 0.2);
+  border-radius: 24px;
+  padding: 3px;
+  gap: 4px;
+}
+
+.mode-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-family: var(--font-primary);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 6px 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.mode-btn svg {
+  width: 14px;
+  height: 14px;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 2;
+  transition: stroke 0.2s;
+}
+
+.mode-btn:hover {
+  color: var(--text-primary);
+  background: rgba(53, 169, 255, 0.08);
+}
+
+.mode-btn.active {
+  color: #FFFFFF;
+  background: linear-gradient(135deg, rgba(255, 45, 45, 0.85) 0%, rgba(215, 25, 32, 0.85) 100%);
+  box-shadow: 0 0 16px rgba(255, 45, 45, 0.4);
+}
+
+.mode-btn.active svg {
+  stroke: #FFFFFF;
+}
+
+/* Right: Status, User, Actions */
+.hud-right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.hud-status-chip {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: rgba(53, 169, 255, 0.8);
+  text-transform: uppercase;
+}
+
+.hud-status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #22C55E;
+  box-shadow: 0 0 6px #22C55E;
+}
+
+.hud-clock {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.hud-user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(8, 24, 44, 0.6);
+  border: 1px solid rgba(53, 169, 255, 0.15);
+  border-radius: var(--radius-sm);
+  padding: 4px 10px;
+}
+
+.hud-user-avatar {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background: rgba(255, 45, 45, 0.2);
+  border: 1px solid rgba(255, 45, 45, 0.5);
+  color: #FF5555;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.hud-user-name {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.5px;
+}
+
+.hud-btn-action {
+  background: rgba(8, 22, 40, 0.8);
+  border: 1px solid rgba(53, 169, 255, 0.22);
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-family: var(--font-primary);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 6px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.hud-btn-action:hover {
+  border-color: var(--cyber-blue);
+  color: var(--text-primary);
+  background: rgba(53, 169, 255, 0.1);
+}
+
+.hud-btn-action.red:hover {
+  border-color: var(--threat-red);
+  color: #FFFFFF;
+  background: rgba(255, 45, 45, 0.2);
+}
+
+/* =====================================================
+   DOMINANT INVESTIGATION CANVAS (~92% OF SCREEN)
+   The screen is the forensic canvas, NOT a card grid
+   ===================================================== */
+#investigation-canvas {
+  position: absolute;
+  top: 56px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 10;
+  overflow: hidden;
+}
+
+/* Floating Tactical Canvas Controls (Bottom Center) */
+.canvas-hud-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: auto;
+}
+
+.hud-control-group {
+  display: flex;
+  background: rgba(4, 14, 28, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(53, 169, 255, 0.22);
+  border-radius: 24px;
+  padding: 4px;
+  gap: 6px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+}
+
+.hud-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-muted);
+  font-family: var(--font-primary);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+}
+
+.hud-btn:hover {
+  color: var(--text-primary);
+  background: rgba(53, 169, 255, 0.1);
+  border-color: rgba(53, 169, 255, 0.3);
+}
+
+.hud-btn.active {
+  color: #FFFFFF;
+  background: rgba(255, 45, 45, 0.35);
+  border-color: var(--threat-red);
+}
+
+.hud-telemetry-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(3, 10, 22, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(53, 169, 255, 0.12);
+  border-radius: 12px;
+  padding: 3px 12px;
+  font-size: 9px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-muted);
+  letter-spacing: 1px;
+}
+
+.hud-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+}
+
+.hud-dot.blue { background: var(--cyber-blue); box-shadow: 0 0 6px var(--cyber-blue); }
+.hud-dot.red  { background: var(--threat-red); box-shadow: 0 0 6px var(--threat-red); }
+
+/* =====================================================
+   CONTEXTUAL FORENSIC INSPECTOR DRAWER
+   Slides in gracefully when an account/node is clicked
+   ===================================================== */
+#contextual-drawer {
+  position: absolute;
+  top: 72px;
+  right: -420px;
+  width: 390px;
+  bottom: 24px;
+  z-index: 80;
+  background: rgba(4, 14, 28, 0.94);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(53, 169, 255, 0.28);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 16px 50px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  transition: right 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+}
+
+#contextual-drawer.open {
+  right: 24px;
+}
+
+.drawer-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(53, 169, 255, 0.12);
+  background: rgba(6, 20, 38, 0.6);
+}
+
+.drawer-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.drawer-node-tag {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--threat-red);
+  text-transform: uppercase;
+}
+
+.drawer-node-id {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+}
+
+.drawer-node-title {
+  font-size: 11px;
+  color: var(--cyber-blue);
+  font-weight: 500;
+}
+
+.drawer-close-btn {
+  background: none;
+  border: 1px solid rgba(53, 169, 255, 0.2);
+  border-radius: var(--radius-sm);
+  width: 28px;
+  height: 28px;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.drawer-close-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--cyber-blue);
+  background: rgba(53, 169, 255, 0.1);
+}
+
+.drawer-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.drawer-data-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(53, 169, 255, 0.06);
+}
+
+.drawer-data-row .lbl {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: rgba(142, 165, 184, 0.6);
+}
+
+.drawer-data-row .val {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.drawer-data-row .val.highlight {
+  color: var(--cyber-blue);
+  font-weight: 700;
+}
+
+.drawer-data-row .val.red {
+  color: var(--threat-red);
+  font-weight: 700;
+}
+
+.drawer-actions {
+  padding: 14px 18px;
+  border-top: 1px solid rgba(53, 169, 255, 0.12);
+  background: rgba(6, 20, 38, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drawer-action-btn {
+  width: 100%;
+  height: 38px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+.drawer-action-btn.freeze {
+  background: linear-gradient(135deg, #E52020 0%, #B81515 100%);
+  border: none;
+  color: #FFFFFF;
+  box-shadow: 0 4px 14px rgba(215, 25, 32, 0.4);
+}
+
+.drawer-action-btn.freeze:hover {
+  filter: brightness(1.15);
+  box-shadow: 0 6px 20px rgba(215, 25, 32, 0.6);
+}
+
+.drawer-action-btn.notice {
+  background: rgba(8, 24, 46, 0.8);
+  border: 1px solid rgba(53, 169, 255, 0.3);
+  color: var(--text-primary);
+}
+
+.drawer-action-btn.notice:hover {
+  border-color: var(--cyber-blue);
+  background: rgba(53, 169, 255, 0.12);
+}
+
+/* =====================================================
+   KEYFRAME ANIMATIONS
+   ===================================================== */
+@keyframes moneyParticle {
+  0%   { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -400; }
+}
+
+@keyframes mapNodeRing {
+  0%   { opacity: 0.9; transform: scale(0.65); }
+  100% { opacity: 0;   transform: scale(1.4); }
+}
+
+@keyframes scanSweep {
+  0%   { top: 0%; opacity: 0; }
+  15%  { opacity: 0.8; }
+  85%  { opacity: 0.8; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes pulseDot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.3); opacity: 0.6; }
+}
+
+@keyframes dropdownIn {
+  0%   { opacity: 0; transform: translateY(-8px); }
+  100% { opacity: 1; transform: translateY(0); }
+}

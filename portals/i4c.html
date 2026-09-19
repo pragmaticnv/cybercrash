@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CYBERCRASH — I4C Cyber Intelligence Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #020912; --blue: #35A9FF; --red: #FF2D2D;
+      --text: #F3F7FA; --muted: #9BAEC0;
+      --font: 'Space Grotesk', sans-serif;
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: var(--font); background: var(--bg); color: var(--text);
+      min-height: 100vh; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 24px;
+    }
+    body::before {
+      content:''; position:fixed; inset:0;
+      background: radial-gradient(ellipse 60% 50% at 50% 40%, rgba(14,35,65,0.7), transparent 70%);
+      pointer-events:none;
+    }
+    .portal-badge {
+      font-size:10px; letter-spacing:4px; text-transform:uppercase;
+      color:var(--blue); border:1px solid rgba(53,169,255,0.3);
+      padding:6px 16px; border-radius:4px; background:rgba(53,169,255,0.06);
+    }
+    h1 { font-size:42px; font-weight:800; letter-spacing:-1px; }
+    h1 .cyber { color:var(--text); } h1 .crash { color:var(--red); }
+    .portal-name { font-size:18px; font-weight:500; color:var(--blue); letter-spacing:3px; text-transform:uppercase; }
+    p { color:var(--muted); font-size:14px; max-width:440px; text-align:center; line-height:1.6; }
+    .status-row { display:flex; align-items:center; gap:10px; font-size:12px; letter-spacing:2px; color:#22c55e; text-transform:uppercase; }
+    .dot { width:8px; height:8px; border-radius:50%; background:#22c55e; box-shadow:0 0 8px #22c55e; animation:pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .back-btn {
+      margin-top:12px; padding:12px 32px;
+      background:rgba(5,18,30,0.8); border:1px solid rgba(100,170,210,0.2);
+      border-radius:8px; color:var(--muted); font-family:var(--font); font-size:13px;
+      letter-spacing:1px; cursor:pointer; text-decoration:none;
+      transition:border-color 0.2s, color 0.2s;
+    }
+    .back-btn:hover { border-color:rgba(53,169,255,0.5); color:var(--text); }
+  </style>
+</head>
+<body>
+  <div class="portal-badge">Authenticated Session</div>
+  <h1><span class="cyber">CYBER</span><span class="crash">CRASH</span></h1>
+  <div class="portal-name">I4C Cyber Intelligence Portal</div>
+  <div class="status-row"><div class="dot"></div> System Online — All Services Operational</div>
+  <p>
+    Welcome to the Indian Cybercrime Coordination Centre Intelligence Portal.
+    Access national threat intelligence, cybercrime analytics, predictive modelling,
+    and cross-agency situational awareness dashboards.
+  </p>
+  <a class="back-btn" href="../index.html">&larr; Return to Login</a>
+</body>
+</html>

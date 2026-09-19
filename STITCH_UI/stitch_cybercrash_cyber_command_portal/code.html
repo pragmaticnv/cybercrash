@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CYBERCRASH - Multi-Agency Cybercrime Intelligence Platform</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Space Grotesk & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'bg-0': '#03070D',
+            'bg-1': '#060D16',
+            'bg-2': '#0B1622',
+            'surface-glass': 'rgba(14, 24, 36, 0.68)',
+            'surface-input': 'rgba(255, 255, 255, 0.04)',
+            'border-subtle': 'rgba(255, 255, 255, 0.09)',
+            'border-input': 'rgba(255, 255, 255, 0.13)',
+            'text-primary': '#FFFFFF',
+            'text-secondary': '#C9D1DA',
+            'text-muted': '#8A96A3',
+            'text-placeholder': '#7C8794',
+            'brand-red': '#E11D2A',
+            'brand-red-bright': '#FF3B3B',
+            'brand-red-deep': '#9E0F18',
+            'brand-blue': '#2F80C8',
+            'brand-cyan': '#3BA0D8'
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['"Space Grotesk"', 'Inter', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    :root {
+      --bg-0: #03070D;
+      --bg-1: #060D16;
+      --bg-2: #0B1622;
+      --surface-glass: rgba(14, 24, 36, 0.68);
+      --surface-input: rgba(255, 255, 255, 0.04);
+      --border-subtle: rgba(255, 255, 255, 0.09);
+      --border-input: rgba(255, 255, 255, 0.13);
+      --text-primary: #FFFFFF;
+      --text-secondary: #C9D1DA;
+      --text-muted: #8A96A3;
+      --brand-red: #E11D2A;
+      --brand-red-bright: #FF3B3B;
+      --brand-red-deep: #9E0F18;
+      --brand-blue: #2F80C8;
+      --glow-red: 0 0 24px rgba(255, 40, 40, 0.55);
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    body {
+      background-color: #03070D;
+      color: #FFFFFF;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    @media (min-width: 1200px) {
+      body {
+        height: 100vh;
+        overflow: hidden;
+      }
+    }
+
+    /* Glassmorphism login panel */
+    .glass-login-card {
+      background: rgba(14, 24, 36, 0.66);
+      backdrop-filter: blur(24px) saturate(130%);
+      -webkit-backdrop-filter: blur(24px) saturate(130%);
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.65), 
+                  inset 0 1px 0 rgba(255, 255, 255, 0.09),
+                  0 0 40px rgba(10, 20, 35, 0.45);
+      border-radius: 28px;
+    }
+
+    .glass-hud-widget {
+      background: rgba(12, 20, 30, 0.58);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+    }
+
+    /* Animated Map Arcs */
+    .arc-path {
+      stroke-dasharray: 12, 8;
+      animation: dashTravel 7s linear infinite;
+    }
+    .arc-path-pulse {
+      stroke-dasharray: 60, 240;
+      animation: pulsePacket 4.5s ease-in-out infinite;
+    }
+
+    @keyframes dashTravel {
+      to {
+        stroke-dashoffset: -200;
+      }
+    }
+
+    @keyframes pulsePacket {
+      0% {
+        stroke-dashoffset: 300;
+        opacity: 0.2;
+      }
+      50% {
+        opacity: 1;
+      }
+      100% {
+        stroke-dashoffset: -300;
+        opacity: 0.1;
+      }
+    }
+
+    /* Radar Ping Animation */
+    @keyframes radarPing {
+      0% {
+        transform: scale(1);
+        opacity: 0.9;
+      }
+      70% {
+        transform: scale(2.6);
+        opacity: 0;
+      }
+      100% {
+        transform: scale(2.8);
+        opacity: 0;
+      }
+    }
+
+    .radar-node {
+      animation: radarPing 2.6s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+    }
+    .radar-node-delayed {
+      animation: radarPing 2.6s cubic-bezier(0, 0.2, 0.8, 1) 1.2s infinite;
+    }
+
+    /* Pulsing Threat Dot */
+    @keyframes threatPulse {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow: 0 0 6px #FF3B3B;
+      }
+      50% {
+        transform: scale(1.25);
+        box-shadow: 0 0 16px #FF3B3B, 0 0 28px rgba(255, 59, 59, 0.6);
+      }
+    }
+    .pulse-threat {
+      animation: threatPulse 2s infinite ease-in-out;
+    }
+
+    /* Sparkline Glow */
+    .sparkline-glow {
+      filter: drop-shadow(0 0 6px rgba(225, 29, 42, 0.35));
+    }
+
+    /* Nav link hover underline slide */
+    .nav-link {
+      position: relative;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 0%;
+      height: 2px;
+      background-color: #E11D2A;
+      box-shadow: 0 0 8px #FF3B3B;
+      transition: width 0.25s ease-out;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Custom Input Focus Glow */
+    .custom-input {
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .custom-input:focus-within {
+      border-color: rgba(255, 60, 60, 0.85);
+      background: rgba(255, 255, 255, 0.06);
+      box-shadow: 0 0 0 3px rgba(225, 29, 42, 0.22), 0 0 16px rgba(225, 29, 42, 0.2);
+    }
+
+    /* Custom Button Primary */
+    .btn-primary {
+      background: linear-gradient(180deg, #F0323C 0%, #C4161F 55%, #9E0F18 100%);
+      box-shadow: 0 8px 28px rgba(225, 29, 42, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 130, 130, 0.35);
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(180deg, #FF454E 0%, #D41A24 55%, #B01019 100%);
+      box-shadow: 0 10px 36px rgba(225, 29, 42, 0.6), 0 0 20px rgba(255, 75, 75, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.45);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active {
+      transform: scale(0.99) translateY(0);
+      box-shadow: 0 4px 16px rgba(225, 29, 42, 0.4);
+    }
+
+    /* Fade-in animations */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(18px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .animate-card {
+      animation: fadeInUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .animate-hero {
+      animation: fadeInUp 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .animate-hud {
+      animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) 0.2s forwards;
+    }
+
+    /* Scanline overlay */
+    .scanlines {
+      background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.02));
+      background-size: 100% 4px, 6px 100%;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body class="relative flex flex-col justify-between select-none bg-[#03070D] text-white">
+
+  <!-- ========================================================================= -->
+  <!-- LAYER 1: CINEMATIC BACKGROUND IMAGE                                       -->
+  <!-- ========================================================================= -->
+  <div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+    <img 
+      src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWw0ssm5KItr1bld2h3ZzB9vUEenfwRrzHyQNGYMh91IEKzS9YtUvGQQI2SNEj565Fk0JSXWrjpDTkpELnBNObkbvQY_TByXAEPA94D6U1gWhyIUIxTX0TKH6dfwKNdSHU5LyGvFqLZ-PG6nscXPotpJCH7wwmT36nJCFRoelYZLXogIkLM4bxi2QTlx44B2nc9tFYzB0s0DyrQ1NH1bJQjjTk_dnY6Gk8AP4t0b2vP0IlEkfr9PAB5A" 
+      alt="Cyber Operations Command Center & India Threat Map" 
+      class="w-full h-full object-cover object-center scale-[1.02] brightness-90 filter"
+    />
+    
+    <!-- Left-to-right darkening overlay for text legibility -->
+    <div class="absolute inset-0 bg-gradient-to-r from-[#03070D]/95 via-[#03070D]/65 via-50% to-[#03070D]/30 pointer-events-none"></div>
+    
+    <!-- Vignette / Radial darkening around edges -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,#03070D_100%)] pointer-events-none"></div>
+    
+    <!-- Top & Bottom smooth fades -->
+    <div class="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#03070D]/90 to-transparent pointer-events-none"></div>
+    <div class="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#03070D] via-[#03070D]/85 to-transparent pointer-events-none"></div>
+    
+    <!-- Micro scanline atmosphere -->
+    <div class="absolute inset-0 scanlines opacity-40"></div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- LAYER 2: INTERACTIVE SVG ARCS & CYBER NETWORK OVERLAY                      -->
+  <!-- ========================================================================= -->
+  <svg class="fixed inset-0 w-full h-full pointer-events-none z-10" viewBox="0 0 1536 1024" preserveAspectRatio="xMidYMid slice" fill="none">
+    <defs>
+      <!-- Gradient for curved red arcs -->
+      <linearGradient id="redArcGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#FF3B3B" stop-opacity="0.1" />
+        <stop offset="35%" stop-color="#FF3B3B" stop-opacity="0.9" />
+        <stop offset="70%" stop-color="#E11D2A" stop-opacity="0.85" />
+        <stop offset="100%" stop-color="#FF3B3B" stop-opacity="0.15" />
+      </linearGradient>
+      
+      <linearGradient id="redArcGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stop-color="#FF3B3B" stop-opacity="0.1" />
+        <stop offset="50%" stop-color="#FF5C5C" stop-opacity="0.95" />
+        <stop offset="100%" stop-color="#E11D2A" stop-opacity="0.2" />
+      </linearGradient>
+
+      <!-- Glow filter for arcs and nodes -->
+      <filter id="redArcGlow" x="-20%" y="-20%" width="140%" height="140%">
+        <feGaussianBlur stdDeviation="3.5" result="glow" />
+        <feMerge>
+          <feMergeNode in="glow" />
+          <feMergeNode in="SourceGraphic" />
+        </feMerge>
+      </filter>
+
+      <radialGradient id="nodeGlow">
+        <stop offset="0%" stop-color="#FF3B3B" stop-opacity="1" />
+        <stop offset="40%" stop-color="#E11D2A" stop-opacity="0.6" />
+        <stop offset="100%" stop-color="#E11D2A" stop-opacity="0" />
+      </radialGradient>
+    </defs>
+
+    <!-- Glowing curved network lines connecting Indian hubs (Delhi ~1120,210; Mumbai ~1010,460; Bengaluru ~1080,600; Chennai ~1160,605; Kolkata ~1365,370; Patna ~1270,300) -->
+    <!-- Arc: Mumbai -> Delhi -->
+    <path d="M 1012 458 Q 1030 310 1124 218" stroke="url(#redArcGrad1)" stroke-width="1.8" filter="url(#redArcGlow)" class="arc-path opacity-80" />
+    <path d="M 1012 458 Q 1030 310 1124 218" stroke="#FFFFFF" stroke-width="2.5" class="arc-path-pulse" filter="url(#redArcGlow)" />
+
+    <!-- Arc: Delhi -> Kolkata -->
+    <path d="M 1124 218 Q 1260 230 1370 372" stroke="url(#redArcGrad2)" stroke-width="1.6" filter="url(#redArcGlow)" class="arc-path opacity-75" />
+    <path d="M 1124 218 Q 1260 230 1370 372" stroke="#FF8080" stroke-width="2.2" class="arc-path-pulse" filter="url(#redArcGlow)" />
+
+    <!-- Arc: Mumbai -> Bengaluru -->
+    <path d="M 1012 458 Q 1018 540 1084 606" stroke="url(#redArcGrad1)" stroke-width="1.8" filter="url(#redArcGlow)" class="arc-path opacity-80" />
+
+    <!-- Arc: Kolkata -> Chennai -->
+    <path d="M 1370 372 Q 1310 520 1172 612" stroke="url(#redArcGrad1)" stroke-width="1.6" filter="url(#redArcGlow)" class="arc-path opacity-85" />
+
+    <!-- Arc: Bengaluru -> Chennai -->
+    <path d="M 1084 606 Q 1128 600 1172 612" stroke="url(#redArcGrad2)" stroke-width="1.5" filter="url(#redArcGlow)" class="arc-path opacity-70" />
+
+    <!-- Secondary subtle branch arcs -->
+    <path d="M 1124 218 Q 1200 270 1272 302" stroke="#E11D2A" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="4,4" />
+    <path d="M 1272 302 Q 1330 330 1370 372" stroke="#E11D2A" stroke-opacity="0.45" stroke-width="1" stroke-dasharray="4,4" />
+
+    <!-- Dynamic Pulse Radar Rings on Nodes -->
+    <!-- Delhi Node -->
+    <g transform="translate(1124, 218)">
+      <circle r="18" fill="url(#nodeGlow)" class="radar-node" />
+      <circle r="5" fill="#FFFFFF" />
+      <circle r="3" fill="#FF2828" />
+    </g>
+
+    <!-- Mumbai Node -->
+    <g transform="translate(1012, 458)">
+      <circle r="22" fill="url(#nodeGlow)" class="radar-node-delayed" />
+      <circle r="5.5" fill="#FFFFFF" />
+      <circle r="3.5" fill="#FF2828" />
+    </g>
+
+    <!-- Kolkata Node -->
+    <g transform="translate(1370, 372)">
+      <circle r="20" fill="url(#nodeGlow)" class="radar-node" />
+      <circle r="5" fill="#FFFFFF" />
+      <circle r="3" fill="#FF2828" />
+    </g>
+
+    <!-- Bengaluru Node -->
+    <g transform="translate(1084, 606)">
+      <circle r="16" fill="url(#nodeGlow)" class="radar-node-delayed" />
+      <circle r="4.5" fill="#FFFFFF" />
+      <circle r="2.5" fill="#FF2828" />
+    </g>
+
+    <!-- Chennai Node -->
+    <g transform="translate(1172, 612)">
+      <circle r="16" fill="url(#nodeGlow)" class="radar-node" />
+      <circle r="4.5" fill="#FFFFFF" />
+      <circle r="2.5" fill="#FF2828" />
+    </g>
+
+    <!-- Faint INDIA watermark label -->
+    <text x="1135" y="420" font-family="'Space Grotesk', sans-serif" font-size="14" font-weight="700" letter-spacing="0.35em" fill="#5C6B7A" opacity="0.35" text-anchor="middle">INDIA</text>
+  </svg>
+
+  <!-- ========================================================================= -->
+  <!-- HEADER: LOGO LOCKUP + NAVIGATION                                          -->
+  <!-- ========================================================================= -->
+  <header class="relative z-30 w-full px-6 lg:px-12 pt-6 lg:pt-8 flex items-center justify-between">
+    <!-- LEFT: Brand Logo Lockup -->
+    <a href="#" class="flex items-center gap-3.5 group" aria-label="CYBERCRASH Home">
+      <!-- Faceted Shield Emblem (Blue/Teal left facet, Red right facet) -->
+      <div class="relative w-[54px] h-[52px] flex items-center justify-center filter drop-shadow-[0_0_12px_rgba(47,128,200,0.35)] transition-transform duration-300 group-hover:scale-105">
+        <svg viewBox="0 0 54 52" fill="none" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+          <defs>
+            <linearGradient id="emblemBlue" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7FD3F0" />
+              <stop offset="45%" stop-color="#2F80C8" />
+              <stop offset="100%" stop-color="#144C82" />
+            </linearGradient>
+            <linearGradient id="emblemRed" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#FF4D58" />
+              <stop offset="50%" stop-color="#E11D2A" />
+              <stop offset="100%" stop-color="#8E0F17" />
+            </linearGradient>
+          </defs>
+          <!-- Left Facet -->
+          <path d="M27 3L6 14V33L27 49V3Z" fill="url(#emblemBlue)" fill-opacity="0.95" />
+          <!-- Inner highlight streak on left -->
+          <path d="M27 7L10 16.5V30L27 43V7Z" fill="white" fill-opacity="0.12" />
+          <!-- Right Facet with sharp cut -->
+          <path d="M27 3L48 14V33L27 49V3Z" fill="url(#emblemRed)" fill-opacity="0.95" />
+          <!-- Center separator glow groove -->
+          <line x1="27" y1="3" x2="27" y2="49" stroke="#FFFFFF" stroke-opacity="0.3" stroke-width="1.2" />
+          <!-- Core Cyber Node -->
+          <circle cx="27" cy="24" r="3.5" fill="#FFFFFF" />
+          <circle cx="27" cy="24" r="6" stroke="#FFFFFF" stroke-opacity="0.6" stroke-width="1" />
+        </svg>
+      </div>
+
+      <!-- Wordmark and Tagline -->
+      <div class="flex flex-col">
+        <div class="font-display font-extrabold tracking-[0.08em] text-[28px] lg:text-[32px] leading-tight uppercase flex items-center">
+          <span class="text-white">CYBER</span>
+          <span class="text-[#E11D2A] text-shadow-[0_0_14px_rgba(225,29,42,0.45)]">CRASH</span>
+        </div>
+        <div class="text-[#DDE3EA] text-[11px] lg:text-[12px] tracking-[0.28em] font-medium uppercase font-sans mt-0.5 opacity-90">
+          TRACE · PREDICT · PREVENT
+        </div>
+      </div>
+    </a>    <!-- RIGHT: Official Classification & Security Badge -->
+    <div class="flex items-center gap-2.5 py-1.5 px-3.5 rounded-full bg-white/[0.04] border border-white/[0.08] text-[12px] text-[#A0ACB9]">
+      <span class="relative flex h-2 w-2">
+        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+        <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+      </span>
+      <span class="font-mono text-white/90 text-[11px] uppercase tracking-wider">RESTRICTED ACCESS · GOV-NET ENCRYPTED</span>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN WORKSPACE: CENTRALISED LOGIN GATEWAY + LEFT SIDE HEADING             -->
+  <!-- ========================================================================= -->
+  <main class="relative z-20 w-full flex-1 max-w-[1536px] mx-auto px-4 sm:px-8 lg:px-16 py-4 flex flex-col items-center justify-center">
+    
+    <!-- LEFT SIDE HEADING (CLEAN, PROPORTIONATE SIZE) -->
+    <div class="hidden lg:flex flex-col justify-center items-start absolute left-8 xl:left-16 top-1/2 -translate-y-1/2 select-none">
+      <h1 class="font-display font-bold text-[28px] xl:text-[34px] tracking-[0.03em] leading-[1.04] uppercase">
+        <span class="block text-white">FIGHT</span>
+        <span class="block text-white">CYBERCRIME</span>
+        <span class="block text-[#E11D2A] drop-shadow-[0_0_16px_rgba(225,29,42,0.45)]">TOGETHER</span>
+      </h1>
+      <div class="w-8 h-[2px] bg-[#E11D2A] mt-3 rounded-full opacity-80 shadow-[0_0_8px_rgba(225,29,42,0.6)]"></div>
+    </div>
+
+    <!-- MOBILE HEADING (COMPACT, SHOWN ONLY ON MOBILE/TABLET) -->
+    <div class="lg:hidden mb-4 text-center">
+      <h1 class="font-display font-bold text-[22px] tracking-[0.03em] uppercase select-none">
+        <span class="text-white">FIGHT </span>
+        <span class="text-white">CYBERCRIME </span>
+        <span class="text-[#E11D2A]">TOGETHER</span>
+      </h1>
+    </div>
+
+    <!-- CENTERED LOGIN CARD (STRICTLY CENTRALISED) -->
+    <div class="animate-card w-full max-w-[460px] mx-auto z-10">
+      <div class="glass-login-card px-8 sm:px-10 py-8 flex flex-col relative overflow-hidden">
+        
+        <!-- Subtle Top Glow Gradient inside card -->
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-32 bg-red-600/10 blur-3xl pointer-events-none rounded-full"></div>
+
+        <!-- Card Header -->
+        <div class="text-center">
+          <!-- Official Access Pill -->
+          <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/25 text-[#FF6B72] text-[11px] font-mono font-medium uppercase tracking-wider mb-3">
+            <svg class="w-3.5 h-3.5 text-[#E11D2A]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+            </svg>
+            OFFICIAL ACCESS GATEWAY
+          </div>
+
+          <div class="font-display font-bold text-[32px] sm:text-[36px] tracking-[0.06em] uppercase leading-tight flex items-center justify-center">
+            <span class="text-white">CYBER</span>
+            <span class="text-[#E11D2A] text-shadow-[0_0_12px_rgba(225,29,42,0.4)]">CRASH</span>
+          </div>
+          
+          <div class="text-[13.5px] text-[#A0ACB9] font-medium mt-1 tracking-wide">
+            Multi-Agency Cybercrime Intelligence Platform
+          </div>
+        </div>
+
+        <!-- Login Form -->
+        <form id="loginForm" class="mt-6 flex flex-col" onsubmit="event.preventDefault(); handleSignIn();">
+          
+          <!-- INPUT 1: User ID -->
+          <div class="relative flex flex-col">
+            <label for="userId" class="sr-only">User ID</label>
+            <div class="custom-input relative flex items-center w-full h-[50px] rounded-[10px] bg-white/[0.045] border border-white/[0.13]">
+              <!-- User outline icon -->
+              <span class="absolute left-[18px] text-[#C9D1DA] pointer-events-none">
+                <svg class="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </span>
+              <input 
+                type="text" 
+                id="userId" 
+                name="userId" 
+                autocomplete="username"
+                placeholder="User ID (e.g. lea_demo)" 
+                class="w-full h-full bg-transparent pl-[52px] pr-4 text-[15px] text-white placeholder-[#7C8794] focus:outline-none font-sans"
+              />
+            </div>
+          </div>
+
+          <!-- INPUT 2: Password -->
+          <div class="relative flex flex-col mt-3.5">
+            <label for="password" class="sr-only">Password</label>
+            <div class="custom-input relative flex items-center w-full h-[50px] rounded-[10px] bg-white/[0.045] border border-white/[0.13]">
+              <!-- Lock outline icon -->
+              <span class="absolute left-[18px] text-[#C9D1DA] pointer-events-none">
+                <svg class="w-[20px] h-[20px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                </svg>
+              </span>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                autocomplete="current-password"
+                placeholder="Password" 
+                class="w-full h-full bg-transparent pl-[52px] pr-12 text-[15px] text-white placeholder-[#7C8794] focus:outline-none font-sans"
+              />
+              <!-- Toggle Show/Hide Password button -->
+              <button 
+                type="button" 
+                id="togglePwd"
+                aria-label="Toggle password visibility" 
+                class="absolute right-[16px] text-[#AEB8C2] hover:text-white transition-colors p-1"
+                onclick="togglePasswordVisibility()"
+              >
+                <!-- Eye off icon (default) -->
+                <svg id="eyeOffIcon" class="w-[18px] h-[18px]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M3.98 8.223A10.477 10.477 0 001.934 12C3.226 16.338 7.244 19.5 12 19.5c.993 0 1.953-.138 2.863-.395M6.228 6.228A10.45 10.45 0 0112 4.5c4.756 0 8.773 3.162 10.065 7.498a10.523 10.523 0 01-4.293 5.774M6.228 6.228L3 3m3.228 3.228l3.65 3.65m7.894 7.894L21 21m-3.228-3.228l-3.65-3.65m0 0a3 3 0 10-4.243-4.243m4.242 4.242L9.88 9.88" />
+                </svg>
+                <!-- Eye on icon (hidden) -->
+                <svg id="eyeOnIcon" class="w-[18px] h-[18px] hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.75">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Forgot Password Link -->
+          <div class="flex justify-end mt-2.5">
+            <a href="#forgot" onclick="alert('Password reset requires Nodal Agency authorization.\nContact: admin@cybercrash.gov.in'); return false;" class="text-[12.5px] text-[#A0ACB9] hover:text-[#E11D2A] transition-colors duration-200">
+              Forgot Password?
+            </a>
+          </div>
+
+          <!-- Primary Sign In Button -->
+          <button 
+            type="submit" 
+            id="signInBtn"
+            class="btn-primary w-full h-[50px] rounded-[10px] mt-4 flex items-center justify-center gap-2 text-[16px] font-semibold text-white tracking-[0.01em] group"
+          >
+            <span id="btnText">Sign In</span>
+            <svg id="arrowIcon" class="w-[18px] h-[18px] transition-transform duration-200 group-hover:translate-x-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.25">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+            </svg>
+            <div id="btnSpinner" class="hidden w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          </button>
+
+          <!-- Divider: OR DEMO SSO -->
+          <div class="flex items-center gap-3 my-5">
+            <div class="flex-1 h-[1px] bg-white/[0.12]"></div>
+            <span class="text-[11px] font-medium tracking-[0.12em] text-[#8A96A3] uppercase">OR DEMO SSO</span>
+            <div class="flex-1 h-[1px] bg-white/[0.12]"></div>
+          </div>
+
+          <!-- SSO Button Row -->
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Aadhaar SSO -->
+            <button 
+              type="button" 
+              onclick="handleSignIn()"
+              class="h-[48px] rounded-[10px] bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.10] hover:border-white/30 flex items-center justify-center gap-2 px-3 transition-all duration-200 group"
+              title="Instant Demo Access"
+            >
+              <!-- Fingerprint SVG Icon -->
+              <svg class="w-5 h-5 text-white/80 group-hover:text-white shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.6-3.3a18.72 18.72 0 01-2.4 4.55" />
+              </svg>
+              <span class="text-[13px] text-[#E6EAEE] font-medium leading-tight">Aadhaar (Demo)</span>
+            </button>
+
+            <!-- Government SSO -->
+            <button 
+              type="button" 
+              onclick="handleSignIn()"
+              class="h-[48px] rounded-[10px] bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.10] hover:border-white/30 flex items-center justify-center gap-2 px-3 transition-all duration-200 group"
+              title="Instant Demo Access"
+            >
+              <!-- Government Institution Pillars Icon -->
+              <svg class="w-5 h-5 text-white/80 group-hover:text-white shrink-0 transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.5m-15 10.5V10.5M3 21h18M3 10.5h18" />
+              </svg>
+              <span class="text-[13px] text-[#E6EAEE] font-medium leading-tight">Gov SSO (Demo)</span>
+            </button>
+          </div>
+
+          <!-- Official Portal Compliance Notice -->
+          <div class="mt-6 pt-4 border-t border-white/[0.07] text-center">
+            <span class="text-[11px] text-[#7C8794] leading-relaxed block">
+              Restricted system for authorized Law Enforcement and Financial Intelligence personnel. All activities are audited under the IT Act.
+            </span>
+          </div>
+
+        </form>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- FOOTER: OFFICIAL METADATA BAR                                             -->
+  <!-- ========================================================================= -->
+  <footer class="relative z-30 w-full px-6 lg:px-12 py-3.5 border-t border-white/[0.07] bg-gradient-to-t from-[#03070D] to-transparent">
+    <div class="max-w-[1536px] mx-auto flex flex-col md:flex-row items-center justify-between gap-2.5 text-center md:text-left">
+      
+      <!-- LEFT: Brand & Tag -->
+      <div class="flex items-center gap-2.5">
+        <span class="text-[11.5px] font-semibold uppercase tracking-[0.08em] text-[#C9D1DA] font-display">
+          CYBERCRASH
+        </span>
+        <span class="text-white/20">|</span>
+        <span class="text-[11.5px] text-[#7C8794]">
+          Government of India
+        </span>
+      </div>
+
+      <!-- CENTER: Agency Partnerships -->
+      <div class="text-[11.5px] text-[#8F9AA6] font-normal tracking-[0.02em] flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+        <span>Ministry of Home Affairs</span>
+        <span class="text-white/20">·</span>
+        <span>I4C</span>
+        <span class="text-white/20">·</span>
+        <span>Law Enforcement Agencies</span>
+        <span class="text-white/20">·</span>
+        <span>Financial Intelligence</span>
+      </div>
+
+      <!-- RIGHT: Security Classification -->
+      <div class="text-[11px] font-mono text-[#7C8794]">
+        RESTRICTED GATEWAY · v1.0.0
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ========================================================================= -->
+  <!-- INTERACTIVITY SCRIPT                                                      -->
+  <!-- ========================================================================= -->
+  <script>
+    // Password Visibility Toggle
+    function togglePasswordVisibility() {
+      const pwdInput = document.getElementById('password');
+      const eyeOff = document.getElementById('eyeOffIcon');
+      const eyeOn = document.getElementById('eyeOnIcon');
+      
+      if (pwdInput.type === 'password') {
+        pwdInput.type = 'text';
+        eyeOff.classList.add('hidden');
+        eyeOn.classList.remove('hidden');
+      } else {
+        pwdInput.type = 'password';
+        eyeOff.classList.remove('hidden');
+        eyeOn.classList.add('hidden');
+      }
+    }
+
+    // Sign-in Button Loading Simulation
+    function handleSignIn() {
+      const btn = document.getElementById('signInBtn');
+      const text = document.getElementById('btnText');
+      const arrow = document.getElementById('arrowIcon');
+      const spinner = document.getElementById('btnSpinner');
+
+      text.textContent = "Authenticating...";
+      arrow.classList.add('hidden');
+      spinner.classList.remove('hidden');
+      btn.style.pointerEvents = 'none';
+
+      setTimeout(() => {
+        text.textContent = "Access Granted";
+        spinner.classList.add('hidden');
+        btn.classList.remove('btn-primary');
+        btn.classList.add('bg-emerald-600', 'border-emerald-400');
+        setTimeout(() => {
+          text.textContent = "Sign In";
+          arrow.classList.remove('hidden');
+          btn.style.pointerEvents = 'auto';
+          btn.classList.remove('bg-emerald-600', 'border-emerald-400');
+          btn.classList.add('btn-primary');
+        }, 1800);
+      }, 1200);
+    }
+  </script>
+
+</body>
+</html>

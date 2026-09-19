@@ -1,0 +1,195 @@
+/* =====================================================
+   CYBERCRASH — Right-side Intelligence Panels
+   Absolutely positioned floating holographic panels
+   ===================================================== */
+
+/* ── Threat Monitoring Panel ─────────────────────────── */
+.threat-monitoring-panel {
+  position: absolute;
+  top: 68px;         /* just below header */
+  right: 24px;
+  width: 162px;
+  z-index: 25;
+  background: rgba(4, 12, 26, 0.82);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(78, 140, 200, 0.16);
+  border-radius: 10px;
+  overflow: hidden;
+  animation: panelSlideIn 0.7s ease-out 0.2s both;
+}
+
+.tmp-header {
+  padding: 8px 12px 6px;
+  border-bottom: 1px solid rgba(53, 169, 255, 0.10);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tmp-title {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.tmp-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 7px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  color: var(--threat-red);
+  text-transform: uppercase;
+}
+
+.tmp-status-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--threat-red);
+  box-shadow: 0 0 0 2px rgba(255,45,45,0.20), 0 0 6px var(--threat-red);
+  animation: activeBlink 1.5s ease-in-out infinite;
+}
+
+.tmp-graph {
+  padding: 8px 10px;
+  height: 52px;
+  position: relative;
+  overflow: hidden;
+}
+
+.tmp-graph canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.tmp-stats {
+  padding: 0 12px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.tmp-stat-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 9px;
+}
+
+.tmp-stat-label {
+  color: var(--text-dim);
+  letter-spacing: 0.5px;
+}
+
+.tmp-stat-value {
+  font-weight: 700;
+  color: var(--cyber-blue);
+  letter-spacing: 0.5px;
+}
+
+.tmp-stat-value.red { color: var(--threat-red); }
+
+/* ── DDD Panel (Detect Disrupt Deter) ───────────────── */
+.ddd-panel {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  z-index: 25;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  animation: panelSlideIn 0.8s ease-out 0.4s both;
+}
+
+.ddd-item {
+  background: rgba(4, 12, 26, 0.80);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(78, 140, 200, 0.14);
+  border-radius: 8px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: default;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.ddd-item:hover {
+  border-color: rgba(53, 169, 255, 0.35);
+  box-shadow: 0 0 14px rgba(53, 169, 255, 0.10);
+}
+
+.ddd-icon {
+  width: 22px; height: 22px;
+  margin: 0 auto 5px;
+  border-radius: 50%;
+  border: 1px solid rgba(53, 169, 255, 0.25);
+  background: rgba(53, 169, 255, 0.06);
+  display: flex; align-items: center; justify-content: center;
+}
+
+.ddd-icon svg {
+  width: 12px; height: 12px;
+  stroke: var(--cyber-blue);
+  fill: none;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+}
+
+.ddd-label {
+  font-size: 7.5px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ── Quote Panel ─────────────────────────────────────── */
+.quote-panel {
+  position: absolute;
+  right: 90px;
+  bottom: 55px;
+  width: 170px;
+  z-index: 25;
+  background: rgba(4, 12, 26, 0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(78, 140, 200, 0.12);
+  border-radius: 8px;
+  padding: 12px 14px;
+  animation: panelSlideIn 0.9s ease-out 0.6s both;
+}
+
+.quote-text {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text-muted);
+  line-height: 1.55;
+  opacity: 0.75;
+}
+
+.quote-attr {
+  font-size: 8.5px;
+  letter-spacing: 2px;
+  color: rgba(53, 169, 255, 0.40);
+  text-transform: uppercase;
+  margin-top: 7px;
+}
+
+/* ── Responsive hide ─────────────────────────────────── */
+@media (max-width: 1280px) {
+  .threat-monitoring-panel { right: 12px; width: 148px; }
+  .ddd-panel { right: 12px; }
+  .quote-panel { right: 76px; }
+}
+
+@media (max-width: 1100px) {
+  .ddd-panel { display: none; }
+  .quote-panel { display: none; }
+}
+
+@media (max-width: 900px) {
+  .threat-monitoring-panel { display: none; }
+}

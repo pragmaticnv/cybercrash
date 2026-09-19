@@ -1,0 +1,327 @@
+/* =====================================================
+   CYBERCRASH — Form Elements
+   ===================================================== */
+
+/* ── Input group ────────────────────────────────────── */
+.form-group {
+  margin-bottom: 11px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  width: 18px;
+  height: 18px;
+  stroke: rgba(155, 174, 192, 0.6);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  pointer-events: none;
+  transition: stroke 0.2s;
+  flex-shrink: 0;
+}
+
+.form-input {
+  width: 100%;
+  height: 46px;
+  background: rgba(8, 22, 38, 0.85);
+  border: 1px solid rgba(100, 170, 210, 0.18);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: 13px;
+  font-weight: 400;
+  padding: 0 44px 0 46px;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.form-input::placeholder {
+  color: rgba(155, 174, 192, 0.5);
+  font-size: 14px;
+}
+
+.form-input:focus {
+  border-color: rgba(53, 169, 255, 0.55);
+  background: rgba(10, 28, 48, 0.92);
+  box-shadow:
+    0 0 0 3px rgba(53, 169, 255, 0.10),
+    inset 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.form-input:focus + .input-icon,
+.input-wrapper:focus-within .input-icon {
+  stroke: var(--cyber-blue);
+}
+
+/* Password toggle — new class name: pwd-toggle */
+.pwd-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.pwd-toggle:hover {
+  background: rgba(53, 169, 255, 0.1);
+}
+
+.pwd-toggle svg,
+.eye-icon {
+  width: 16px;
+  height: 16px;
+  stroke: rgba(155, 174, 192, 0.50);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: stroke 0.2s;
+  pointer-events: none;
+}
+
+.pwd-toggle:hover svg { stroke: var(--cyber-blue); }
+
+/* ── Forgot password link ───────────────────────────── */
+.form-extras,
+.forgot-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 16px;
+  margin-top: 4px;
+}
+
+.forgot-link {
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--cyber-blue);
+  text-decoration: none;
+  opacity: 0.8;
+  cursor: pointer;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.forgot-link:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+/* ── Sign In button ─────────────────────────────────── */
+.sign-in-btn,
+.btn-signin {
+  width: 100%;
+  height: 46px;
+  background: linear-gradient(135deg, #E52020 0%, #B81515 50%, #D71920 100%);
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-primary);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  position: relative;
+  overflow: hidden;
+  transition:
+    filter 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.1s ease;
+  box-shadow:
+    0 4px 18px rgba(215, 25, 32, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.3);
+  margin-bottom: 18px;
+}
+
+.sign-in-btn::before,
+.btn-signin::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.12) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.sign-in-btn:hover,
+.btn-signin:hover {
+  filter: brightness(1.12);
+  box-shadow:
+    0 6px 24px rgba(215, 25, 32, 0.65),
+    0 0 25px rgba(255, 45, 45, 0.30),
+    0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+.sign-in-btn:active,
+.btn-signin:active {
+  transform: translateY(1px);
+  filter: brightness(0.95);
+  box-shadow:
+    0 2px 10px rgba(215, 25, 32, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.btn-arrow,
+.signin-arrow {
+  width: 16px;
+  height: 16px;
+  stroke: #ffffff;
+  stroke-width: 2.2;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transition: transform 0.2s ease;
+}
+
+.sign-in-btn:hover .btn-arrow,
+.btn-signin:hover .signin-arrow {
+  transform: translateX(4px);
+}
+
+/* ── Divider ────────────────────────────────────────── */
+.alt-divider,
+.or-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.alt-divider-line,
+.or-divider-line {
+  flex: 1;
+  height: 1px;
+  background: rgba(100, 170, 210, 0.15);
+}
+
+.alt-divider-text,
+.or-divider-text {
+  font-size: 9.5px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: rgba(155, 174, 192, 0.45);
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Alt auth buttons ───────────────────────────────── */
+.alt-auth-grid,
+.alt-auth-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.alt-auth-btn,
+.btn-alt-auth {
+  flex: 1;
+  height: 40px;
+  background: rgba(8, 22, 38, 0.7);
+  border: 1px solid rgba(100, 170, 210, 0.18);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-family: var(--font-primary);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition:
+    border-color 0.25s,
+    background 0.25s,
+    color 0.25s,
+    box-shadow 0.25s;
+  letter-spacing: 0.3px;
+}
+
+.alt-auth-btn svg,
+.btn-alt-auth svg {
+  width: 15px;
+  height: 15px;
+  stroke: var(--text-muted);
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+  transition: stroke 0.25s;
+}
+
+.alt-auth-btn:hover,
+.btn-alt-auth:hover {
+  border-color: rgba(53, 169, 255, 0.45);
+  background: rgba(53, 169, 255, 0.09);
+  color: var(--text-primary);
+  box-shadow: 0 0 14px rgba(53, 169, 255, 0.10);
+}
+
+.alt-auth-btn:hover svg,
+.btn-alt-auth:hover svg {
+  stroke: var(--cyber-blue);
+}
+
+/* ── Register row ───────────────────────────────────── */
+.register-row {
+  text-align: center;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.register-text {
+  color: var(--text-muted);
+}
+
+.register-link {
+  color: var(--threat-red);
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  margin-left: 4px;
+  transition: opacity 0.2s;
+}
+
+.register-link:hover {
+  opacity: 0.85;
+  text-decoration: underline;
+}
+
+/* ── Loading state ──────────────────────────────────── */
+.sign-in-btn.loading,
+.btn-signin.loading {
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+.sign-in-btn.loading::after,
+.btn-signin.loading::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: slowRotate 0.7s linear infinite;
+  margin-left: 10px;
+}
+

@@ -267,49 +267,6 @@ export const Login: React.FC = () => {
                 )}
               </button>
             </form>
-
-            <div className="mt-6 pt-5 border-t border-white/[0.08] text-center">
-              <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block mb-2.5">
-                Quick Multi-Agency Portals
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-5 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => navigate('/cases')}
-                  className="py-2 px-1.5 rounded-lg bg-white/[0.04] hover:bg-cyan-500/15 border border-white/[0.08] hover:border-cyan-500/40 text-[10px] font-mono text-cyan-300 font-semibold uppercase transition-colors"
-                >
-                  LEA Cases
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/i4c')}
-                  className="py-2 px-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 hover:border-red-500/60 text-[10px] font-mono text-red-300 font-semibold uppercase transition-colors"
-                >
-                  I4C Command
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/bank')}
-                  className="py-2 px-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 hover:border-amber-500/60 text-[10px] font-mono text-amber-300 font-semibold uppercase transition-colors"
-                >
-                  Bank Security
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/admin')}
-                  className="py-2 px-1.5 rounded-lg bg-purple-600/20 hover:bg-purple-600/30 border border-purple-500/40 hover:border-purple-500/70 text-[10px] font-mono text-purple-300 font-semibold uppercase transition-colors shadow-sm"
-                >
-                  Admin Demo
-                </button>
-                <button
-                  type="button"
-                  onClick={() => navigate('/investigation/CASE_007001')}
-                  className="py-2 px-1.5 rounded-lg bg-white/[0.04] hover:bg-purple-500/15 border border-white/[0.08] hover:border-purple-500/40 text-[10px] font-mono text-slate-300 font-semibold uppercase transition-colors"
-                >
-                  CASE_007001
-                </button>
-              </div>
-            </div>
           </div>
         </div>
       </main>

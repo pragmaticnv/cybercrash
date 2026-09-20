@@ -29,11 +29,11 @@ export const App: React.FC = () => {
         <Route path="/login" element={<Login />} />
         <Route path="/access-denied" element={<AccessDenied />} />
 
-        {/* 1. LEA Interface */}
+        {/* 1. LEA Interface (Protected: role = LEA or ADMIN) */}
         <Route
           path="/lea"
           element={
-            <ProtectedRoute allowedRoles={['LEA', 'BANK', 'I4C', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['LEA', 'ADMIN']}>
               <LEACaseCommand />
             </ProtectedRoute>
           }
@@ -41,7 +41,7 @@ export const App: React.FC = () => {
         <Route
           path="/cases"
           element={
-            <ProtectedRoute allowedRoles={['LEA', 'BANK', 'I4C', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['LEA', 'ADMIN']}>
               <LEACaseCommand />
             </ProtectedRoute>
           }
@@ -49,7 +49,7 @@ export const App: React.FC = () => {
         <Route
           path="/command"
           element={
-            <ProtectedRoute allowedRoles={['LEA', 'BANK', 'I4C', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['LEA', 'ADMIN']}>
               <LEACaseCommand />
             </ProtectedRoute>
           }
@@ -57,17 +57,17 @@ export const App: React.FC = () => {
         <Route
           path="/investigation/:caseId"
           element={
-            <ProtectedRoute allowedRoles={['LEA', 'BANK', 'I4C', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['LEA', 'ADMIN']}>
               <CaseInvestigation />
             </ProtectedRoute>
           }
         />
 
-        {/* 2. Bank Operations Interface */}
+        {/* 2. Bank Operations Interface (Protected: role = BANK or ADMIN) */}
         <Route
           path="/bank"
           element={
-            <ProtectedRoute allowedRoles={['BANK', 'LEA', 'I4C', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['BANK', 'ADMIN']}>
               <BankHome />
             </ProtectedRoute>
           }
@@ -75,7 +75,7 @@ export const App: React.FC = () => {
         <Route
           path="/bank/security"
           element={
-            <ProtectedRoute allowedRoles={['BANK', 'LEA', 'I4C', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['BANK', 'ADMIN']}>
               <BankHome />
             </ProtectedRoute>
           }
@@ -83,17 +83,17 @@ export const App: React.FC = () => {
         <Route
           path="/bank/account/:accountId"
           element={
-            <ProtectedRoute allowedRoles={['BANK', 'LEA', 'I4C', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['BANK', 'ADMIN']}>
               <BankAccountInvestigation />
             </ProtectedRoute>
           }
         />
 
-        {/* 3. I4C National Command Interface */}
+        {/* 3. I4C National Command Interface (Protected: role = I4C or ADMIN) */}
         <Route
           path="/i4c"
           element={
-            <ProtectedRoute allowedRoles={['I4C', 'LEA', 'BANK', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['I4C', 'ADMIN']}>
               <I4CCommand />
             </ProtectedRoute>
           }
@@ -101,17 +101,17 @@ export const App: React.FC = () => {
         <Route
           path="/i4c/intelligence"
           element={
-            <ProtectedRoute allowedRoles={['I4C', 'LEA', 'BANK', 'ADMIN']}>
+            <ProtectedRoute allowedRoles={['I4C', 'ADMIN']}>
               <I4CCommand />
             </ProtectedRoute>
           }
         />
 
-        {/* 4. Admin Management Interface */}
+        {/* 4. Admin Management Interface (Protected: role = ADMIN) */}
         <Route
           path="/admin"
           element={
-            <ProtectedRoute allowedRoles={['ADMIN', 'LEA', 'BANK', 'I4C']}>
+            <ProtectedRoute allowedRoles={['ADMIN']}>
               <AdminDashboard />
             </ProtectedRoute>
           }

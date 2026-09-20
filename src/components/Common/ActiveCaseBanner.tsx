@@ -1,29 +1,12 @@
 import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { useActiveCaseStore } from '../../store/useActiveCaseStore';
-import { useAuthStore } from '../../store/useAuthStore';
-import { 
-  FolderCheck, 
-  Sparkles, 
-  RefreshCw, 
-  ExternalLink, 
-  Shield, 
-  Radio, 
-  Building2, 
-  Sliders, 
-  Crosshair,
-  ArrowRight,
-  Plus
-} from 'lucide-react';
+import { Radio, RefreshCw } from 'lucide-react';
 
 interface ActiveCaseBannerProps {
   currentPortal?: 'lea' | 'i4c' | 'bank' | 'admin' | string;
 }
 
-export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPortal }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { user } = useAuthStore();
+export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = () => {
   const { 
     activeCase, 
     prediction, 
@@ -33,12 +16,6 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPorta
   } = useActiveCaseStore();
 
   const [isSwitching, setIsSwitching] = useState(false);
-
-  const currentPath = location.pathname;
-  const isLEA = currentPath.startsWith('/cases') || currentPath.startsWith('/investigation');
-  const isI4C = currentPath.startsWith('/i4c');
-  const isBank = currentPath.startsWith('/bank');
-  const isAdmin = currentPath.startsWith('/admin');
 
   const handleSelectDemo = async (key: string) => {
     if (!key) return;
@@ -51,14 +28,14 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPorta
   };
 
   return (
-    <div className="w-full bg-[#030812] border-b border-cyan-500/25 text-white select-none z-20 backdrop-blur-md">
-      <div className="max-w-[1720px] mx-auto px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-3 text-xs">
+    <div className="w-full bg-[#030812]/95 border-b border-cyan-500/20 text-white select-none z-20 backdrop-blur-md">
+      <div className="max-w-[1720px] mx-auto px-4 lg:px-8 py-2 flex items-center justify-between gap-4 text-xs">
         
-        {/* Left: Active Demo Case Focus + Dropdown */}
-        <div className="flex items-center flex-wrap gap-2.5">
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-cyan-950/60 border border-cyan-500/40 text-cyan-300">
+        {/* Left: Active Demo Case Selector */}
+        <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-cyan-950/60 border border-cyan-500/40 text-cyan-300 flex-shrink-0">
             <Radio className="w-3 h-3 text-cyan-400 animate-pulse" />
-            <span className="font-mono text-[10px] font-bold uppercase tracking-wider">
+            <span className="font-mono text-[10.5px] font-bold uppercase tracking-wider">
               ACTIVE CASE FOCUS:
             </span>
           </div>
@@ -68,7 +45,7 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPorta
               value={selectedDemoKey}
               onChange={(e) => handleSelectDemo(e.target.value)}
               disabled={isLoading || isSwitching}
-              className="bg-[#091527] border border-cyan-500/50 text-cyan-200 font-mono text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 cursor-pointer disabled:opacity-50"
+              className="bg-[#091527] border border-cyan-500/40 hover:border-cyan-400 text-cyan-200 font-mono text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:ring-1 focus:ring-cyan-400 cursor-pointer disabled:opacity-50 transition-colors max-w-[480px] truncate"
             >
               <option value="LIVE_DEMO_001">
                 LIVE_DEMO_001 · Investment Scam (₹1,50,000 · Goa · ACC_013041)
@@ -87,68 +64,23 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPorta
             </select>
 
             {(isLoading || isSwitching) && (
-              <RefreshCw className="w-3.5 h-3.5 text-cyan-400 animate-spin ml-2" />
+              <RefreshCw className="w-3.5 h-3.5 text-cyan-400 animate-spin ml-2 flex-shrink-0" />
             )}
-          </div>
-
-          {/* Quick Case ML Prediction Tag */}
-          <div className="hidden md:flex items-center gap-2 px-2.5 py-1 rounded bg-[#071324] border border-white/[0.08] font-mono text-[11px]">
-            <span className="text-slate-400">ML TARGET:</span>
-            <span className="text-emerald-400 font-bold">{prediction.predictedZone}</span>
-            <span className="text-slate-600">|</span>
-            <span className="text-slate-400">CONFIDENCE:</span>
-            <span className="text-cyan-300 font-bold">{prediction.confidencePercent}</span>
-            <span className="text-slate-600">|</span>
-            <span className="text-slate-400">MULE:</span>
-            <span className="text-amber-300">{activeCase.primaryMule}</span>
           </div>
         </div>
 
-        {/* Right: Authenticated Role / RBAC Domain Indicator & Context Actions */}
-        <div className="flex items-center flex-wrap gap-2">
-          {/* Active Role Console Badge (RBAC compliant) */}
-          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] font-mono text-[11px]">
-            <span className="text-slate-500 uppercase">OPERATOR:</span>
-            <span className="text-white font-bold">{user?.name || (isLEA ? 'Amit Salve' : isBank ? 'Varun Grover' : isI4C ? 'Sunita Deshmukh' : 'Rajesh Varma')}</span>
+        {/* Right: Live ML Intelligence Telemetry Strip */}
+        <div className="hidden sm:flex items-center gap-3 font-mono text-[11px]">
+          <div className="flex items-center gap-2 px-3 py-1 rounded-lg bg-[#071324] border border-white/[0.08]">
+            <span className="text-slate-400">ML TARGET:</span>
+            <span className="text-emerald-400 font-bold tracking-wide">{prediction.predictedZone}</span>
             <span className="text-slate-600">|</span>
-            <span className="text-slate-500 uppercase">ROLE:</span>
-            {isLEA && (
-              <span className="text-cyan-300 font-bold flex items-center gap-1">
-                <Shield className="w-3 h-3 text-cyan-400" />
-                LEA INVESTIGATOR
-              </span>
-            )}
-            {isI4C && (
-              <span className="text-red-300 font-bold flex items-center gap-1">
-                <Radio className="w-3 h-3 text-red-400" />
-                I4C THREAT INTELLIGENCE
-              </span>
-            )}
-            {isBank && (
-              <span className="text-amber-300 font-bold flex items-center gap-1">
-                <Building2 className="w-3 h-3 text-amber-400" />
-                BANK FRAUD DESK
-              </span>
-            )}
-            {isAdmin && (
-              <span className="text-purple-300 font-bold flex items-center gap-1">
-                <Sliders className="w-3 h-3 text-purple-400" />
-                SYSTEM ADMINISTRATOR
-              </span>
-            )}
+            <span className="text-slate-400">CONFIDENCE:</span>
+            <span className="text-cyan-300 font-bold tracking-wide">{prediction.confidencePercent}</span>
+            <span className="text-slate-600">|</span>
+            <span className="text-slate-400">PRIMARY MULE:</span>
+            <span className="text-amber-300 font-bold tracking-wide">{activeCase.primaryMule}</span>
           </div>
-
-          {/* New Case Intake Action (Only accessible in LEA console) */}
-          {isLEA && (
-            <button
-              onClick={() => navigate(`/investigation/${activeCase.id}?newCase=true`)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-[10.5px] font-bold tracking-wider uppercase border border-cyan-400/40 shadow-[0_0_10px_rgba(6,182,212,0.25)] ml-1 cursor-pointer"
-              title="Open New Case Intake Form"
-            >
-              <Plus className="w-3 h-3 stroke-[2.5]" />
-              <span>+ INTAKE CASE</span>
-            </button>
-          )}
         </div>
 
       </div>

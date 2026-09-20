@@ -9,6 +9,7 @@ import { Case } from '../types/case';
 import { useInvestigationStore } from '../store/useInvestigationStore';
 import { useActiveCaseStore } from '../store/useActiveCaseStore';
 import { Shield, Filter, RefreshCw, FolderSearch, Plus } from 'lucide-react';
+import { NewCaseButton } from '../components/Common/NewCaseButton';
 
 export const LEACaseCommand: React.FC = () => {
   const [cases, setCases] = useState<Case[]>([]);
@@ -90,14 +91,7 @@ export const LEACaseCommand: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-3 text-xs">
-            <button
-              onClick={() => navigate('/investigation/CASE_007001?newCase=true')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer border border-cyan-400/40"
-              title="Open New Case Intake Workflow"
-            >
-              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
-              <span>INTAKE NEW CASE</span>
-            </button>
+            <NewCaseButton variant="hero" label="INTAKE NEW CASE" />
 
             <span className="font-mono text-slate-400 text-[11px]">
               Showing <strong className="text-white">{filteredCases.length}</strong> active dossiers

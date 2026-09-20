@@ -13,8 +13,15 @@ export const HighRiskAccountsList: React.FC = () => {
 
   const combinedAccounts = React.useMemo(() => {
     const dynamicIds = new Set((bankAccounts || []).map((a) => a.accountId));
-    return [...(bankAccounts || []), ...BANK_ACCOUNTS.filter((a) => !dynamicIds.has(a.accountId))];
-  }, [bankAccounts]);
+    const all = [...(bankAccounts || []), ...BANK_ACCOUNTS.filter((a) => !dynamicIds.has(a.accountId))];
+
+    // Priority Sort: Newly analyzed active case primary mule account MUST BE FIRST
+    return all.sort((a, b) => {
+      const aIsActive = activeCase && a.accountId === activeCase.primaryMule ? 1 : 0;
+      const bIsActive = activeCase && b.accountId === activeCase.primaryMule ? 1 : 0;
+      return bIsActive - aIsActive;
+    });
+  }, [bankAccounts, activeCase]);
 
   const handleAccountClick = (accId: string) => {
     setSelectedAccountId(accId);
@@ -72,8 +79,9 @@ export const HighRiskAccountsList: React.FC = () => {
                       {acc.accountId}
                     </span>
                     {isActiveMule && (
-                      <span className="text-[8px] font-mono font-bold text-amber-300 bg-amber-500/20 px-1 py-0.2 rounded border border-amber-500/40">
-                        DEMO MULE
+                      <span className="text-[8px] font-mono font-bold text-amber-300 bg-amber-950/80 px-1.5 py-0.2 rounded border border-amber-500/50 flex items-center gap-1 shadow-[0_0_8px_rgba(245,158,11,0.3)]">
+                        <span className="w-1 h-1 rounded-full bg-amber-400 animate-pulse" />
+                        CASE MULE {activeCase?.id ? `(${activeCase.id})` : ''}
                       </span>
                     )}
                   </div>

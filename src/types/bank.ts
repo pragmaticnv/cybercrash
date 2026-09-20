@@ -61,13 +61,17 @@ export interface BankTransaction {
 
 export interface BankAlert {
   alertId: string;
+  caseId?: string;
   severity: AlertSeverity;
   accountId: string;
+  accountNumber?: string;
   accountHolder: string;
   bankId: string;
+  bankName?: string;
   transactionId?: string;
   timestamp: string;
   amount?: number;
+  amountRaw?: number;
   reason: string;
   signals: string[];
   status: 'OPEN' | 'REVIEW' | 'ESCALATED' | 'RESOLVED';
@@ -75,6 +79,7 @@ export interface BankAlert {
   outboundCount: number;
   uniqueReceivers: number;
   paymentChannels: string[];
+  recommendedAction?: string;
 }
 
 export interface BankRiskSignal {

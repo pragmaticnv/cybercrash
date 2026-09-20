@@ -294,18 +294,32 @@ def build_active_case_state(case: dict, result: dict):
     dynamic_alerts = [
         {
             "alertId": f"ALT_{cid}_01",
+            "caseId": cid,
             "accountId": primary_mule,
             "accountNumber": f"•••• {primary_mule[-4:]}",
+            "accountHolder": f"Target Mule ({primary_mule})",
+            "bankId": "BANK05",
             "bankName": "Axis Bank",
-            "amount": f"₹{amt_raw:,.0f}",
+            "amount": amt_raw,
             "amountRaw": amt_raw,
+            "severity": "CRITICAL",
             "riskLevel": "CRITICAL",
             "riskScore": top_score,
+            "networkRiskScore": top_score,
             "trigger": f"Urgent: Primary Mule Recipient for Case {cid} (Victim in {loc_meta['state']})",
+            "reason": f"Urgent: Primary Mule Recipient for Case {cid} (Victim in {loc_meta['state']})",
+            "signals": [
+                f"Rapid outbound movement following ₹{amt_raw:,.0f} inflow",
+                f"Target mule node in {state_code} extraction corridor",
+                f"High model extraction confidence {top_score * 100:.1f}%"
+            ],
             "timestamp": "Just now",
             "channel": "IMPS / UPI",
-            "status": "UNREVIEWED",
-            "recommendedAction": "FREEZE ACCOUNT NOW"
+            "status": "OPEN",
+            "recommendedAction": "FREEZE ACCOUNT NOW",
+            "outboundCount": len(tx_list) or 1,
+            "uniqueReceivers": len(tx_list) or 1,
+            "paymentChannels": ["IMPS", "UPI"]
         }
     ]
     for idx, tx in enumerate(tx_list):
@@ -313,34 +327,60 @@ def build_active_case_state(case: dict, result: dict):
         amt_tx = float(tx.get("amount", 0))
         dynamic_alerts.append({
             "alertId": f"ALT_{cid}_{idx+2:02d}",
+            "caseId": cid,
             "accountId": dest,
             "accountNumber": f"•••• {dest[-4:] if len(dest) >= 4 else '8910'}",
+            "accountHolder": accounts_map.get(dest, {}).get("accountHolder", f"Syndicate Layer Mule ({dest})"),
+            "bankId": accounts_map.get(dest, {}).get("bankId", "BANK01"),
             "bankName": accounts_map.get(dest, {}).get("bankName", "Commercial Bank"),
-            "amount": f"₹{amt_tx:,.0f}",
+            "amount": amt_tx,
             "amountRaw": amt_tx,
+            "severity": "CRITICAL" if amt_tx >= 60000 else "HIGH",
             "riskLevel": "CRITICAL" if amt_tx >= 60000 else "HIGH",
             "riskScore": round(0.85 - idx * 0.05, 3),
+            "networkRiskScore": round(0.85 - idx * 0.05, 3),
             "trigger": f"Hop {idx+1} Downstream Layering Split from {tx.get('source_account')}",
+            "reason": f"Hop {idx+1} Downstream Layering Split from {tx.get('source_account')}",
+            "signals": [
+                f"Hop {idx+1} relay execution across inter-bank channel",
+                f"Downstream transfer ₹{amt_tx:,.0f}"
+            ],
             "timestamp": f"{(idx+1)*5}m ago",
             "channel": "UPI / NEFT",
-            "status": "UNDER_REVIEW",
-            "recommendedAction": "INITIATE LIEN MARKING"
+            "status": "OPEN",
+            "recommendedAction": "INITIATE LIEN MARKING",
+            "outboundCount": 1,
+            "uniqueReceivers": 1,
+            "paymentChannels": ["UPI", "NEFT"]
         })
         
     dynamic_alerts.append({
         "alertId": f"ALT_{cid}_ATM",
+        "caseId": cid,
         "accountId": primary_mule,
         "accountNumber": f"•••• {primary_mule[-4:]}",
+        "accountHolder": f"Target Mule ({primary_mule})",
+        "bankId": "BANK05",
         "bankName": "State Bank of India",
-        "amount": f"₹{amt_raw:,.0f}",
+        "amount": amt_raw,
         "amountRaw": amt_raw,
+        "severity": "HIGH",
         "riskLevel": "HIGH",
         "riskScore": top_score,
+        "networkRiskScore": top_score,
         "trigger": f"ATM Corridor Staged Cash-Out Proximity Alert (Zone {top_zone} · {zone_name})",
+        "reason": f"ATM Corridor Staged Cash-Out Proximity Alert (Zone {top_zone} · {zone_name})",
+        "signals": [
+            f"ATM Proximity correlation with predicted zone {top_zone}",
+            f"Extraction velocity matching live complaint loss ₹{amt_raw:,.0f}"
+        ],
         "timestamp": "Active window",
         "channel": "ATM WITHDRAWAL STAGED",
-        "status": "UNREVIEWED",
-        "recommendedAction": "DISPATCH FIELD INTERCEPT"
+        "status": "OPEN",
+        "recommendedAction": "DISPATCH FIELD INTERCEPT",
+        "outboundCount": 1,
+        "uniqueReceivers": 1,
+        "paymentChannels": ["ATM", "IMPS"]
     })
     DYNAMIC_ALERTS = dynamic_alerts
     

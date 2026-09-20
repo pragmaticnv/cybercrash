@@ -7,9 +7,9 @@ export const MapLegend: React.FC = () => {
   const { mapFilters, toggleMapFilter, selectedBaseLayer, setBaseLayer } = useInvestigationStore();
 
   const baseLayers: { id: BaseMapLayer; label: string; icon: React.ReactNode }[] = [
-    { id: 'google-tactical', label: 'Google Tactical Dark', icon: <MapIcon className="w-3 h-3" /> },
-    { id: 'google-satellite', label: 'Google 4K Satellite', icon: <Satellite className="w-3 h-3" /> },
-    { id: 'google-roadmap', label: 'Google Roadmap HD', icon: <Globe className="w-3 h-3" /> },
+    { id: 'google-tactical', label: 'Tactical Cyber Dark', icon: <MapIcon className="w-3 h-3" /> },
+    { id: 'google-satellite', label: '4K Satellite (Esri)', icon: <Satellite className="w-3 h-3" /> },
+    { id: 'google-roadmap', label: 'Roadmap HD (OSM)', icon: <Globe className="w-3 h-3" /> },
     { id: 'carto-dark', label: 'Minimal Dark Canvas', icon: <Layers className="w-3 h-3" /> },
   ];
 
@@ -38,15 +38,15 @@ export const MapLegend: React.FC = () => {
   // Expanded Floating Window with Minimize Control
   return (
     <div className="absolute bottom-4 right-4 z-[1000] bg-[#071120]/95 backdrop-blur-md border border-white/[0.12] rounded-xl p-3.5 text-xs shadow-2xl max-w-[260px] font-sans animate-in fade-in duration-200 select-none">
-      {/* Google Maps API Status & Minimize Button */}
+      {/* Tactical GIS Engine Status & Minimize Button */}
       <div className="flex items-center justify-between pb-2 mb-2.5 border-b border-white/[0.08]">
         <div className="flex items-center gap-1.5">
           <span className="font-mono text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-            GOOGLE MAPS ENGINE
+            TACTICAL GIS ENGINE
           </span>
           <span className="inline-flex items-center gap-1 font-mono text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
             <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
-            ONLINE
+            GIS ONLINE
           </span>
         </div>
 

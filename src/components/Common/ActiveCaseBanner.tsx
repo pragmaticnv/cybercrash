@@ -40,11 +40,16 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = () => {
 
           <div className="relative flex items-center">
             <select
-              value={selectedDemoKey}
+              value={selectedDemoKey || activeCase?.id || 'LIVE_DEMO_001'}
               onChange={(e) => handleSelectDemo(e.target.value)}
               disabled={isLoading || isSwitching}
               className="bg-transparent text-cyan-300 font-mono text-xs py-1 pr-6 focus:outline-none cursor-pointer disabled:opacity-50 transition-colors max-w-[480px] truncate hover:text-white border-b border-transparent hover:border-cyan-500/40 focus:border-cyan-400"
             >
+              {activeCase && !['LIVE_DEMO_001', 'LIVE_DEMO_002', 'LIVE_DEMO_003', 'DEMO_EXISTING_001', 'DEMO_MIXED_001', 'DEMO_NEW_001'].includes(activeCase.id) && (
+                <option value={activeCase.id} className="bg-[#091527] text-cyan-200 font-bold">
+                  ⚡ {activeCase.id} · {activeCase.type} ({activeCase.amount} · {activeCase.stateCode}) [NEWLY ANALYZED CASE]
+                </option>
+              )}
               <option value="LIVE_DEMO_001" className="bg-[#091527] text-cyan-200">
                 LIVE_DEMO_001 · Investment Scam (₹1,50,000 · Goa · ACC_013041)
               </option>
@@ -54,11 +59,15 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = () => {
               <option value="LIVE_DEMO_003" className="bg-[#091527] text-cyan-200">
                 LIVE_DEMO_003 · Marketplace Fraud (₹2,50,000 · Tamil Nadu · NEW_MULE_002)
               </option>
-              {selectedDemoKey && !['LIVE_DEMO_001', 'LIVE_DEMO_002', 'LIVE_DEMO_003'].includes(selectedDemoKey) && (
-                <option value={selectedDemoKey} className="bg-[#091527] text-cyan-200">
-                  {selectedDemoKey} · {activeCase.type} ({activeCase.amount} · {activeCase.stateCode})
-                </option>
-              )}
+              <option value="DEMO_EXISTING_001" className="bg-[#091527] text-cyan-200">
+                DEMO_EXISTING_001 · Pre-Existing Mule Syndicate (₹1,50,000 · Goa)
+              </option>
+              <option value="DEMO_MIXED_001" className="bg-[#091527] text-cyan-200">
+                DEMO_MIXED_001 · Cross-Border Relay Network (₹2,75,000 · Punjab)
+              </option>
+              <option value="DEMO_NEW_001" className="bg-[#091527] text-cyan-200">
+                DEMO_NEW_001 · Rapid Zero-Shot Mule Ring (₹2,50,000 · Tamil Nadu)
+              </option>
             </select>
 
             {(isLoading || isSwitching) && (

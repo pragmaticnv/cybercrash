@@ -13,11 +13,29 @@ export const AlertList: React.FC = () => {
 
   const combinedAlerts = React.useMemo(() => {
     const dynamicIds = new Set((bankAlerts || []).map((a) => a.alertId));
-    return [...(bankAlerts || []), ...BANK_ALERTS.filter((a) => !dynamicIds.has(a.alertId))];
-  }, [bankAlerts]);
+    const all = [...(bankAlerts || []), ...BANK_ALERTS.filter((a) => !dynamicIds.has(a.alertId))];
+
+    // Priority Sort: Newly analyzed active case alerts MUST BE FIRST
+    return all.sort((a, b) => {
+      const aIsActive = activeCase && (
+        a.accountId === activeCase.primaryMule ||
+        a.caseId === activeCase.id ||
+        a.alertId.includes(activeCase.id) ||
+        (a.reason && a.reason.includes(activeCase.id))
+      ) ? 1 : 0;
+      const bIsActive = activeCase && (
+        b.accountId === activeCase.primaryMule ||
+        b.caseId === activeCase.id ||
+        b.alertId.includes(activeCase.id) ||
+        (b.reason && b.reason.includes(activeCase.id))
+      ) ? 1 : 0;
+      return bIsActive - aIsActive;
+    });
+  }, [bankAlerts, activeCase]);
 
   const filteredAlerts = combinedAlerts.filter((alert) => {
-    if (severityFilter !== 'ALL' && alert.severity !== severityFilter) return false;
+    const sev = alert.severity || (alert as any).riskLevel || 'HIGH';
+    if (severityFilter !== 'ALL' && sev !== severityFilter) return false;
     if (statusFilter !== 'ALL' && alert.status !== statusFilter) return false;
     return true;
   });
@@ -86,8 +104,9 @@ export const AlertList: React.FC = () => {
                     {alert.severity || (alert as any).riskLevel || 'HIGH'} RISK
                   </span>
                   {isActiveMule && (
-                    <span className="text-[9px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/40 animate-pulse">
-                      ACTIVE CASE TARGET
+                    <span className="text-[9.5px] font-mono font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded border border-amber-500/50 shadow-[0_0_10px_rgba(245,158,11,0.35)] flex items-center gap-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                      ACTIVE CASE TARGET {activeCase?.id ? `(${activeCase.id})` : ''}
                     </span>
                   )}
                   <span className="text-xs font-mono font-bold text-white tracking-wider">

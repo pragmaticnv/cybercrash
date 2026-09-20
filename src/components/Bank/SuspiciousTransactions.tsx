@@ -11,8 +11,23 @@ export const SuspiciousTransactions: React.FC = () => {
 
   const combinedTransactions = React.useMemo(() => {
     const dynamicIds = new Set((bankTransactions || []).map((t) => t.transactionId));
-    return [...(bankTransactions || []), ...BANK_TRANSACTIONS.filter((t) => !dynamicIds.has(t.transactionId))];
-  }, [bankTransactions]);
+    const all = [...(bankTransactions || []), ...BANK_TRANSACTIONS.filter((t) => !dynamicIds.has(t.transactionId))];
+
+    // Priority Sort: Newly analyzed active case transactions MUST BE FIRST
+    return all.sort((a, b) => {
+      const aIsActive = activeCase && (
+        a.caseId === activeCase.id ||
+        a.sourceAccount === activeCase.primaryMule ||
+        a.destinationAccount === activeCase.primaryMule
+      ) ? 1 : 0;
+      const bIsActive = activeCase && (
+        b.caseId === activeCase.id ||
+        b.sourceAccount === activeCase.primaryMule ||
+        b.destinationAccount === activeCase.primaryMule
+      ) ? 1 : 0;
+      return bIsActive - aIsActive;
+    });
+  }, [bankTransactions, activeCase]);
 
   const handleTxClick = (tx: BankTransaction) => {
     setSelectedTransaction(tx);

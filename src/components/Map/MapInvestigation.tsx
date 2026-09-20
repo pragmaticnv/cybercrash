@@ -29,21 +29,21 @@ export const MapInvestigation: React.FC<MapInvestigationProps> = ({ prediction, 
   const centerLat = prediction.centerCoordinates.lat;
   const centerLng = prediction.centerCoordinates.lng;
 
-  // Determine active tile configuration from Google Maps API
+  // Determine active tile configuration from Tactical Open GIS Providers
   let activeTileUrl = GOOGLE_MAP_TILE_URLS.tacticalDark;
   let activeTileClass = 'tactical-dark-tiles';
-  let activeAttribution = '&copy; Google Maps';
+  let activeAttribution = '&copy; CARTO &copy; OpenStreetMap';
   let maxZoomLevel = 20;
 
   if (selectedBaseLayer === 'google-satellite') {
     activeTileUrl = GOOGLE_MAP_TILE_URLS.satellite;
     activeTileClass = '';
-    activeAttribution = '&copy; Google Satellite 4K';
+    activeAttribution = '&copy; Esri World Imagery';
     maxZoomLevel = 21;
   } else if (selectedBaseLayer === 'google-roadmap') {
     activeTileUrl = GOOGLE_MAP_TILE_URLS.roadmap;
     activeTileClass = '';
-    activeAttribution = '&copy; Google Maps';
+    activeAttribution = '&copy; OpenStreetMap contributors';
     maxZoomLevel = 20;
   } else if (selectedBaseLayer === 'carto-dark') {
     activeTileUrl = GOOGLE_MAP_TILE_URLS.cartoDark;
@@ -118,11 +118,12 @@ export const MapInvestigation: React.FC<MapInvestigationProps> = ({ prediction, 
       >
         <MapController center={[centerLat, centerLng]} zoom={12} />
 
-        {/* Google Maps Base Tile Layer */}
+        {/* Tactical GIS Base Tile Layer */}
         <TileLayer
           key={selectedBaseLayer}
           attribution={activeAttribution}
           url={activeTileUrl}
+          subdomains={['a', 'b', 'c', 'd']}
           className={activeTileClass}
           maxZoom={maxZoomLevel}
         />

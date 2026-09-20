@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Sparkles, Play, Plus, Trash2, ChevronDown, ChevronUp, AlertCircle, FolderCheck, RefreshCw, FileText, RotateCcw } from 'lucide-react';
+import { Sparkles, Play, Plus, Trash2, ChevronDown, ChevronUp, AlertCircle, FolderCheck, RefreshCw, FileText, RotateCcw, Zap } from 'lucide-react';
 import { apiFetch } from '../../api/apiClient';
+import { DEMO_CASE_PRESETS } from '../../data/demoCasesData';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 
 export interface TransactionFormItem {
   source_account: string;
@@ -37,16 +39,24 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
 }) => {
   const [searchParams] = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
-  const [demoCases, setDemoCases] = useState<Record<string, any>>({});
-  const [selectedDemoKey, setSelectedDemoKey] = useState<string>('');
+  const [demoCases, setDemoCases] = useState<Record<string, any>>(DEMO_CASE_PRESETS);
+  const [selectedDemoKey, setSelectedDemoKey] = useState<string>('LIVE_DEMO_001');
   const [loadingDemoCases, setLoadingDemoCases] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Auto-open if redirected via New Case button (?newCase=true)
+  // Auto-open if redirected via New Case button (?newCase=true) and auto-load demo case if ?demo=...
   useEffect(() => {
     if (searchParams.get('newCase') === 'true') {
       setIsOpen(true);
+    }
+    const demoParam = searchParams.get('demo');
+    if (demoParam) {
+      if (demoParam === 'blank') {
+        handleClearToBlank();
+      } else {
+        handleSelectDemoCase(demoParam);
+      }
     }
   }, [searchParams]);
 
@@ -79,10 +89,10 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
       try {
         const data = await apiFetch<any>('/demo-cases');
         if (data?.available_cases) {
-          setDemoCases(data.available_cases);
+          setDemoCases((prev) => ({ ...DEMO_CASE_PRESETS, ...prev, ...data.available_cases }));
         }
       } catch (err) {
-        console.warn('Could not fetch demo cases from backend:', err);
+        console.warn('Could not fetch demo cases from backend, using presets:', err);
       } finally {
         setLoadingDemoCases(false);
       }
@@ -90,7 +100,7 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
     loadDemoCases();
   }, []);
 
-  // Handle demo case selection from dropdown
+  // Handle demo case selection from dropdown or card grid
   const handleSelectDemoCase = (key: string) => {
     setSelectedDemoKey(key);
     setErrorMessage(null);
@@ -100,7 +110,7 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
       return;
     }
 
-    const demo = demoCases[key];
+    const demo = demoCases[key] || DEMO_CASE_PRESETS[key];
     if (!demo) return;
 
     setCaseId(demo.case_id || key);
@@ -185,6 +195,8 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
         throw new Error('ML Engine returned an invalid response structure.');
       }
 
+      // Synchronize to multi-agency global store immediately
+      useActiveCaseStore.getState().setActiveCaseFromMLResult(payload, result);
       onAnalyzeSuccess(result, payload);
     } catch (err: any) {
       const errMsg = 'Unable to connect to ML backend. Make sure FastAPI is running on port 8000.';
@@ -303,6 +315,77 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
               <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/50 px-2 py-1 rounded border border-cyan-500/30">
                 TARGET ENDPOINT: POST /new-case
               </span>
+            </div>
+          </div>
+
+          {/* Benchmark Demo Case Options Selection Grid */}
+          <div className="p-3.5 rounded-xl bg-[#06101e] border border-cyan-500/25 space-y-2.5 shadow-[inset_0_1px_1px_rgba(255,255,255,0.05)]">
+            <div className="flex flex-wrap items-center justify-between gap-2 pb-1.5 border-b border-white/[0.06]">
+              <div className="flex items-center gap-2">
+                <FolderCheck className="w-4 h-4 text-cyan-400" />
+                <span className="font-mono text-xs font-bold uppercase tracking-wider text-cyan-300">
+                  SELECT DEMO CASE OPTION TO POPULATE SPECIFICATION
+                </span>
+                <span className="text-[9.5px] font-mono px-1.5 py-0.2 rounded bg-cyan-950/80 text-cyan-400 border border-cyan-500/30 uppercase font-semibold">
+                  6 BENCHMARK PRESETS
+                </span>
+              </div>
+              <span className="text-[10.5px] font-mono text-slate-400">
+                Click any demo case below to automatically populate telemetry, victim state, and multi-hop transactions
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {Object.values(DEMO_CASE_PRESETS).map((demo) => {
+                const isSelected = selectedDemoKey === demo.case_id || caseId === demo.case_id;
+                return (
+                  <button
+                    key={demo.case_id}
+                    type="button"
+                    onClick={() => handleSelectDemoCase(demo.case_id)}
+                    className={`p-3 rounded-lg text-left transition-all cursor-pointer border relative group ${
+                      isSelected
+                        ? 'bg-gradient-to-b from-cyan-950/70 to-[#071a33] border-cyan-400 shadow-[0_0_15px_rgba(6,182,212,0.3)] ring-1 ring-cyan-400/80'
+                        : 'bg-[#071426]/70 hover:bg-[#0c1f38] border-white/[0.08] hover:border-cyan-500/40'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-1.5">
+                        <span className={`font-mono text-xs font-bold ${isSelected ? 'text-cyan-200' : 'text-white'}`}>
+                          {demo.case_id}
+                        </span>
+                        <span className="text-[8.5px] font-mono px-1.5 py-0.2 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-500/30 uppercase">
+                          {demo.badge}
+                        </span>
+                      </div>
+                      <span className="font-mono text-xs font-bold text-emerald-400">
+                        ₹{demo.reported_amount.toLocaleString()}
+                      </span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-300 mb-1">
+                      <span className="font-medium text-slate-200">{demo.fraud_type}</span>
+                      <span className="font-mono text-[10.5px] text-slate-400">
+                        State: <strong className="text-cyan-300">{demo.complaint_state}</strong> · {demo.transactions.length} hops
+                      </span>
+                    </div>
+
+                    <p className="text-[10px] text-slate-400 line-clamp-2 leading-relaxed">
+                      {demo.description}
+                    </p>
+
+                    {isSelected && (
+                      <div className="mt-2 pt-1.5 border-t border-cyan-500/30 flex items-center justify-between text-[10px] font-mono text-cyan-300">
+                        <span className="flex items-center gap-1 font-bold">
+                          <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
+                          ACTIVE SELECTION
+                        </span>
+                        <span className="text-slate-400">Ready to Analyze →</span>
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

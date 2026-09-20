@@ -4,6 +4,8 @@ import { Prediction } from '../types/prediction';
 import { BankAccount, BankAlert, BankTransaction } from '../types/bank';
 import { I4CIntelligenceAlert } from '../types/i4c';
 import { apiFetch } from '../api/apiClient';
+import { DEMO_CASE_PRESETS } from '../data/demoCasesData';
+import { useBankStore } from './useBankStore';
 
 // Built-in initial state for LIVE_DEMO_001 so frontend immediately renders without delay
 const INITIAL_DEMO_CASE: Case = {
@@ -397,7 +399,7 @@ export const useActiveCaseStore = create<ActiveCaseState>((set, get) => ({
   bankTransactions: stored?.bankTransactions || INITIAL_TRANSACTIONS,
   i4cAlert: stored?.i4cAlert || INITIAL_I4C_ALERT,
   selectedDemoKey: stored?.selectedDemoKey || 'LIVE_DEMO_001',
-  demoCases: {},
+  demoCases: DEMO_CASE_PRESETS,
   isLoading: false,
   isLiveModel: true,
 
@@ -547,35 +549,67 @@ export const useActiveCaseStore = create<ActiveCaseState>((set, get) => ({
       }
     ];
 
-    const newAlerts: BankAlert[] = activeCaseServer?.alerts || [
-      {
-        alertId: `ALT_${cid}_01`,
-        accountId: primary,
-        accountNumber: `•••• ${primary.slice(-4) || '9012'}`,
-        accountHolder: `Target Mule (${primary})`,
-        bankId: 'BANK05',
-        amount: amt,
-        amountRaw: amt,
-        severity: 'CRITICAL',
-        riskLevel: 'CRITICAL',
-        riskScore: topScore,
-        networkRiskScore: topScore,
-        trigger: `Urgent: Primary Mule Recipient for Case ${cid} (Victim in ${state})`,
-        reason: `Urgent: Primary Mule Recipient for Case ${cid} (Victim in ${state})`,
-        signals: [
-          `Rapid outbound movement following ₹${amt.toLocaleString()} inflow`,
-          `Target mule node in ${state} extraction corridor`,
-          `High model extraction confidence ${(topScore * 100).toFixed(1)}%`
-        ],
-        timestamp: 'Just now',
-        channel: 'IMPS / UPI',
-        status: 'OPEN',
-        recommendedAction: 'FREEZE ACCOUNT NOW',
-        outboundCount: (casePayload.transactions || []).length || 1,
-        uniqueReceivers: (casePayload.transactions || []).length || 1,
-        paymentChannels: ['IMPS', 'UPI']
-      }
-    ];
+    const serverAlerts = activeCaseServer?.alerts;
+    const newAlerts: BankAlert[] = Array.isArray(serverAlerts) && serverAlerts.length > 0
+      ? serverAlerts.map((a: any, i: number) => ({
+          ...a,
+          alertId: a.alertId || `ALT_${cid}_${i + 1}`,
+          caseId: a.caseId || cid,
+          accountId: a.accountId || (i === 0 ? primary : (casePayload.transactions?.[i - 1]?.destination_account || primary)),
+          accountNumber: a.accountNumber || `•••• ${(a.accountId || primary).slice(-4) || '9012'}`,
+          accountHolder: a.accountHolder || (i === 0 ? `Target Mule (${primary})` : `Syndicate Layer Mule (${a.accountId || ''})`),
+          bankId: a.bankId || 'BANK05',
+          amount: typeof a.amount === 'number' ? a.amount : Number(String(a.amount || amt).replace(/[^0-9.]/g, '')),
+          amountRaw: typeof a.amountRaw === 'number' ? a.amountRaw : amt,
+          severity: (a.severity || a.riskLevel || 'CRITICAL') as any,
+          riskLevel: (a.riskLevel || a.severity || 'CRITICAL') as any,
+          riskScore: typeof a.riskScore === 'number' ? a.riskScore : topScore,
+          networkRiskScore: typeof a.networkRiskScore === 'number' ? a.networkRiskScore : topScore,
+          trigger: a.trigger || a.reason || `Urgent: Primary Mule Recipient for Case ${cid} (Victim in ${state})`,
+          reason: a.reason || a.trigger || `Urgent: Primary Mule Recipient for Case ${cid} (Victim in ${state})`,
+          signals: a.signals || [
+            `Rapid outbound movement following ₹${amt.toLocaleString()} inflow`,
+            `Target mule node in ${state} extraction corridor`,
+            `High model extraction confidence ${(topScore * 100).toFixed(1)}%`
+          ],
+          timestamp: a.timestamp || 'Just now',
+          channel: a.channel || 'IMPS / UPI',
+          status: 'OPEN',
+          recommendedAction: a.recommendedAction || 'FREEZE ACCOUNT NOW',
+          outboundCount: a.outboundCount || (casePayload.transactions || []).length || 1,
+          uniqueReceivers: a.uniqueReceivers || (casePayload.transactions || []).length || 1,
+          paymentChannels: a.paymentChannels || ['IMPS', 'UPI']
+        }))
+      : [
+          {
+            alertId: `ALT_${cid}_01`,
+            caseId: cid,
+            accountId: primary,
+            accountNumber: `•••• ${primary.slice(-4) || '9012'}`,
+            accountHolder: `Target Mule (${primary})`,
+            bankId: 'BANK05',
+            amount: amt,
+            amountRaw: amt,
+            severity: 'CRITICAL',
+            riskLevel: 'CRITICAL',
+            riskScore: topScore,
+            networkRiskScore: topScore,
+            trigger: `Urgent: Primary Mule Recipient for Case ${cid} (Victim in ${state})`,
+            reason: `Urgent: Primary Mule Recipient for Case ${cid} (Victim in ${state})`,
+            signals: [
+              `Rapid outbound movement following ₹${amt.toLocaleString()} inflow`,
+              `Target mule node in ${state} extraction corridor`,
+              `High model extraction confidence ${(topScore * 100).toFixed(1)}%`
+            ],
+            timestamp: 'Just now',
+            channel: 'IMPS / UPI',
+            status: 'OPEN',
+            recommendedAction: 'FREEZE ACCOUNT NOW',
+            outboundCount: (casePayload.transactions || []).length || 1,
+            uniqueReceivers: (casePayload.transactions || []).length || 1,
+            paymentChannels: ['IMPS', 'UPI']
+          }
+        ];
 
     const newTransactions: BankTransaction[] = (casePayload.transactions || []).map((tx: any, i: number) => ({
       transactionId: `TX_${cid}_${i + 1}`,
@@ -630,6 +664,18 @@ export const useActiveCaseStore = create<ActiveCaseState>((set, get) => ({
 
     set(nextState);
     saveState(nextState);
+
+    try {
+      useBankStore.getState().setSelectedAccountId(primary);
+      if (newAccounts && newAccounts[0]) {
+        useBankStore.setState({ selectedAccount: newAccounts[0] });
+      }
+      if (newAlerts && newAlerts[0]) {
+        useBankStore.getState().setSelectedAlert(newAlerts[0]);
+      }
+    } catch (e) {
+      console.warn('Bank store sync skipped:', e);
+    }
   },
 
   selectDemoCase: async (demoId: string) => {
@@ -656,6 +702,19 @@ export const useActiveCaseStore = create<ActiveCaseState>((set, get) => ({
         };
         set(nextState);
         saveState(nextState);
+
+        try {
+          if (res.case?.primaryMule) {
+            useBankStore.getState().setSelectedAccountId(res.case.primaryMule);
+          }
+          if (res.accounts && res.accounts[0]) {
+            useBankStore.setState({ selectedAccount: res.accounts[0] });
+          }
+          if (res.alerts && res.alerts[0]) {
+            useBankStore.getState().setSelectedAlert(res.alerts[0]);
+          }
+        } catch (e) {}
+
         return;
       }
     } catch (err) {
@@ -673,7 +732,21 @@ export const useActiveCaseStore = create<ActiveCaseState>((set, get) => ({
         return;
       }
     } catch (err2) {
-      console.error(`Failed to activate demo case ${demoId}:`, err2);
+      console.warn(`Backend demo fetch failed, trying local preset for ${demoId}:`, err2);
+    }
+
+    const preset = DEMO_CASE_PRESETS[demoId];
+    if (preset) {
+      try {
+        const result = await apiFetch<any>('/new-case', {
+          method: 'POST',
+          body: JSON.stringify(preset)
+        });
+        get().setActiveCaseFromMLResult(preset, result);
+        return;
+      } catch (err3) {
+        console.warn(`Fallback ML call for preset ${demoId} failed:`, err3);
+      }
     }
 
     set({ isLoading: false });

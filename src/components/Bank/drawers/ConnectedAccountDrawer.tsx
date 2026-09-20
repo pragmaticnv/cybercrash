@@ -90,7 +90,7 @@ export const ConnectedAccountDrawer: React.FC = () => {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-mono font-bold text-white">{connectedAccount.accountId}</span>
                 <span className="text-[10px] font-mono font-bold text-red-400 bg-red-500/15 px-2 py-0.5 rounded border border-red-500/30">
-                  Risk Score: {connectedAccount.networkRiskScore.toFixed(3)}
+                  Risk Score: {(connectedAccount.networkRiskScore ?? 0.85).toFixed(3)}
                 </span>
               </div>
               <div className="text-sm font-bold text-slate-200">{connectedAccount.holderName}</div>

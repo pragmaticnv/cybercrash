@@ -12,7 +12,7 @@ export const AccountProfile: React.FC<AccountProfileProps> = ({ account }) => {
   const navigate = useNavigate();
   const { accountActionStatus, setAccountStatus, freezeAccount, openDrawer } = useBankStore();
 
-  const currentStatus = accountActionStatus[account.accountId] || account.accountStatus;
+  const currentStatus = accountActionStatus[account.accountId] || account.accountStatus || (account as any).status || 'FLAGGED FOR REVIEW';
 
   const handleFlag = () => {
     setAccountStatus(account.accountId, 'FLAGGED FOR REVIEW');

@@ -18,6 +18,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ allowedRoles, ch
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
+  // Admin has global operational clearance across all subsystems
+  if (user.role === 'ADMIN') {
+    return children;
+  }
+
   // If authenticated but role does not match required permissions
   if (!allowedRoles.includes(user.role)) {
     return <AccessDenied requiredRoles={allowedRoles} />;

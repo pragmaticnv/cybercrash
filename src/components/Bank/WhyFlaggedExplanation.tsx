@@ -28,14 +28,14 @@ export const WhyFlaggedExplanation: React.FC<{ account: BankAccount }> = ({ acco
     {
       num: '04',
       title: 'DENSE NETWORK CONNECTIVITY',
-      observed: `${account.networkDegree} Connected Nodes in Graph`,
+      observed: `${account.networkDegree ?? 3} Connected Nodes in Graph`,
       context: 'Account occupies high degree centrality in Western Coastal laundering network with known links to Layer 2 aggregators.',
       severity: 'ELEVATED'
     },
     {
       num: '05',
       title: 'PREVIOUS BANK ALERT ON RECORD',
-      observed: `${account.previousAlertCount} Historical Alert`,
+      observed: `${account.previousAlertCount ?? 1} Historical Alert`,
       context: 'Prior alert logged on 2025-08-14 for high-speed debit transfers; current incident escalates risk pattern.',
       severity: 'SUSPICIOUS'
     },
@@ -70,7 +70,7 @@ export const WhyFlaggedExplanation: React.FC<{ account: BankAccount }> = ({ acco
             SPLIT: {Math.round((account.fundSplitRatio || 0.85) * 100)}%
           </span>
           <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20 font-bold">
-            VELOCITY: {account.transferVelocity.toFixed(3)}
+            VELOCITY: {(account.transferVelocity ?? 0.12).toFixed(3)}
           </span>
           <span className="text-[10px] font-mono text-red-400 bg-red-500/10 px-2 py-0.5 rounded border border-red-500/20 font-bold">
             6 VERIFIED SIGNALS

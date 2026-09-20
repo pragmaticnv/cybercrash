@@ -106,6 +106,61 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPorta
 
         {/* Right: Authenticated Role / RBAC Domain Indicator & Context Actions */}
         <div className="flex items-center flex-wrap gap-2">
+          {/* Quick Subsystem Switcher Pills */}
+          <div className="flex items-center bg-[#071324] p-0.5 rounded-lg border border-white/[0.1] text-[10.5px] font-mono shadow-sm">
+            <button
+              onClick={() => navigate(`/investigation/${activeCase.id || 'CASE_007001'}`)}
+              className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                isLEA
+                  ? 'bg-cyan-500/20 text-cyan-300 font-bold border border-cyan-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+              }`}
+              title="LEA Tactical Case Command"
+            >
+              <Shield className="w-3 h-3 text-cyan-400" />
+              <span>LEA</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/bank')}
+              className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                isBank
+                  ? 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+              }`}
+              title="Bank Fraud & Mule Account Operations"
+            >
+              <Building2 className="w-3 h-3 text-amber-400" />
+              <span>BANK</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/i4c')}
+              className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                isI4C
+                  ? 'bg-red-500/20 text-red-300 font-bold border border-red-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+              }`}
+              title="I4C National Command Intelligence"
+            >
+              <Radio className="w-3 h-3 text-red-400" />
+              <span>I4C</span>
+            </button>
+
+            <button
+              onClick={() => navigate('/admin')}
+              className={`px-2.5 py-1 rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                isAdmin
+                  ? 'bg-purple-500/20 text-purple-300 font-bold border border-purple-500/40 shadow-sm'
+                  : 'text-slate-400 hover:text-white hover:bg-white/[0.05]'
+              }`}
+              title="System Administration & Audit Console"
+            >
+              <Sliders className="w-3 h-3 text-purple-400" />
+              <span>ADMIN</span>
+            </button>
+          </div>
+
           {/* Active Role Console Badge (RBAC compliant) */}
           <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] font-mono text-[11px]">
             <span className="text-slate-500 uppercase">OPERATOR:</span>

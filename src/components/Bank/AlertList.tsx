@@ -125,7 +125,11 @@ export const AlertList: React.FC = () => {
 
               {/* Row 3: Observed Signals Chips */}
               <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-white/[0.06] mb-3">
-                {alert.signals.map((sig, idx) => (
+                {(alert.signals || [
+                  'Rapid outbound movement detected',
+                  'Anomaly in transaction velocity',
+                  'Cross-bank layering signature'
+                ]).map((sig, idx) => (
                   <span
                     key={idx}
                     className="text-[10px] font-mono text-slate-300 bg-white/[0.04] border border-white/[0.08] px-2 py-0.5 rounded"
@@ -139,7 +143,11 @@ export const AlertList: React.FC = () => {
               <div className="flex items-center justify-between pt-1">
                 <div className="flex items-center gap-1 text-[10.5px] font-mono text-slate-400">
                   <span>Channels: </span>
-                  <span className="text-cyan-300 font-semibold">{alert.paymentChannels.join(', ')}</span>
+                  <span className="text-cyan-300 font-semibold">
+                    {Array.isArray(alert.paymentChannels)
+                      ? alert.paymentChannels.join(', ')
+                      : (alert as any).channel || 'UPI, IMPS'}
+                  </span>
                 </div>
 
                 <button

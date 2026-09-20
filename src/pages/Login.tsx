@@ -58,14 +58,14 @@ export const Login: React.FC = () => {
       {/* Background with cinematic threat map image and overlays */}
       <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
         <img
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWw0ssm5KItr1bld2h3ZzB9vUEenfwRrzHyQNGYMh91IEKzS9YtUvGQQI2SNEj565Fk0JSXWrjpDTkpELnBNObkbvQY_TByXAEPA94D6U1gWhyIUIxTX0TKH6dfwKNdSHU5LyGvFqLZ-PG6nscXPotpJCH7wwmT36nJCFRoelYZLXogIkLM4bxi2QTlx44B2nc9tFYzB0s0DyrQ1NH1bJQjjTk_dnY6Gk8AP4t0b2vP0IlEkfr9PAB5A"
-          alt="Cyber Intelligence Center"
-          className="w-full h-full object-cover object-center scale-[1.02] brightness-90 filter"
+          src="/login-bg.png"
+          alt="Cyber Intelligence Command Center"
+          className="w-full h-full object-cover object-center scale-[1.01] brightness-[0.88] contrast-[1.06] filter"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#03070D]/95 via-[#03070D]/65 via-50% to-[#03070D]/30" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,#03070D_100%)]" />
-        <div className="absolute inset-x-0 top-0 h-36 bg-gradient-to-b from-[#03070D]/90 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#03070D] via-[#03070D]/85 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#03070D]/75 via-[#03070D]/35 to-[#03070D]/70" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_40%,#03070D_95%)]" />
+        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#03070D]/85 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-[#03070D] via-[#03070D]/80 to-transparent" />
       </div>
 
       {/* Header */}

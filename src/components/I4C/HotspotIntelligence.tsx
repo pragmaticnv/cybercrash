@@ -7,11 +7,45 @@ import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 
 export const HotspotIntelligence: React.FC = () => {
   const { openHotspotDrawer, selectedFraudType } = useI4CStore();
-  const { activeCase, prediction } = useActiveCaseStore();
+  const { activeCase, prediction, hotspots } = useActiveCaseStore();
 
   const combinedHotspots = React.useMemo(() => {
     let list = [...i4cHotspots];
-    if (activeCase && prediction) {
+
+    // If activeCase has an array of ML predicted candidate zones from the backend XGBoost model
+    if (hotspots && Array.isArray(hotspots) && hotspots.length > 0) {
+      const mlHotspots: I4CHotspot[] = hotspots.map((h: any, idx: number) => {
+        const zid = h.zone_id || h.zoneId || `ZONE_${idx + 1}`;
+        const score = typeof h.risk_score === 'number' ? Math.round(h.risk_score * 100) : (h.modelConfidence || 85);
+        return {
+          zoneId: zid,
+          city: h.zone_name || h.city || activeCase?.state || 'Candidate Sector',
+          state: activeCase?.state || 'Target Corridor',
+          stateCode: activeCase?.stateCode || 'IND',
+          lat: h.latitude || h.lat || (prediction?.centerCoordinates?.lat || 21.1702),
+          lng: h.longitude || h.lng || (prediction?.centerCoordinates?.lng || 72.8311),
+          locationRisk: idx === 0 ? 'Critical' : 'Severe',
+          dominantFraudType: activeCase?.type || 'Investment Scam',
+          modelConfidence: score,
+          estimatedWindow: h.time_window || prediction?.timeWindow || '18:00 – 21:00',
+          associatedCasesCount: 1,
+          associatedCaseIds: activeCase ? [activeCase.id] : [],
+          associatedMuleAccountsCount: 2,
+          associatedMules: activeCase?.primaryMule ? [activeCase.primaryMule] : [],
+          historicalCashOuts: h.historical_cashouts || 3,
+          atmDensity: 'Very High',
+          recentActivitySummary: (h.reasoning && h.reasoning[0]) || `XGBoost Rank #${idx + 1} candidate extraction hotspot for Case ${activeCase?.id}.`,
+          supportingFactors: h.reasoning || [
+            `XGBoost Rank #${idx + 1} Geolocation Hotspot`,
+            'High Historical Withdrawal Density',
+            'Cross-rail Rapid Fan-out Corridor'
+          ]
+        };
+      });
+
+      const dynamicIds = new Set(mlHotspots.map(h => h.zoneId));
+      list = [...mlHotspots, ...list.filter(h => !dynamicIds.has(h.zoneId))];
+    } else if (activeCase && prediction) {
       const zoneId = prediction.predictedZone || 'ZONE-ACTIVE-01';
       const city = activeCase.complaintLocation?.city || activeCase.state || 'Surat';
       const state = activeCase.complaintLocation?.state || activeCase.state || 'Gujarat';
@@ -46,7 +80,7 @@ export const HotspotIntelligence: React.FC = () => {
       list = [dynamicHotspot, ...list.filter(h => h.zoneId !== zoneId)];
     }
     return list;
-  }, [activeCase, prediction]);
+  }, [activeCase, prediction, hotspots]);
 
   const filteredHotspots = selectedFraudType
     ? combinedHotspots.filter((h) => h.dominantFraudType.toLowerCase().includes(selectedFraudType.toLowerCase()))

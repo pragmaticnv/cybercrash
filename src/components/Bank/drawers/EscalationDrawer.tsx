@@ -143,20 +143,10 @@ export const EscalationDrawer: React.FC = () => {
 
                 <div className="pt-4 flex flex-col gap-2">
                   <button
-                    onClick={() => {
-                      handleClose();
-                      navigate('/i4c');
-                    }}
-                    className="py-2.5 px-4 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/40 text-cyan-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors"
-                  >
-                    <Globe className="w-4 h-4" />
-                    <span>VIEW IN I4C NATIONAL COMMAND CENTER</span>
-                  </button>
-                  <button
                     onClick={handleClose}
-                    className="py-2 px-3 text-xs font-mono text-slate-400 hover:text-white"
+                    className="py-2.5 px-4 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 border border-emerald-500/40 text-emerald-300 text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                   >
-                    Close Window
+                    <span>TRANSMISSION CONFIRMED · CLOSE WINDOW</span>
                   </button>
                 </div>
               </div>

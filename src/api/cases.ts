@@ -2,6 +2,12 @@ import { Case } from '../types/case';
 import { MOCK_CASES } from '../data/mockCases';
 import { apiFetch } from './apiClient';
 
+export function isDemoCaseId(caseId?: string): boolean {
+  if (!caseId) return false;
+  const upper = caseId.toUpperCase().trim();
+  return upper.startsWith('LIVE_DEMO') || upper.startsWith('DEMO_') || ['1', '2', '3'].includes(upper);
+}
+
 export async function fetchCases(options?: { limit?: number; q?: string; state?: string }): Promise<Case[]> {
   try {
     const params = new URLSearchParams();
@@ -12,14 +18,14 @@ export async function fetchCases(options?: { limit?: number; q?: string; state?:
     const query = params.toString() ? `?${params.toString()}` : '';
     const data = await apiFetch<Case[]>(`/cases${query}`);
     if (Array.isArray(data) && data.length > 0) {
-      return data;
+      return data.filter((c) => !isDemoCaseId(c.id));
     }
   } catch (err) {
     console.warn('[ML Backend] Fallback used for cases list:', err);
   }
 
-  // Resilient fallback
-  return [...MOCK_CASES];
+  // Resilient fallback (operational cases only, excluding demo/training cases)
+  return MOCK_CASES.filter((c) => !isDemoCaseId(c.id));
 }
 
 export async function fetchCaseById(caseId: string): Promise<Case | null> {

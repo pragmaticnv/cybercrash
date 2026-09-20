@@ -1,12 +1,14 @@
 import React from 'react';
 import { Search, Shield, Bell, User, Lock, Activity, Plus } from 'lucide-react';
 import { useInvestigationStore } from '../../store/useInvestigationStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { useNavigate } from 'react-router-dom';
 
 import { BackendStatusBadge } from './BackendStatusBadge';
 
 export const Header: React.FC = () => {
   const { searchQuery, setSearchQuery } = useInvestigationStore();
+  const { user, logout } = useAuthStore();
   const navigate = useNavigate();
 
   return (
@@ -103,13 +105,24 @@ export const Header: React.FC = () => {
 
         {/* User Profile / Logout */}
         <div className="flex items-center gap-2 pl-2 border-l border-white/[0.08]">
+          <div className="hidden sm:flex flex-col text-right">
+            <span className="text-[11px] font-mono font-bold text-white leading-tight">
+              {user?.name || 'Sub-Insp. Amit Salve'}
+            </span>
+            <span className="text-[9.5px] font-mono text-cyan-300">
+              {user?.role || 'LEA'} · {user?.badgeNumber || 'LEA-MH-4402'}
+            </span>
+          </div>
           <div className="w-8 h-8 rounded-full bg-[#102036] border border-white/[0.12] flex items-center justify-center text-slate-300">
-            <User className="w-4 h-4" />
+            <User className="w-4 h-4 text-cyan-400" />
           </div>
           <button
-            onClick={() => navigate('/')}
-            title="Lock & Exit Workstation"
-            className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            title="Lock & Exit Workstation (Logout)"
+            className="p-1.5 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
           >
             <Lock className="w-4 h-4" />
           </button>

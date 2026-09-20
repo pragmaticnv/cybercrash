@@ -50,13 +50,10 @@ export const LinkedCasesView: React.FC<{ cases: BankLinkedCase[] }> = ({ cases }
               <span className="font-mono text-[10.5px] text-slate-500">{c.incidentDate}</span>
             </div>
 
-            <button
-              onClick={() => navigate(`/investigation/${c.caseId}`)}
-              className="w-full py-1.5 px-2.5 rounded bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/30 text-cyan-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors mt-1"
-            >
-              <span>OPEN FULL LEA INVESTIGATION DOSSIER</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </button>
+            <div className="w-full py-1.5 px-2.5 rounded bg-[#040A14] border border-white/[0.08] text-slate-400 text-xs font-mono flex items-center justify-between mt-1">
+              <span className="text-[10.5px]">NCRP CASE RECORD:</span>
+              <span className="text-cyan-300 font-bold">{c.caseId}</span>
+            </div>
           </div>
         ))}
       </div>

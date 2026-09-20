@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Shield, User, Lock, Activity, ArrowRight, ExternalLink, Globe2 } from 'lucide-react';
 import { useI4CStore } from '../../store/useI4CStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { i4cSearchDatabase } from '../../data/i4cMockData';
 import { I4CSearchResult } from '../../types/i4c';
 
 export const I4CHeader: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
   const {
     searchQuery,
     setSearchQuery,
@@ -171,16 +173,6 @@ export const I4CHeader: React.FC = () => {
 
       {/* Right: I4C Identity & Controls */}
       <div className="flex items-center gap-3">
-        {/* Switch to LEA Portal link for quick multi-agency transition */}
-        <button
-          onClick={() => navigate('/cases')}
-          title="Open LEA Case Command Portal"
-          className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] hover:bg-cyan-500/10 border border-white/[0.08] hover:border-cyan-500/30 text-[11px] font-mono text-slate-300 hover:text-cyan-300 transition-colors"
-        >
-          <Globe2 className="w-3 h-3 text-cyan-400" />
-          <span>LEA PORTAL</span>
-        </button>
-
         {/* I4C INTELLIGENCE Pill */}
         <div className="flex items-center gap-2 px-3 py-1 rounded-md bg-[#0F1B2F] border border-cyan-500/30 text-xs text-cyan-300 shadow-[0_0_12px_rgba(56,189,248,0.15)]">
           <Shield className="w-3.5 h-3.5 text-cyan-400" />
@@ -198,13 +190,24 @@ export const I4CHeader: React.FC = () => {
 
         {/* Officer Profile & Exit */}
         <div className="flex items-center gap-2 pl-2 border-l border-white/[0.08]">
-          <div className="w-7 h-7 rounded-full bg-[#0E1E34] border border-white/[0.12] flex items-center justify-center text-slate-300">
+          <div className="hidden sm:flex flex-col text-right">
+            <span className="text-[11px] font-mono font-bold text-white leading-tight">
+              {user?.name || 'Dr. Sunita Deshmukh'}
+            </span>
+            <span className="text-[9.5px] font-mono text-red-300">
+              {user?.role || 'I4C'} · {user?.badgeNumber || 'I4C-NAT-1008'}
+            </span>
+          </div>
+          <div className="w-7 h-7 rounded-full bg-[#0E1E34] border border-white/[0.12] flex items-center justify-center text-red-400">
             <User className="w-3.5 h-3.5" />
           </div>
           <button
-            onClick={() => navigate('/')}
-            title="Lock & Exit I4C Terminal"
-            className="p-1.5 text-slate-400 hover:text-red-400 transition-colors"
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            title="Lock & Exit I4C Terminal (Logout)"
+            className="p-1.5 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
           >
             <Lock className="w-3.5 h-3.5" />
           </button>

@@ -1,14 +1,44 @@
 import React from 'react';
 import { INITIAL_AUDIT_EVENTS, AuditEventItem } from '../../data/adminDemoData';
 import { ScrollText, ShieldAlert, ArrowRight, Terminal } from 'lucide-react';
+import { useBankStore } from '../../store/useBankStore';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 
 interface AuditTrailProps {
   onOpenFullAudit: () => void;
 }
 
 export const AuditTrail: React.FC<AuditTrailProps> = ({ onOpenFullAudit }) => {
-  // Show top 4 in summary card
-  const displayEvents = INITIAL_AUDIT_EVENTS.slice(0, 4);
+  const { bankAuditEvents } = useBankStore();
+  const { activeCase } = useActiveCaseStore();
+
+  const displayEvents = React.useMemo(() => {
+    const dynamicEvents: AuditEventItem[] = (bankAuditEvents || []).map((b) => ({
+      id: b.id,
+      timestamp: b.timestamp,
+      userId: b.operator,
+      target: b.accountId,
+      action: b.action,
+      severity: 'SECURITY',
+      ipAddress: '10.244.12.89',
+      agency: 'BANK_FRAUD_DESK'
+    }));
+
+    if (activeCase) {
+      dynamicEvents.unshift({
+        id: `AUDIT_CASE_${activeCase.id}`,
+        timestamp: 'Just now',
+        userId: 'LEA_OFFICER_01',
+        target: `CASE ${activeCase.id}`,
+        action: `ACTIVE_INTEL_DISPATCH (${activeCase.state})`,
+        severity: 'NOTICE',
+        ipAddress: '10.244.8.14',
+        agency: 'LEA_CYBER_CELL'
+      });
+    }
+
+    return [...dynamicEvents, ...INITIAL_AUDIT_EVENTS].slice(0, 4);
+  }, [bankAuditEvents, activeCase]);
 
   return (
     <div className="rounded-2xl bg-[rgba(10,16,25,0.75)] border border-white/[0.08] p-5 backdrop-blur-md flex flex-col justify-between hover:border-white/[0.12] transition-all">

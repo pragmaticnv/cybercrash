@@ -5,6 +5,7 @@ import {
   AdminCaseItem 
 } from '../../data/adminDemoData';
 import { useActiveCaseStore } from '../../store/useActiveCaseStore';
+import { isDemoCaseId } from '../../api/cases';
 import { 
   FolderLock, 
   AlertCircle, 
@@ -28,8 +29,9 @@ export const CaseControl: React.FC<CaseControlProps> = ({
   const { activeCase, prediction } = useActiveCaseStore();
 
   const combinedCases = React.useMemo(() => {
-    let list: AdminCaseItem[] = [...RECENT_CASE_STREAM];
-    if (activeCase) {
+    // Exclude live demo cases from operational admin queue
+    let list: AdminCaseItem[] = RECENT_CASE_STREAM.filter(c => !isDemoCaseId(c.id));
+    if (activeCase && !isDemoCaseId(activeCase.id)) {
       const dynamicCase: AdminCaseItem = {
         id: activeCase.id,
         fraudType: activeCase.type || 'Investment Scam',
@@ -38,7 +40,7 @@ export const CaseControl: React.FC<CaseControlProps> = ({
         reportedAmount: activeCase.amount || '₹1,50,000',
         state: activeCase.state || 'Goa',
         currentStatus: 'ACTIVE',
-        createdTime: 'Just now (LIVE DEMO)',
+        createdTime: 'Just now',
         predictionStatus: `ML Zone: ${prediction?.predictedZone || 'GA_Z05'} (${Math.round((prediction?.confidenceScore || 0.88) * 100)}%)`,
         predictedZone: prediction?.predictedZone || 'GA_Z05',
         confidence: `${Math.round((prediction?.confidenceScore || 0.88) * 100)}%`,

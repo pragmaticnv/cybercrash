@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Shield, Flag, PauseCircle, Send, ExternalLink, FileEdit, CheckCircle2, AlertCircle } from 'lucide-react';
+import { Shield, Flag, PauseCircle, Send, ExternalLink, FileEdit, CheckCircle2, AlertCircle, Lock } from 'lucide-react';
 import { BankAccount } from '../../types/bank';
 import { useBankStore } from '../../store/useBankStore';
 
@@ -10,7 +10,7 @@ interface AccountProfileProps {
 
 export const AccountProfile: React.FC<AccountProfileProps> = ({ account }) => {
   const navigate = useNavigate();
-  const { accountActionStatus, setAccountStatus, openDrawer } = useBankStore();
+  const { accountActionStatus, setAccountStatus, freezeAccount, openDrawer } = useBankStore();
 
   const currentStatus = accountActionStatus[account.accountId] || account.accountStatus;
 
@@ -20,6 +20,10 @@ export const AccountProfile: React.FC<AccountProfileProps> = ({ account }) => {
 
   const handleHold = () => {
     setAccountStatus(account.accountId, 'REVIEW HOLD ACTIVE');
+  };
+
+  const handleFreeze = () => {
+    freezeAccount(account.accountId, 'Direct ML Mule Correlation & Excessive Transfer Velocity');
   };
 
   return (
@@ -63,21 +67,35 @@ export const AccountProfile: React.FC<AccountProfileProps> = ({ account }) => {
         <div className="flex flex-wrap items-center gap-2 font-mono text-[11px] sm:pl-4 sm:border-l sm:border-white/[0.08]">
           <div className="px-2.5 py-1 rounded bg-[#060D1A] border border-white/[0.06]">
             <span className="text-slate-400">AGE: </span>
-            <span className="text-white font-bold">{account.accountAgeDays} DAYS</span>
+            <span className="text-white font-bold">{account.accountAgeDays ?? 45} DAYS</span>
           </div>
           <div className="px-2.5 py-1 rounded bg-[#060D1A] border border-white/[0.06]">
             <span className="text-slate-400">PREVIOUS ALERTS: </span>
-            <span className="text-amber-300 font-bold">{account.previousAlertCount}</span>
+            <span className="text-amber-300 font-bold">{account.previousAlertCount ?? 0}</span>
           </div>
           <div className="px-2.5 py-1 rounded bg-[#060D1A] border border-white/[0.06]">
             <span className="text-slate-400">NETWORK RISK: </span>
-            <span className="text-red-400 font-bold">{account.networkRiskScore.toFixed(3)}</span>
+            <span className="text-red-400 font-bold">{(account.networkRiskScore ?? 0.85).toFixed(3)}</span>
           </div>
         </div>
       </div>
 
       {/* Operational Action Bar */}
       <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={handleFreeze}
+          disabled={currentStatus.includes('FROZEN')}
+          title="Place Emergency Compliance Freeze under I4C SOP"
+          className={`py-1.5 px-3 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all shadow-md cursor-pointer ${
+            currentStatus.includes('FROZEN')
+              ? 'bg-red-950/80 border border-red-500/50 text-red-300 opacity-90 cursor-not-allowed'
+              : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 border border-red-500 text-white animate-pulse'
+          }`}
+        >
+          <Lock className="w-3.5 h-3.5 text-white" />
+          <span>{currentStatus.includes('FROZEN') ? 'LIEN PLACED (FROZEN)' : 'FREEZE ACCOUNT'}</span>
+        </button>
+
         <button
           onClick={handleFlag}
           title="Flag Account for Compliance Review"
@@ -114,14 +132,10 @@ export const AccountProfile: React.FC<AccountProfileProps> = ({ account }) => {
         </button>
 
         {account.linkedCaseId && (
-          <button
-            onClick={() => navigate(`/investigation/${account.linkedCaseId}`)}
-            title="Inspect in LEA Case Command"
-            className="py-1.5 px-3 rounded-lg bg-cyan-500/15 hover:bg-cyan-500/25 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300 flex items-center gap-1.5 transition-colors"
-          >
-            <span>VIEW LEA CASE</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </button>
+          <div className="py-1.5 px-3 rounded-lg bg-cyan-950/40 border border-cyan-500/30 text-xs font-mono font-bold text-cyan-300 flex items-center gap-1.5">
+            <span className="text-slate-400 text-[10.5px]">LINKED LEA INCIDENT:</span>
+            <span>{account.linkedCaseId}</span>
+          </div>
         )}
       </div>
     </div>

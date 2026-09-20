@@ -75,6 +75,11 @@ export const SuspiciousTransactions: React.FC = () => {
                         DEMO CASE
                       </span>
                     )}
+                    {tx.hop && (
+                      <span className="text-[9px] font-mono font-bold text-purple-300 bg-purple-500/20 px-1.5 py-0.2 rounded border border-purple-500/40">
+                        HOP {tx.hop} {tx.hop === 1 ? '(PRIMARY INFLOW)' : tx.hop === 2 ? '(LAYER MULE)' : '(EXTRACTION)'}
+                      </span>
+                    )}
                     <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-white/[0.06] text-slate-300">
                       {tx.channel}
                     </span>
@@ -103,9 +108,18 @@ export const SuspiciousTransactions: React.FC = () => {
                       isCredit ? 'text-cyan-300' : 'text-red-400'
                     }`}
                   >
-                    {isCredit ? '+' : '-'}₹{tx.amount.toLocaleString()}
+                    {isCredit ? '+' : '-'}₹
+                    {typeof tx.amount === 'number'
+                      ? tx.amount.toLocaleString()
+                      : Number(String(tx.amount || 0).replace(/[^0-9.-]+/g, '')).toLocaleString()}
                   </div>
-                  <div className="text-[10px] font-mono text-slate-500">{tx.timestamp.split(' ')[1]}</div>
+                  <div className="text-[10px] font-mono text-slate-500">
+                    {tx.timestamp
+                      ? tx.timestamp.includes('T')
+                        ? tx.timestamp.split('T')[1]?.split('.')[0]
+                        : tx.timestamp.split(' ')[1] || tx.timestamp
+                      : '--'}
+                  </div>
                 </div>
                 <ChevronRight className="w-4 h-4 text-slate-600 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
               </div>

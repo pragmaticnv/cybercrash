@@ -57,7 +57,9 @@ export const TransactionDrawer: React.FC = () => {
               <div>
                 <div className="text-[10px] font-mono text-slate-400 uppercase">TRANSACTION AMOUNT</div>
                 <div className="text-2xl font-mono font-bold text-white mt-0.5">
-                  ₹{selectedTransaction.amount.toLocaleString()}
+                  ₹{typeof selectedTransaction.amount === 'number'
+                    ? selectedTransaction.amount.toLocaleString()
+                    : Number(String(selectedTransaction.amount || 0).replace(/[^0-9.-]+/g, '')).toLocaleString()}
                 </div>
               </div>
               <span
@@ -138,15 +140,12 @@ export const TransactionDrawer: React.FC = () => {
               </div>
             )}
 
-            {/* Linked Case Button */}
+            {/* Linked Case Reference */}
             {selectedTransaction.caseId && (
-              <button
-                onClick={() => navigate(`/investigation/${selectedTransaction.caseId}`)}
-                className="w-full py-2.5 px-3 rounded-lg bg-cyan-600/20 hover:bg-cyan-600/40 border border-cyan-500/30 text-cyan-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors"
-              >
-                <span>OPEN LINKED LEA INVESTIGATION ({selectedTransaction.caseId})</span>
-                <ExternalLink className="w-3.5 h-3.5" />
-              </button>
+              <div className="w-full py-2 px-3 rounded-lg bg-[#040A14] border border-white/[0.08] text-xs font-mono flex items-center justify-between">
+                <span className="text-slate-400">LINKED LEA INCIDENT REF:</span>
+                <span className="text-cyan-300 font-bold">{selectedTransaction.caseId}</span>
+              </div>
             )}
           </div>
         </motion.div>

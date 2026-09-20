@@ -83,7 +83,7 @@ export const AlertList: React.FC = () => {
                         : 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40'
                     }`}
                   >
-                    {alert.severity} RISK
+                    {alert.severity || (alert as any).riskLevel || 'HIGH'} RISK
                   </span>
                   {isActiveMule && (
                     <span className="text-[9px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/40 animate-pulse">
@@ -93,21 +93,23 @@ export const AlertList: React.FC = () => {
                   <span className="text-xs font-mono font-bold text-white tracking-wider">
                     {alert.accountId}
                   </span>
-                  <span className="text-[11px] text-slate-400">({alert.accountHolder})</span>
+                  <span className="text-[11px] text-slate-400">
+                    ({alert.accountHolder || (alert as any).holderName || 'Target Mule'})
+                  </span>
                 </div>
 
-                <span className="text-[10.5px] font-mono text-slate-400">{alert.timestamp}</span>
+                <span className="text-[10.5px] font-mono text-slate-400">{alert.timestamp || 'Just now'}</span>
               </div>
 
               {/* Row 2: Reason & Outbound Exposure */}
               <div className="flex items-start justify-between gap-3 mb-2.5">
                 <div>
                   <div className="text-xs font-semibold text-white leading-snug">
-                    {alert.reason}
+                    {alert.reason || (alert as any).trigger || 'Immediate compliance review required'}
                   </div>
                   {alert.amount && (
                     <div className="text-[11px] font-mono text-red-400 font-bold mt-0.5">
-                      Outbound Volume: ₹{alert.amount.toLocaleString()}
+                      Outbound Volume: ₹{typeof alert.amount === 'number' ? alert.amount.toLocaleString() : String(alert.amount).replace('₹', '')}
                     </div>
                   )}
                 </div>
@@ -116,7 +118,7 @@ export const AlertList: React.FC = () => {
                 <div className="text-right flex-shrink-0 font-mono">
                   <div className="text-[9.5px] text-slate-400">NETWORK RISK</div>
                   <div className="text-xs font-bold text-amber-400">
-                    {alert.networkRiskScore.toFixed(3)}
+                    {(alert.networkRiskScore ?? (alert as any).riskScore ?? 0.85).toFixed(3)}
                   </div>
                 </div>
               </div>

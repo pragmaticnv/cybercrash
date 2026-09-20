@@ -23,22 +23,44 @@ import { i4cNationalSummary } from '../data/i4cMockData';
 import { ActiveCaseBanner } from '../components/Common/ActiveCaseBanner';
 import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, Crosshair, ArrowRight, ExternalLink, Building2 } from 'lucide-react';
+import { apiFetch } from '../api/apiClient';
 
 export const I4CCommand: React.FC = () => {
   const navigate = useNavigate();
   const { closeDrawer, activeDrawer } = useI4CStore();
   const { activeCase, prediction } = useActiveCaseStore();
+  const [liveSummary, setLiveSummary] = React.useState<any>(null);
 
-  // Dynamic summary factoring in active demo case
+  useEffect(() => {
+    let isMounted = true;
+    apiFetch<any>('/i4c/summary')
+      .then((data) => {
+        if (isMounted && data) {
+          setLiveSummary(data);
+        }
+      })
+      .catch(() => {
+        // Fallback to synchronized mock
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Dynamic summary factoring in live backend API and active demo case
   const dynamicSummary = React.useMemo(() => {
+    const base = liveSummary || i4cNationalSummary;
+    const baseCases = base.activeCases || base.totalCases || i4cNationalSummary.activeCases;
     const rawCr = (342.8 + (activeCase.amountRaw / 10000000)).toFixed(1);
     return {
       ...i4cNationalSummary,
-      activeCases: i4cNationalSummary.activeCases + 1,
+      activeCases: typeof baseCases === 'number' ? baseCases + 1 : i4cNationalSummary.activeCases + 1,
       fraudExposure: `₹${rawCr} Cr`,
-      lastUpdated: `Live Sync · Case ${activeCase.id} Verified`
+      muleNetworks: base.muleNetworks || base.totalMuleAccounts || i4cNationalSummary.muleNetworks,
+      predictedHotspots: base.predictedHotspots || base.activeHotspots || i4cNationalSummary.predictedHotspots,
+      lastUpdated: `Live Sync · Case ${activeCase.id} (${activeCase.state}) Verified`
     };
-  }, [activeCase]);
+  }, [liveSummary, activeCase]);
 
   // Handle Escape key to close active drawer
   useEffect(() => {
@@ -86,18 +108,13 @@ export const I4CCommand: React.FC = () => {
 
           <div className="flex items-center gap-2 shrink-0">
             <button
-              onClick={() => navigate(`/investigation/${activeCase.id}`)}
-              className="flex items-center gap-1.5 px-3 py-1 rounded bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-mono text-[11px] font-bold transition-all cursor-pointer"
-            >
-              <span>INSPECT CASE DOSSIER</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
-            <button
-              onClick={() => navigate('/bank')}
+              onClick={() => {
+                alert(`[I4C PROTOCOL 1930] Interstate Interception order dispatched to Member Banks. Target Mule Account: ${activeCase.primaryMule}`);
+              }}
               className="flex items-center gap-1.5 px-3 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-mono text-[11px] font-bold transition-all cursor-pointer"
             >
               <Building2 className="w-3 h-3" />
-              <span>ALERT BANK OPS</span>
+              <span>DISPATCH INTERCEPT TO BANKS</span>
             </button>
           </div>
         </div>

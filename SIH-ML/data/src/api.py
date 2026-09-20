@@ -605,6 +605,12 @@ def format_case_record(row: pd.Series) -> dict:
         }
     }
 
+def is_demo_case_id(case_id: Optional[str]) -> bool:
+    if not case_id:
+        return False
+    cid = str(case_id).strip().upper()
+    return cid.startswith("LIVE_DEMO") or cid.startswith("DEMO_") or cid in {"1", "2", "3"}
+
 @app.get("/api/cases")
 def list_cases(
     limit: int = Query(50, ge=1, le=500),
@@ -637,9 +643,11 @@ def list_cases(
         
     records = [format_case_record(row) for _, row in df.head(limit).iterrows()]
     
-    # Prepend dynamic and active cases
+    # Prepend dynamic operational cases only (excluding benchmark / training demo cases)
     dynamic_items = []
     for cid, dcase in reversed(list(DYNAMIC_CASES_MAP.items())):
+        if is_demo_case_id(cid) or is_demo_case_id(dcase.get("id")):
+            continue
         matches_q = True
         if q:
             qs = q.strip().lower()
@@ -655,12 +663,17 @@ def list_cases(
             dynamic_items.append(dcase)
             
     if CURRENT_ACTIVE_CASE:
-        act = CURRENT_ACTIVE_CASE["case"]
-        if act["id"] not in [d["id"] for d in dynamic_items]:
-            dynamic_items.insert(0, act)
+        act = CURRENT_ACTIVE_CASE.get("case", {})
+        act_id = act.get("id", "")
+        if act_id and not is_demo_case_id(act_id):
+            if act_id not in [d["id"] for d in dynamic_items]:
+                dynamic_items.insert(0, act)
             
     dynamic_ids = set(d["id"] for d in dynamic_items)
-    filtered_existing = [r for r in records if r["id"] not in dynamic_ids]
+    filtered_existing = [
+        r for r in records 
+        if r["id"] not in dynamic_ids and not is_demo_case_id(r.get("id"))
+    ]
     return dynamic_items + filtered_existing
 
 @app.get("/api/cases/{case_id}")
@@ -670,6 +683,10 @@ def get_case(case_id: str):
         return DYNAMIC_CASES_MAP[cid]
     if CURRENT_ACTIVE_CASE and CURRENT_ACTIVE_CASE.get("case", {}).get("id", "").upper() == cid:
         return CURRENT_ACTIVE_CASE["case"]
+    if cid in DEMO_CASES:
+        act = activate_demo_case(cid)
+        if act and "case" in act:
+            return act["case"]
     matches = CASES_DF[CASES_DF["case_id"].str.upper() == cid]
     if matches.empty:
         raise HTTPException(status_code=404, detail=f"Case {case_id} not found")
@@ -1239,6 +1256,159 @@ def get_i4c_intelligence():
             "actionRequired": "Coordinated Interstate Interception Order"
         })
     return alerts
+
+@app.get("/api/i4c/map")
+@app.get("/i4c/map")
+def get_i4c_map_data():
+    states = get_i4c_states()
+    hotspots = get_i4c_hotspots()
+    flows = get_i4c_flows()
+    return {
+        "status": "ok",
+        "service": "I4C-National-Map-Engine",
+        "states": states,
+        "hotspots": hotspots,
+        "flows": flows,
+        "activeCase": CURRENT_ACTIVE_CASE.get("case") if CURRENT_ACTIVE_CASE else None
+    }
+
+@app.get("/api/i4c/hotspots")
+@app.get("/i4c/hotspots")
+def get_i4c_hotspots():
+    results = []
+    if CURRENT_ACTIVE_CASE and CURRENT_ACTIVE_CASE.get("hotspots"):
+        cid = CURRENT_ACTIVE_CASE["case"]["id"]
+        c_state = CURRENT_ACTIVE_CASE["case"]["state"]
+        c_sc = CURRENT_ACTIVE_CASE["case"]["stateCode"]
+        c_mule = CURRENT_ACTIVE_CASE["case"]["primaryMule"]
+        c_type = CURRENT_ACTIVE_CASE["case"]["type"]
+        for idx, h in enumerate(CURRENT_ACTIVE_CASE["hotspots"][:5]):
+            coords = h.get("zone_coordinates", {})
+            results.append({
+                "zoneId": h.get("zone_id", f"{c_sc}_Z0{idx+1}"),
+                "city": h.get("zone_name", f"{c_state} Cashout Corridor"),
+                "state": c_state,
+                "stateCode": c_sc,
+                "lat": float(h.get("latitude") or coords.get("latitude") or 15.5925),
+                "lng": float(h.get("longitude") or coords.get("longitude") or 73.8135),
+                "locationRisk": "Critical" if idx == 0 else "Severe",
+                "dominantFraudType": c_type,
+                "modelConfidence": round(float(h.get("risk_score", 0.95)) * 100, 1),
+                "estimatedWindow": "18:00 – 21:00",
+                "associatedCasesCount": 1,
+                "associatedCaseIds": [cid],
+                "associatedMuleAccountsCount": 3,
+                "associatedMules": [c_mule],
+                "historicalCashOuts": 4 + idx,
+                "atmDensity": "Very High",
+                "recentActivitySummary": f"Active high-probability cash extraction corridor for {cid}.",
+                "supportingFactors": [
+                    "Target Mule Proximity Vector",
+                    "Inter-State Rapid Outbound Relay",
+                    "High Density Commercial ATM Cluster"
+                ]
+            })
+
+    # Add baseline model zones from ZONES_DF
+    top_zones = ZONES_DF.head(8)
+    for idx, (_, z) in enumerate(top_zones.iterrows()):
+        zid = str(z["zone_id"])
+        if any(r["zoneId"] == zid for r in results):
+            continue
+        sc = str(z.get("state_code", "GA"))
+        loc = STATE_COORDINATES.get(sc, {"lat": 15.4909, "lng": 73.8278, "city": "Target Sector", "state": "Goa"})
+        results.append({
+            "zoneId": zid,
+            "city": str(z.get("zone_name", f"{loc['city']} Terminal Hub")),
+            "state": str(loc.get("state", "National Corridor")),
+            "stateCode": sc,
+            "lat": float(z.get("latitude") or loc["lat"]),
+            "lng": float(z.get("longitude") or loc["lng"]),
+            "locationRisk": "High",
+            "dominantFraudType": "UPI / Investment Scam",
+            "modelConfidence": round(84.0 + (hash(zid) % 120) * 0.1, 1),
+            "estimatedWindow": "18:00 – 21:00",
+            "associatedCasesCount": max(2, idx + 1),
+            "associatedCaseIds": [f"CASE_007{idx:03d}"],
+            "associatedMuleAccountsCount": max(1, idx),
+            "associatedMules": [f"ACC_013{idx:03d}"],
+            "historicalCashOuts": 6 + idx,
+            "atmDensity": "High",
+            "recentActivitySummary": "Baseline surveillance zone monitored by National Cyber Registry.",
+            "supportingFactors": [
+                "Clustered ATM Infrastructure",
+                "Historical Syndicate Corridor"
+            ]
+        })
+    return results
+
+@app.get("/api/i4c/flows")
+@app.get("/i4c/flows")
+def get_i4c_flows():
+    flows = [
+        {
+            "id": "flow-1",
+            "fromState": "Goa",
+            "fromCoords": [15.2993, 74.1240],
+            "toState": "Karnataka",
+            "toCoords": [15.3173, 75.7139],
+            "amount": "₹34.8L",
+            "txCount": 42,
+            "networkId": "N-017",
+            "color": "#EF4444"
+        },
+        {
+            "id": "flow-2",
+            "fromState": "Karnataka",
+            "fromCoords": [15.3173, 75.7139],
+            "toState": "Maharashtra",
+            "toCoords": [19.7515, 75.7139],
+            "amount": "₹28.4L",
+            "txCount": 36,
+            "networkId": "N-017",
+            "color": "#F59E0B"
+        },
+        {
+            "id": "flow-3",
+            "fromState": "Punjab",
+            "fromCoords": [31.1471, 75.3412],
+            "toState": "Delhi",
+            "toCoords": [28.7041, 77.1025],
+            "amount": "₹42.1L",
+            "txCount": 58,
+            "networkId": "N-009",
+            "color": "#38BDF8"
+        },
+        {
+            "id": "flow-4",
+            "fromState": "Tamil Nadu",
+            "fromCoords": [11.1271, 78.6569],
+            "toState": "Karnataka",
+            "toCoords": [15.3173, 75.7139],
+            "amount": "₹21.5L",
+            "txCount": 29,
+            "networkId": "N-024",
+            "color": "#10B981"
+        }
+    ]
+    if CURRENT_ACTIVE_CASE and CURRENT_ACTIVE_CASE.get("prediction"):
+        pred = CURRENT_ACTIVE_CASE["prediction"]
+        coords = pred.get("centerCoordinates", {})
+        c_state = CURRENT_ACTIVE_CASE["case"].get("state", "Goa")
+        sc = CURRENT_ACTIVE_CASE["case"].get("stateCode", "GA")
+        origin_loc = STATE_COORDINATES.get(sc, {"lat": 15.4909, "lng": 73.8278})
+        flows.insert(0, {
+            "id": f"active-case-flow-{CURRENT_ACTIVE_CASE['case']['id']}",
+            "fromState": c_state,
+            "fromCoords": [origin_loc["lat"], origin_loc["lng"]],
+            "toState": pred.get("clusterName", f"Zone {pred.get('predictedZone')}"),
+            "toCoords": [coords.get("lat", 15.5925), coords.get("lng", 73.8135)],
+            "amount": CURRENT_ACTIVE_CASE["case"].get("amount", "₹1,50,000"),
+            "txCount": len(CURRENT_ACTIVE_CASE.get("transactions", [])) or 3,
+            "networkId": "NET-LIVE-SYNC",
+            "color": "#EF4444"
+        })
+    return flows
 
 # ============================================================
 # BANK SECURITY OPERATIONS ENDPOINTS

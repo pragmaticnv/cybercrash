@@ -1,6 +1,7 @@
 import React from 'react';
 import { Shield, ShieldAlert, LogOut, Cpu, Database, Radio } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../store/useAuthStore';
 
 interface AdminTopBarProps {
   onOpenSystemStatus?: () => void;
@@ -8,8 +9,10 @@ interface AdminTopBarProps {
 
 export const AdminTopBar: React.FC<AdminTopBarProps> = ({ onOpenSystemStatus }) => {
   const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
 
   const handleLogout = () => {
+    logout();
     navigate('/login');
   };
 
@@ -103,13 +106,15 @@ export const AdminTopBar: React.FC<AdminTopBarProps> = ({ onOpenSystemStatus }) 
           </div>
           <div className="flex flex-col text-left">
             <div className="flex items-center gap-1.5">
-              <span className="text-[12px] font-semibold text-white tracking-wide">admin_demo</span>
+              <span className="text-[12px] font-semibold text-white tracking-wide">
+                {user?.username || 'admin_sec'}
+              </span>
               <span className="px-1.5 py-0.2 rounded bg-red-500/20 text-[#FF4D58] border border-red-500/30 text-[8.5px] font-mono font-bold tracking-wider uppercase">
-                ADMIN ACCESS
+                {user?.role || 'ADMIN'} ACCESS
               </span>
             </div>
             <span className="text-[9.5px] font-mono text-[#94A3B8] tracking-widest uppercase">
-              ADMINISTRATOR
+              {user?.name || 'Rajesh Varma'}
             </span>
           </div>
         </div>

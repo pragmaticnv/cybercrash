@@ -9,6 +9,8 @@ import { ArrowRight, Crosshair, ShieldAlert, Sparkles, Navigation, Globe, Eye } 
 import { GOOGLE_MAP_TILE_URLS } from '../../config/maps';
 import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 
+import { apiFetch } from '../../api/apiClient';
+
 function getComplaintCoords(location?: any): [number, number] {
   if (!location) return [15.4989, 73.8278];
   if (typeof location === 'object' && location.lat && location.lng) {
@@ -24,8 +26,19 @@ function getComplaintCoords(location?: any): [number, number] {
   return [15.4989, 73.8278];
 }
 
+// Controller to smoothly pan/zoom to the active extraction corridor
+const ActiveCorridorController: React.FC<{ focusTarget: [number, number] | null }> = ({ focusTarget }) => {
+  const map = useMap();
+  useEffect(() => {
+    if (focusTarget) {
+      map.flyTo(focusTarget, 6, { animate: true, duration: 1.2 });
+    }
+  }, [focusTarget, map]);
+  return null;
+};
+
 // Subcomponent to project SVG curved bezier flow lines directly on top of Leaflet
-const CrossStateFlowOverlay: React.FC = () => {
+const CrossStateFlowOverlay: React.FC<{ liveFlows?: any[] }> = ({ liveFlows }) => {
   const map = useMap();
   const [, setTick] = useState(0);
   const { activeMapLayers, openNetworkById } = useI4CStore();
@@ -43,7 +56,8 @@ const CrossStateFlowOverlay: React.FC = () => {
 
   if (!activeMapLayers.includes('network_flows')) return null;
 
-  const combinedFlows = [...i4cStateFlows];
+  const baseFlows = liveFlows && liveFlows.length > 0 ? liveFlows : i4cStateFlows;
+  const combinedFlows = [...baseFlows];
   if (activeCase && prediction?.centerCoordinates) {
     const from = getComplaintCoords(activeCase.complaintLocation);
     const to: [number, number] = [
@@ -134,15 +148,41 @@ export const NationalMap: React.FC = () => {
   } = useI4CStore();
   const { activeCase, prediction } = useActiveCaseStore();
 
-  const [baseTheme, setBaseTheme] = useState<'tactical' | 'satellite' | 'roadmap'>('tactical');
+  const [baseTheme, setBaseTheme] = useState<'carto' | 'tactical' | 'satellite' | 'roadmap'>('carto');
+  const [focusTarget, setFocusTarget] = useState<[number, number] | null>(null);
+  const [liveMapData, setLiveMapData] = useState<{
+    states?: I4CStateSummary[];
+    hotspots?: I4CHotspot[];
+    flows?: any[];
+  } | null>(null);
+  const [mapApiOnline, setMapApiOnline] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    apiFetch<any>('/i4c/map')
+      .then((data) => {
+        if (isMounted && data) {
+          setLiveMapData(data);
+          setMapApiOnline(true);
+        }
+      })
+      .catch(() => {
+        // Fallback to local intelligence data
+      });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const activeStates = liveMapData?.states || i4cStatesData;
 
   // Filter states if a fraud type filter is active
   const filteredStates = selectedFraudType
-    ? i4cStatesData.filter((s) => s.topFraudType === selectedFraudType || s.fraudBreakdown.some((b) => b.type === selectedFraudType))
-    : i4cStatesData;
+    ? activeStates.filter((s) => s.topFraudType === selectedFraudType || s.fraudBreakdown.some((b) => b.type === selectedFraudType))
+    : activeStates;
 
   const combinedHotspots = React.useMemo(() => {
-    let list = [...i4cHotspots];
+    let list = [...(liveMapData?.hotspots || i4cHotspots)];
     if (activeCase && prediction?.centerCoordinates) {
       const zoneId = prediction.predictedZone || 'GA_Z05';
       const city = activeCase.complaintLocation?.city || activeCase.state || 'Panaji';
@@ -195,8 +235,18 @@ export const NationalMap: React.FC = () => {
           </span>
         </div>
 
-        {/* Google Maps Theme Switcher Pills */}
+        {/* Base Map Switcher Pills */}
         <div className="flex items-center bg-[#030712] p-0.5 rounded-md border border-white/[0.08] text-[10px] font-mono font-semibold">
+          <button
+            onClick={() => setBaseTheme('carto')}
+            className={`px-2 py-0.5 rounded transition-all ${
+              baseTheme === 'carto'
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            CartoDB Dark
+          </button>
           <button
             onClick={() => setBaseTheme('tactical')}
             className={`px-2 py-0.5 rounded transition-all ${
@@ -229,6 +279,28 @@ export const NationalMap: React.FC = () => {
           </button>
         </div>
 
+        {/* Map API Status Badge */}
+        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-emerald-950/40 border border-emerald-500/30 text-emerald-400 text-[10px] font-mono">
+          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          <span>{mapApiOnline ? 'MAP API: CONNECTED (FASTAPI)' : 'MAP ENGINE: ONLINE (HD)'}</span>
+        </div>
+
+        {activeCase && (
+          <button
+            onClick={() => {
+              if (prediction?.centerCoordinates?.lat && prediction?.centerCoordinates?.lng) {
+                setFocusTarget([prediction.centerCoordinates.lat, prediction.centerCoordinates.lng]);
+              } else {
+                setFocusTarget(getComplaintCoords(activeCase.complaintLocation));
+              }
+            }}
+            className="flex items-center gap-1 px-2 py-0.5 rounded bg-red-500/20 text-red-300 border border-red-500/40 hover:bg-red-500/30 text-[10px] font-mono cursor-pointer transition-all"
+          >
+            <Crosshair className="w-3 h-3 text-red-400 animate-pulse" />
+            <span>FOCUS {activeCase.id} CORRIDOR</span>
+          </button>
+        )}
+
         {selectedFraudType && (
           <span className="text-[10px] font-mono bg-cyan-500/20 text-cyan-300 px-2 py-0.5 rounded border border-cyan-500/30">
             FILTER: {selectedFraudType}
@@ -249,7 +321,8 @@ export const NationalMap: React.FC = () => {
           className="w-full h-full"
           attributionControl={false}
         >
-          {/* Google Maps Base Tile Layer Powered by User API Key */}
+          {focusTarget && <ActiveCorridorController focusTarget={focusTarget} />}
+          {/* Base Tile Layer */}
           <TileLayer
             key={baseTheme}
             url={
@@ -257,15 +330,18 @@ export const NationalMap: React.FC = () => {
                 ? GOOGLE_MAP_TILE_URLS.satellite
                 : baseTheme === 'roadmap'
                 ? GOOGLE_MAP_TILE_URLS.roadmap
-                : GOOGLE_MAP_TILE_URLS.tacticalDark
+                : baseTheme === 'tactical'
+                ? GOOGLE_MAP_TILE_URLS.tacticalDark
+                : GOOGLE_MAP_TILE_URLS.cartoDark
             }
+            subdomains={['a', 'b', 'c', 'd']}
             className={baseTheme === 'tactical' ? 'tactical-dark-tiles' : ''}
             maxZoom={20}
-            attribution="&copy; Google Maps"
+            attribution="&copy; OpenStreetMap &copy; CartoDB"
           />
 
           {/* D3/SVG Flow Overlay for Cross-State Suspicious Fund Movements */}
-          <CrossStateFlowOverlay />
+          <CrossStateFlowOverlay liveFlows={liveMapData?.flows} />
 
           {/* State Intelligence Nodes */}
           {activeMapLayers.includes('fraud_activity') &&

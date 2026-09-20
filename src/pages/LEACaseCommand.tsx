@@ -4,7 +4,7 @@ import { Header } from '../components/Common/Header';
 import { ActiveCaseBanner } from '../components/Common/ActiveCaseBanner';
 import { StatsBar } from '../components/CaseCommand/StatsBar';
 import { CaseList } from '../components/CaseCommand/CaseList';
-import { fetchCases } from '../api/cases';
+import { fetchCases, isDemoCaseId } from '../api/cases';
 import { Case } from '../types/case';
 import { useInvestigationStore } from '../store/useInvestigationStore';
 import { useActiveCaseStore } from '../store/useActiveCaseStore';
@@ -32,10 +32,12 @@ export const LEACaseCommand: React.FC = () => {
     navigate(`/investigation/${caseId}`);
   };
 
-  // Combine fetched cases with the live active demo case at the top
-  const combinedCases = useMemo(() => {
-    const list = [...cases];
-    if (activeCase) {
+  // Exclude live demo cases from the active cybercrime cases list
+  // as they are test cases checked for model training and benchmark evaluations.
+  // Genuine newly created operational cases will still appear.
+  const operationalCases = useMemo(() => {
+    const list = cases.filter((c) => !isDemoCaseId(c.id));
+    if (activeCase && !isDemoCaseId(activeCase.id)) {
       const existingIdx = list.findIndex((c) => c.id.toUpperCase() === activeCase.id.toUpperCase());
       if (existingIdx >= 0) {
         list.splice(existingIdx, 1);
@@ -47,9 +49,9 @@ export const LEACaseCommand: React.FC = () => {
 
   // Filter cases by search query (supports Case ID, Primary Mule, Account ID, Type, State)
   const filteredCases = useMemo(() => {
-    if (!searchQuery.trim()) return combinedCases;
+    if (!searchQuery.trim()) return operationalCases;
     const q = searchQuery.toLowerCase().trim();
-    return combinedCases.filter(
+    return operationalCases.filter(
       (c) =>
         c.id.toLowerCase().includes(q) ||
         c.primaryMule.toLowerCase().includes(q) ||
@@ -58,7 +60,7 @@ export const LEACaseCommand: React.FC = () => {
         c.victim.name.toLowerCase().includes(q) ||
         (c.victim.utr && c.victim.utr.toLowerCase().includes(q))
     );
-  }, [combinedCases, searchQuery]);
+  }, [operationalCases, searchQuery]);
 
   return (
     <div className="min-h-screen bg-[#02060D] text-white flex flex-col font-sans">
@@ -105,7 +107,7 @@ export const LEACaseCommand: React.FC = () => {
 
         {/* Operational Statistics Bar */}
         <StatsBar
-          totalActive={14}
+          totalActive={operationalCases.length || 14}
           newCases={3}
           inProgress={8}
           criticalAttention={3}

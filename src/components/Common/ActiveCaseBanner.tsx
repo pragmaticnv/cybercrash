@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useActiveCaseStore } from '../../store/useActiveCaseStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { 
   FolderCheck, 
   Sparkles, 
@@ -22,6 +23,7 @@ interface ActiveCaseBannerProps {
 export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPortal }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuthStore();
   const { 
     activeCase, 
     prediction, 
@@ -102,77 +104,51 @@ export const ActiveCaseBanner: React.FC<ActiveCaseBannerProps> = ({ currentPorta
           </div>
         </div>
 
-        {/* Right: 4 Portal Direct Jump Buttons + Intake Action */}
+        {/* Right: Authenticated Role / RBAC Domain Indicator & Context Actions */}
         <div className="flex items-center flex-wrap gap-2">
-          <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider hidden lg:inline mr-1">
-            ALL 4 INTERFACES SYNCED:
-          </span>
+          {/* Active Role Console Badge (RBAC compliant) */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] font-mono text-[11px]">
+            <span className="text-slate-500 uppercase">OPERATOR:</span>
+            <span className="text-white font-bold">{user?.name || (isLEA ? 'Amit Salve' : isBank ? 'Varun Grover' : isI4C ? 'Sunita Deshmukh' : 'Rajesh Varma')}</span>
+            <span className="text-slate-600">|</span>
+            <span className="text-slate-500 uppercase">ROLE:</span>
+            {isLEA && (
+              <span className="text-cyan-300 font-bold flex items-center gap-1">
+                <Shield className="w-3 h-3 text-cyan-400" />
+                LEA INVESTIGATOR
+              </span>
+            )}
+            {isI4C && (
+              <span className="text-red-300 font-bold flex items-center gap-1">
+                <Radio className="w-3 h-3 text-red-400" />
+                I4C THREAT INTELLIGENCE
+              </span>
+            )}
+            {isBank && (
+              <span className="text-amber-300 font-bold flex items-center gap-1">
+                <Building2 className="w-3 h-3 text-amber-400" />
+                BANK FRAUD DESK
+              </span>
+            )}
+            {isAdmin && (
+              <span className="text-purple-300 font-bold flex items-center gap-1">
+                <Sliders className="w-3 h-3 text-purple-400" />
+                SYSTEM ADMINISTRATOR
+              </span>
+            )}
+          </div>
 
-          {/* Portal 1: LEA Officer */}
-          <button
-            onClick={() => navigate(currentPath.startsWith('/investigation') ? `/investigation/${activeCase.id}` : '/cases')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono text-[11px] font-semibold transition-all border ${
-              isLEA
-                ? 'bg-cyan-500/20 text-cyan-300 border-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)]'
-                : 'bg-white/[0.03] text-slate-300 hover:text-white border-white/[0.08] hover:border-cyan-500/40'
-            }`}
-            title="LEA Officer Case Command & Spatial Investigation"
-          >
-            <Shield className="w-3 h-3 text-cyan-400" />
-            <span>LEA OFFICER</span>
-          </button>
-
-          {/* Portal 2: I4C National Command */}
-          <button
-            onClick={() => navigate('/i4c')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono text-[11px] font-semibold transition-all border ${
-              isI4C
-                ? 'bg-red-500/20 text-red-300 border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.3)]'
-                : 'bg-white/[0.03] text-slate-300 hover:text-white border-white/[0.08] hover:border-red-500/40'
-            }`}
-            title="I4C National Cybercrime Intelligence Command Center"
-          >
-            <Radio className="w-3 h-3 text-red-400" />
-            <span>I4C NATIONAL</span>
-          </button>
-
-          {/* Portal 3: Banks Security */}
-          <button
-            onClick={() => navigate('/bank')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono text-[11px] font-semibold transition-all border ${
-              isBank
-                ? 'bg-amber-500/20 text-amber-300 border-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)]'
-                : 'bg-white/[0.03] text-slate-300 hover:text-white border-white/[0.08] hover:border-amber-500/40'
-            }`}
-            title="Bank Security & Fraud Operations Workstation"
-          >
-            <Building2 className="w-3 h-3 text-amber-400" />
-            <span>BANKS</span>
-          </button>
-
-          {/* Portal 4: Admin Control */}
-          <button
-            onClick={() => navigate('/admin')}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono text-[11px] font-semibold transition-all border ${
-              isAdmin
-                ? 'bg-purple-500/20 text-purple-300 border-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.3)]'
-                : 'bg-white/[0.03] text-slate-300 hover:text-white border-white/[0.08] hover:border-purple-500/40'
-            }`}
-            title="Admin Platform Control & Multi-Agency Coordination"
-          >
-            <Sliders className="w-3 h-3 text-purple-400" />
-            <span>ADMIN</span>
-          </button>
-
-          {/* New Case Intake Action */}
-          <button
-            onClick={() => navigate(`/investigation/${activeCase.id}?newCase=true`)}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-[10.5px] font-bold tracking-wider uppercase border border-cyan-400/40 shadow-[0_0_10px_rgba(6,182,212,0.25)] ml-1"
-            title="Open New Case Intake Form"
-          >
-            <Plus className="w-3 h-3 stroke-[2.5]" />
-            <span>+ INTAKE CASE</span>
-          </button>
+          {/* New Case Intake Action (Only accessible in LEA console) */}
+          {isLEA && (
+            <button
+              onClick={() => navigate(`/investigation/${activeCase.id}?newCase=true`)}
+              className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-[10.5px] font-bold tracking-wider uppercase border border-cyan-400/40 shadow-[0_0_10px_rgba(6,182,212,0.25)] ml-1 cursor-pointer"
+              title="Open New Case Intake Form"
+            >
+              <Plus className="w-3 h-3 stroke-[2.5]" />
+              <span>+ INTAKE CASE</span>
+            </button>
+          )}
         </div>
 
       </div>

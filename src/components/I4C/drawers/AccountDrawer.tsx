@@ -86,27 +86,18 @@ export const AccountDrawer: React.FC = () => {
 
             <div className="p-4 rounded-xl bg-[#040914] border border-white/[0.08]">
               <div className="text-xs font-mono font-bold text-slate-300 uppercase tracking-wider mb-2">
-                PRIMARY INVESTIGATION CASE
+                PRIMARY INVESTIGATION CASE REF
               </div>
-              <div
-                onClick={() => navigate('/investigation/CASE_007001')}
-                className="p-2.5 rounded-lg bg-[#081220] hover:bg-[#0C1A30] border border-cyan-500/30 cursor-pointer flex items-center justify-between transition-colors"
-              >
+              <div className="p-2.5 rounded-lg bg-[#081220] border border-cyan-500/30 flex items-center justify-between">
                 <div>
                   <div className="text-xs font-mono font-bold text-cyan-300">CASE_007001</div>
                   <div className="text-[11px] text-slate-400">Investment Scam · Goa Cyber Crime Cell</div>
                 </div>
-                <ExternalLink className="w-4 h-4 text-cyan-400" />
+                <span className="text-[10px] font-mono text-cyan-400 px-2 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20">
+                  NCRP LINKED
+                </span>
               </div>
             </div>
-
-            <button
-              onClick={() => navigate('/investigation/CASE_007001')}
-              className="w-full py-2.5 px-3 rounded-lg bg-cyan-600/30 hover:bg-cyan-600/50 border border-cyan-500/40 text-cyan-200 text-xs font-mono font-bold flex items-center justify-center gap-1.5 transition-colors"
-            >
-              <span>OPEN FULL LEA INVESTIGATION DOSSIER</span>
-              <ExternalLink className="w-3.5 h-3.5" />
-            </button>
           </div>
         </motion.div>
       </div>

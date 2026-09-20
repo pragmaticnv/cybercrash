@@ -11,6 +11,7 @@ import { PredictionCard } from '../components/Intelligence/PredictionCard';
 import { PredictionEvidence } from '../components/Intelligence/PredictionEvidence';
 import { HistoricalLinksCard } from '../components/Intelligence/HistoricalLinksCard';
 import { MoneyFlowGraph } from '../components/MoneyFlow/MoneyFlowGraph';
+import { LocationReasoningDossier } from '../components/Investigation/LocationReasoningDossier';
 import { AccountDrawer } from '../components/Drawers/AccountDrawer';
 import { TransactionDrawer } from '../components/Drawers/TransactionDrawer';
 import { HistoricalCaseModal } from '../components/Drawers/HistoricalCaseModal';
@@ -369,6 +370,15 @@ export const CaseInvestigation: React.FC = () => {
                   networkData={networkData || undefined}
                 />
               </div>
+
+              {/* 3. Detailed Spatial-Temporal Location Reasoning & PDF Export (Fills the space below money flow) */}
+              <LocationReasoningDossier
+                caseData={caseData}
+                prediction={prediction}
+                primaryMule={primaryMule}
+                transactions={transactions}
+                modelReasoning={modelReasoning || undefined}
+              />
             </div>
 
             {/* Right (4 cols): CASE INTELLIGENCE DOSSIER */}

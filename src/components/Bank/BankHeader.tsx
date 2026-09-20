@@ -2,11 +2,13 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, ShieldAlert, Building2, User, Lock, Activity, Globe, Scale } from 'lucide-react';
 import { useBankStore } from '../../store/useBankStore';
+import { useAuthStore } from '../../store/useAuthStore';
 import { BANK_ACCOUNTS } from '../../data/bank/bankAccounts';
 import { BANK_TRANSACTIONS } from '../../data/bank/bankTransactions';
 
 export const BankHeader: React.FC = () => {
   const navigate = useNavigate();
+  const { user, logout } = useAuthStore();
   const { searchQuery, setSearchQuery, setSelectedAccountId, setSelectedTransaction, openDrawer } = useBankStore();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -139,7 +141,7 @@ export const BankHeader: React.FC = () => {
                         <div className="text-[11px] text-slate-400">{acc.holderName} · {acc.bankName}</div>
                       </div>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-400">Risk: {acc.networkRiskScore.toFixed(3)}</span>
+                    <span className="text-[10px] font-mono text-slate-400">Risk: {(acc.networkRiskScore ?? 0.85).toFixed(3)}</span>
                   </div>
                 ))}
                 {matchedTx.map((tx) => (
@@ -172,28 +174,8 @@ export const BankHeader: React.FC = () => {
         )}
       </div>
 
-      {/* Right: Operational Status & Multi-Agency Portals */}
+      {/* Right: Operational Status & Security Telemetry */}
       <div className="flex items-center gap-2.5">
-        {/* Switch to I4C / LEA Portals */}
-        <div className="hidden xl:flex items-center gap-1.5 bg-white/[0.03] p-1 rounded-lg border border-white/[0.08]">
-          <button
-            onClick={() => navigate('/i4c')}
-            title="Open I4C National Command Center"
-            className="flex items-center gap-1 px-2 py-1 rounded text-[10.5px] font-mono text-slate-300 hover:text-cyan-300 hover:bg-white/[0.06] transition-colors"
-          >
-            <Globe className="w-3 h-3 text-cyan-400" />
-            <span>I4C NATIONAL</span>
-          </button>
-          <button
-            onClick={() => navigate('/cases')}
-            title="Open LEA Case Command"
-            className="flex items-center gap-1 px-2 py-1 rounded text-[10.5px] font-mono text-slate-300 hover:text-red-300 hover:bg-white/[0.06] transition-colors"
-          >
-            <Scale className="w-3 h-3 text-red-400" />
-            <span>LEA CASES</span>
-          </button>
-        </div>
-
         {/* Bank Operational Status Badge */}
         <div className="flex items-center gap-2 px-2.5 py-1 rounded-md bg-emerald-950/50 border border-emerald-500/30 text-emerald-400 text-xs">
           <span className="relative flex h-2 w-2">
@@ -212,14 +194,25 @@ export const BankHeader: React.FC = () => {
         </div>
 
         {/* User / Exit */}
-        <div className="flex items-center gap-1.5 pl-1.5 border-l border-white/[0.08]">
-          <div className="w-7 h-7 rounded-full bg-[#102036] border border-white/[0.12] flex items-center justify-center text-slate-300">
+        <div className="flex items-center gap-2 pl-2 border-l border-white/[0.08]">
+          <div className="hidden sm:flex flex-col text-right">
+            <span className="text-[11px] font-mono font-bold text-white leading-tight">
+              {user?.name || 'Varun Grover'}
+            </span>
+            <span className="text-[9.5px] font-mono text-amber-300">
+              {user?.role || 'BANK'} · {user?.agency || 'HDFC Unit'}
+            </span>
+          </div>
+          <div className="w-7 h-7 rounded-full bg-[#102036] border border-white/[0.12] flex items-center justify-center text-amber-400">
             <User className="w-3.5 h-3.5" />
           </div>
           <button
-            onClick={() => navigate('/')}
-            title="Lock & Exit Workstation"
-            className="p-1 text-slate-400 hover:text-red-400 transition-colors"
+            onClick={() => {
+              logout();
+              navigate('/login');
+            }}
+            title="Lock & Exit Workstation (Logout)"
+            className="p-1 text-slate-400 hover:text-red-400 transition-colors cursor-pointer"
           >
             <Lock className="w-3.5 h-3.5" />
           </button>

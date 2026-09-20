@@ -7,36 +7,118 @@ import { I4CCommand } from './pages/I4CCommand';
 import { AdminDashboard } from './pages/AdminDashboard';
 import { BankHome } from './pages/BankHome';
 import { BankAccountInvestigation } from './pages/BankAccountInvestigation';
+import { AccessDenied } from './pages/AccessDenied';
+import { ProtectedRoute } from './components/Auth/ProtectedRoute';
+import { useAuthStore } from './store/useAuthStore';
+
+// Root / Catch-all redirect component based on authentication state
+const RootRedirect: React.FC = () => {
+  const { user, isAuthenticated } = useAuthStore();
+  if (isAuthenticated && user?.authorizedDashboard) {
+    return <Navigate to={user.authorizedDashboard} replace />;
+  }
+  return <Navigate to="/login" replace />;
+};
 
 export const App: React.FC = () => {
   return (
     <HashRouter>
       <Routes>
-        {/* Route 1: Login Gateway */}
-        <Route path="/" element={<Login />} />
+        {/* Public Gateway */}
+        <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/access-denied" element={<AccessDenied />} />
 
-        {/* Route 2: LEA Case Command (Landing page for officers - NO map, NO money-flow) */}
-        <Route path="/cases" element={<LEACaseCommand />} />
-        <Route path="/command" element={<LEACaseCommand />} />
+        {/* 1. LEA Interface (Protected: role = LEA) */}
+        <Route
+          path="/lea"
+          element={
+            <ProtectedRoute allowedRoles={['LEA']}>
+              <LEACaseCommand />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/cases"
+          element={
+            <ProtectedRoute allowedRoles={['LEA']}>
+              <LEACaseCommand />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/command"
+          element={
+            <ProtectedRoute allowedRoles={['LEA']}>
+              <LEACaseCommand />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/investigation/:caseId"
+          element={
+            <ProtectedRoute allowedRoles={['LEA']}>
+              <CaseInvestigation />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Route 3: Case Investigation Workspace (Map + Dossier + React Flow Money Flow) */}
-        <Route path="/investigation/:caseId" element={<CaseInvestigation />} />
+        {/* 2. Bank Operations Interface (Protected: role = BANK) */}
+        <Route
+          path="/bank"
+          element={
+            <ProtectedRoute allowedRoles={['BANK']}>
+              <BankHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bank/security"
+          element={
+            <ProtectedRoute allowedRoles={['BANK']}>
+              <BankHome />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/bank/account/:accountId"
+          element={
+            <ProtectedRoute allowedRoles={['BANK']}>
+              <BankAccountInvestigation />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Route 4: I4C National Intelligence Command Center */}
-        <Route path="/i4c" element={<I4CCommand />} />
-        <Route path="/i4c/intelligence" element={<I4CCommand />} />
+        {/* 3. I4C National Command Interface (Protected: role = I4C) */}
+        <Route
+          path="/i4c"
+          element={
+            <ProtectedRoute allowedRoles={['I4C']}>
+              <I4CCommand />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/i4c/intelligence"
+          element={
+            <ProtectedRoute allowedRoles={['I4C']}>
+              <I4CCommand />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Route 5: Admin Demo Workspace */}
-        <Route path="/admin" element={<AdminDashboard />} />
+        {/* 4. Admin Management Interface (Protected: role = ADMIN) */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* Route 6: Bank Security & Fraud Operations Workstation */}
-        <Route path="/bank" element={<BankHome />} />
-        <Route path="/bank/security" element={<BankHome />} />
-        <Route path="/bank/account/:accountId" element={<BankAccountInvestigation />} />
-
-        {/* Catch-all fallback */}
-        <Route path="*" element={<Navigate to="/cases" replace />} />
+        {/* Catch-all Fallback */}
+        <Route path="*" element={<RootRedirect />} />
       </Routes>
     </HashRouter>
   );

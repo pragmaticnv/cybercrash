@@ -53,6 +53,7 @@ export interface BankTransaction {
   channel: BankChannel;
   transactionDirection: 'CREDIT' | 'DEBIT';
   caseId?: string;
+  hop?: number;
   status: 'COMPLETED' | 'FLAGGED' | 'HELD';
   riskLabel?: string;
   isSuspicious: boolean;

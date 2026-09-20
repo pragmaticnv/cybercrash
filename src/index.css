@@ -122,6 +122,16 @@ body {
   }
 }
 
+@keyframes flowDash {
+  0% {
+    stroke-dashoffset: 44;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+
 .tactical-i4c-popup .leaflet-popup-content-wrapper {
   background: rgba(7, 14, 26, 0.96) !important;
   border: 1px solid rgba(56, 189, 248, 0.3) !important;

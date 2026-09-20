@@ -37,6 +37,16 @@ const ActiveCorridorController: React.FC<{ focusTarget: [number, number] | null 
   return null;
 };
 
+// Helper to select matching arrowhead marker ID based on flow color
+const getFlowArrowId = (color: string) => {
+  const c = color.toLowerCase();
+  if (c.includes('ef4444') || c.includes('red')) return 'flowArrowRed';
+  if (c.includes('f59e0b') || c.includes('amber')) return 'flowArrowAmber';
+  if (c.includes('ec4899') || c.includes('pink')) return 'flowArrowPink';
+  if (c.includes('10b981') || c.includes('emerald') || c.includes('green')) return 'flowArrowEmerald';
+  return 'flowArrowCyan';
+};
+
 // Subcomponent to project SVG curved bezier flow lines directly on top of Leaflet
 const CrossStateFlowOverlay: React.FC<{ liveFlows?: any[] }> = ({ liveFlows }) => {
   const map = useMap();
@@ -83,55 +93,126 @@ const CrossStateFlowOverlay: React.FC<{ liveFlows?: any[] }> = ({ liveFlows }) =
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none z-[450]">
       <defs>
-        <linearGradient id="flowRedGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#EF4444" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#F59E0B" stopOpacity="0.9" />
-        </linearGradient>
-        <linearGradient id="flowCyanGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#10B981" stopOpacity="0.9" />
-        </linearGradient>
+        {/* Directional Arrowheads for each flow color */}
+        <marker id="flowArrowRed" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#EF4444" />
+        </marker>
+        <marker id="flowArrowAmber" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#F59E0B" />
+        </marker>
+        <marker id="flowArrowCyan" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#38BDF8" />
+        </marker>
+        <marker id="flowArrowPink" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#EC4899" />
+        </marker>
+        <marker id="flowArrowEmerald" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#10B981" />
+        </marker>
       </defs>
 
       {combinedFlows.map((flow) => {
         const p1 = map.latLngToContainerPoint(L.latLng(flow.fromCoords[0], flow.fromCoords[1]));
         const p2 = map.latLngToContainerPoint(L.latLng(flow.toCoords[0], flow.toCoords[1]));
 
+        const dx = p2.x - p1.x;
+        const dy = p2.y - p1.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < 10) return null;
+
         // Calculate a gentle perpendicular curve midpoint
         const midX = (p1.x + p2.x) / 2;
         const midY = (p1.y + p2.y) / 2;
-        const dx = p2.x - p1.x;
-        const dy = p2.y - p1.y;
-        const normalX = -dy * 0.22;
-        const normalY = dx * 0.22;
+        const curvature = 0.20;
+        const normalX = -dy * curvature;
+        const normalY = dx * curvature;
         const ctrlX = midX + normalX;
         const ctrlY = midY + normalY;
 
         const pathData = `M ${p1.x} ${p1.y} Q ${ctrlX} ${ctrlY} ${p2.x} ${p2.y}`;
+        const arrowMarkerId = getFlowArrowId(flow.color);
 
         return (
-          <g key={flow.id} className="cursor-pointer pointer-events-auto" onClick={() => openNetworkById(flow.networkId)}>
-            {/* Ambient Glow */}
+          <g 
+            key={flow.id} 
+            className="cursor-pointer pointer-events-auto group" 
+            onClick={() => openNetworkById(flow.networkId)}
+          >
+            <title>{`${flow.fromState} → ${flow.toState}: ${flow.amount} (${flow.txCount} transactions)`}</title>
+
+            {/* 1. Ambient Glow underneath */}
             <path
               d={pathData}
               fill="none"
               stroke={flow.color}
               strokeWidth="6"
-              strokeOpacity="0.2"
+              strokeOpacity="0.18"
               className="filter blur-[3px]"
             />
-            {/* Animated dashed trajectory line */}
+
+            {/* 2. Solid Clearly Connected Continuous Arc with Directional Arrowhead */}
             <path
               d={pathData}
               fill="none"
               stroke={flow.color}
               strokeWidth="2.2"
-              strokeDasharray="6 6"
-              className="animate-[dash_1.5s_linear_infinite]"
+              strokeOpacity="0.55"
+              strokeLinecap="round"
+              markerEnd={`url(#${arrowMarkerId})`}
             />
-            {/* Pulsing Start & End Points */}
+
+            {/* 3. Smooth Moving Dash Stream */}
+            <path
+              d={pathData}
+              fill="none"
+              stroke="#FFFFFF"
+              strokeWidth="2"
+              strokeDasharray="10 24"
+              strokeLinecap="round"
+              strokeOpacity="0.85"
+              className="animate-[flowDash_2.2s_linear_infinite]"
+            />
+
+            {/* 4. Real-time Animated Particle Gliding Across State Flow */}
+            <circle r="3.2" fill="#FFFFFF" opacity="0.95">
+              <animateMotion dur="2.4s" repeatCount="indefinite" path={pathData} />
+            </circle>
+            <circle r="2" fill={flow.color} opacity="0.8">
+              <animateMotion dur="2.4s" begin="0.15s" repeatCount="indefinite" path={pathData} />
+            </circle>
+
+            {/* 5. Origin Node Point (Source) */}
             <circle cx={p1.x} cy={p1.y} r="3.5" fill={flow.color} />
-            <circle cx={p2.x} cy={p2.y} r="3.5" fill={flow.color} />
+            <circle cx={p1.x} cy={p1.y} r="6" fill="none" stroke={flow.color} strokeWidth="1" strokeOpacity="0.7" />
+
+            {/* 6. Destination Node Point (Sink / Target) */}
+            <circle cx={p2.x} cy={p2.y} r="4" fill={flow.color} />
+            <circle cx={p2.x} cy={p2.y} r="8" fill="none" stroke={flow.color} strokeWidth="1" strokeOpacity="0.6" strokeDasharray="2 2" />
+
+            {/* 7. Midpoint Tactical Amount Badge */}
+            <g transform={`translate(${midX + normalX * 0.45}, ${midY + normalY * 0.45})`} className="transition-transform group-hover:scale-110">
+              <rect
+                x="-22"
+                y="-8"
+                width="44"
+                height="16"
+                rx="8"
+                fill="#040914"
+                stroke={flow.color}
+                strokeWidth="1"
+                strokeOpacity="0.9"
+              />
+              <text
+                textAnchor="middle"
+                y="3.5"
+                fill="#F8FAFC"
+                fontSize="9"
+                fontFamily="ui-monospace, monospace"
+                fontWeight="bold"
+              >
+                {flow.amount}
+              </text>
+            </g>
           </g>
         );
       })}
@@ -343,10 +424,10 @@ export const NationalMap: React.FC = () => {
           {/* D3/SVG Flow Overlay for Cross-State Suspicious Fund Movements */}
           <CrossStateFlowOverlay liveFlows={liveMapData?.flows} />
 
-          {/* State Intelligence Nodes */}
+          {/* State Intelligence Nodes - Compact Tactical Sizing */}
           {activeMapLayers.includes('fraud_activity') &&
             filteredStates.map((state) => {
-              const radius = Math.max(16, Math.min(32, Math.sqrt(state.activeCases) * 0.7));
+              const radius = Math.max(6, Math.min(11, Math.round(Math.sqrt(state.activeCases) * 0.22)));
               const isCritical = state.riskLevel === 'CRITICAL';
               const color = isCritical ? '#EF4444' : state.riskLevel === 'HIGH' ? '#F59E0B' : '#38BDF8';
 
@@ -357,9 +438,9 @@ export const NationalMap: React.FC = () => {
                   radius={radius}
                   pathOptions={{
                     color: color,
-                    weight: 2,
+                    weight: 1.5,
                     fillColor: color,
-                    fillOpacity: 0.25
+                    fillOpacity: 0.45
                   }}
                   eventHandlers={{
                     click: () => openStateDrawer(state)
@@ -408,19 +489,18 @@ export const NationalMap: React.FC = () => {
               );
             })}
 
-          {/* Predicted Cash-Out Hotspots: Highlighted Pulsing Rings */}
+          {/* Predicted Cash-Out Hotspots: Compact Tactical Nodes */}
           {activeMapLayers.includes('predicted_hotspots') &&
             filteredHotspots.map((hotspot) => (
               <CircleMarker
                 key={hotspot.zoneId}
                 center={[hotspot.lat, hotspot.lng]}
-                radius={18}
+                radius={7.5}
                 pathOptions={{
                   color: '#EF4444',
-                  weight: 2.5,
-                  dashArray: '3, 4',
-                  fillColor: '#FF2A3A',
-                  fillOpacity: 0.45
+                  weight: 2,
+                  fillColor: '#EF4444',
+                  fillOpacity: 0.8
                 }}
                 eventHandlers={{
                   click: () => openHotspotDrawer(hotspot)

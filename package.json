@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3000 --host",
+    "backend": "powershell -Command \".\\SIH-ML\\.venv\\Scripts\\python.exe -m uvicorn api:app --app-dir SIH-ML/data/src --host 127.0.0.1 --port 8000 --reload\"",
     "build": "tsc && vite build",
     "preview": "vite preview --port 3000"
   },

@@ -1,18 +1,21 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '../components/Common/Header';
+import { ActiveCaseBanner } from '../components/Common/ActiveCaseBanner';
 import { StatsBar } from '../components/CaseCommand/StatsBar';
 import { CaseList } from '../components/CaseCommand/CaseList';
 import { fetchCases } from '../api/cases';
 import { Case } from '../types/case';
 import { useInvestigationStore } from '../store/useInvestigationStore';
-import { Shield, Filter, RefreshCw, FolderSearch } from 'lucide-react';
+import { useActiveCaseStore } from '../store/useActiveCaseStore';
+import { Shield, Filter, RefreshCw, FolderSearch, Plus } from 'lucide-react';
 
 export const LEACaseCommand: React.FC = () => {
   const [cases, setCases] = useState<Case[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { searchQuery, setSelectedCaseId } = useInvestigationStore();
+  const { activeCase } = useActiveCaseStore();
 
   useEffect(() => {
     async function loadData() {
@@ -29,11 +32,24 @@ export const LEACaseCommand: React.FC = () => {
     navigate(`/investigation/${caseId}`);
   };
 
+  // Combine fetched cases with the live active demo case at the top
+  const combinedCases = useMemo(() => {
+    const list = [...cases];
+    if (activeCase) {
+      const existingIdx = list.findIndex((c) => c.id.toUpperCase() === activeCase.id.toUpperCase());
+      if (existingIdx >= 0) {
+        list.splice(existingIdx, 1);
+      }
+      list.unshift(activeCase);
+    }
+    return list;
+  }, [cases, activeCase]);
+
   // Filter cases by search query (supports Case ID, Primary Mule, Account ID, Type, State)
   const filteredCases = useMemo(() => {
-    if (!searchQuery.trim()) return cases;
+    if (!searchQuery.trim()) return combinedCases;
     const q = searchQuery.toLowerCase().trim();
-    return cases.filter(
+    return combinedCases.filter(
       (c) =>
         c.id.toLowerCase().includes(q) ||
         c.primaryMule.toLowerCase().includes(q) ||
@@ -42,12 +58,15 @@ export const LEACaseCommand: React.FC = () => {
         c.victim.name.toLowerCase().includes(q) ||
         (c.victim.utr && c.victim.utr.toLowerCase().includes(q))
     );
-  }, [cases, searchQuery]);
+  }, [combinedCases, searchQuery]);
 
   return (
     <div className="min-h-screen bg-[#02060D] text-white flex flex-col font-sans">
       {/* 1. Header */}
       <Header />
+
+      {/* 1.5 Active Demo Case & Multi-Agency Synchronizer */}
+      <ActiveCaseBanner />
 
       {/* 2. Main Case Command Workspace */}
       <main className="flex-1 max-w-[1536px] w-full mx-auto px-4 lg:px-8 py-6 space-y-6">
@@ -68,7 +87,16 @@ export const LEACaseCommand: React.FC = () => {
             </p>
           </div>
 
-          <div className="flex items-center gap-2 text-xs">
+          <div className="flex items-center gap-3 text-xs">
+            <button
+              onClick={() => navigate('/investigation/CASE_007001?newCase=true')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(6,182,212,0.3)] transition-all cursor-pointer border border-cyan-400/40"
+              title="Open New Case Intake Workflow"
+            >
+              <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+              <span>INTAKE NEW CASE</span>
+            </button>
+
             <span className="font-mono text-slate-400 text-[11px]">
               Showing <strong className="text-white">{filteredCases.length}</strong> active dossiers
             </span>

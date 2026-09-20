@@ -18,10 +18,27 @@ import { AccountDrawer } from '../components/I4C/drawers/AccountDrawer';
 import { IntelligenceDrawer } from '../components/I4C/drawers/IntelligenceDrawer';
 
 import { useI4CStore } from '../store/useI4CStore';
+import { useActiveCaseStore } from '../store/useActiveCaseStore';
 import { i4cNationalSummary } from '../data/i4cMockData';
+import { ActiveCaseBanner } from '../components/Common/ActiveCaseBanner';
+import { useNavigate } from 'react-router-dom';
+import { ShieldAlert, Crosshair, ArrowRight, ExternalLink, Building2 } from 'lucide-react';
 
 export const I4CCommand: React.FC = () => {
+  const navigate = useNavigate();
   const { closeDrawer, activeDrawer } = useI4CStore();
+  const { activeCase, prediction } = useActiveCaseStore();
+
+  // Dynamic summary factoring in active demo case
+  const dynamicSummary = React.useMemo(() => {
+    const rawCr = (342.8 + (activeCase.amountRaw / 10000000)).toFixed(1);
+    return {
+      ...i4cNationalSummary,
+      activeCases: i4cNationalSummary.activeCases + 1,
+      fraudExposure: `₹${rawCr} Cr`,
+      lastUpdated: `Live Sync · Case ${activeCase.id} Verified`
+    };
+  }, [activeCase]);
 
   // Handle Escape key to close active drawer
   useEffect(() => {
@@ -39,8 +56,52 @@ export const I4CCommand: React.FC = () => {
       {/* 1. Global CYBERCRASH Header for I4C */}
       <I4CHeader />
 
+      {/* 1.5 Active Demo Case & Multi-Agency Synchronizer */}
+      <ActiveCaseBanner />
+
       {/* 2. National Intelligence Summary Metric Strip */}
-      <NationalSummary summary={i4cNationalSummary} />
+      <NationalSummary summary={dynamicSummary} />
+
+      {/* Active Demo Case National Interception Order Strip */}
+      <div className="w-full bg-[#120508] border-b border-red-500/40 px-4 lg:px-8 py-2.5">
+        <div className="max-w-[1720px] mx-auto flex flex-col md:flex-row md:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1 rounded bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse">
+              <ShieldAlert className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-red-400 font-bold uppercase tracking-wider text-[11px]">
+                  🚨 ACTIVE INTERSTATE INTERCEPTION ORDER
+                </span>
+                <span className="px-1.5 py-0.2 rounded bg-red-950 text-red-300 font-mono text-[10px] border border-red-500/40">
+                  {activeCase.id}
+                </span>
+              </div>
+              <div className="text-slate-300 text-[11.5px] mt-0.5">
+                <strong className="text-white">{activeCase.type}</strong> ({activeCase.amount}) originating from <strong className="text-cyan-300">{activeCase.state}</strong> → ML Predicted Extraction Corridor: <strong className="text-red-300">{prediction.predictedZone}</strong> ({prediction.confidencePercent} Confidence · Window: {prediction.timeWindow})
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <button
+              onClick={() => navigate(`/investigation/${activeCase.id}`)}
+              className="flex items-center gap-1.5 px-3 py-1 rounded bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-300 font-mono text-[11px] font-bold transition-all cursor-pointer"
+            >
+              <span>INSPECT CASE DOSSIER</span>
+              <ArrowRight className="w-3 h-3" />
+            </button>
+            <button
+              onClick={() => navigate('/bank')}
+              className="flex items-center gap-1.5 px-3 py-1 rounded bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 font-mono text-[11px] font-bold transition-all cursor-pointer"
+            >
+              <Building2 className="w-3 h-3" />
+              <span>ALERT BANK OPS</span>
+            </button>
+          </div>
+        </div>
+      </div>
 
       {/* Main Intelligence Workspace Container */}
       <main className="flex-1 w-full max-w-[1720px] mx-auto px-4 lg:px-8 py-5 space-y-6">

@@ -2,11 +2,19 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Users, ArrowUpRight, ShieldAlert, CreditCard, Building } from 'lucide-react';
 import { useBankStore } from '../../store/useBankStore';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 import { BANK_ACCOUNTS } from '../../data/bank/bankAccounts';
+import { BankAccount } from '../../types/bank';
 
 export const HighRiskAccountsList: React.FC = () => {
   const navigate = useNavigate();
   const { setSelectedAccountId } = useBankStore();
+  const { activeCase, bankAccounts } = useActiveCaseStore();
+
+  const combinedAccounts = React.useMemo(() => {
+    const dynamicIds = new Set((bankAccounts || []).map((a) => a.accountId));
+    return [...(bankAccounts || []), ...BANK_ACCOUNTS.filter((a) => !dynamicIds.has(a.accountId))];
+  }, [bankAccounts]);
 
   const handleAccountClick = (accId: string) => {
     setSelectedAccountId(accId);
@@ -31,26 +39,38 @@ export const HighRiskAccountsList: React.FC = () => {
           </div>
         </div>
         <span className="text-[10px] font-mono text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-          BANK05 INTERNAL RISK REGISTER
+          BANK05 INTERNAL RISK REGISTER ({combinedAccounts.length} ACCOUNTS)
         </span>
       </div>
 
       {/* Grid of Accounts */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
-        {BANK_ACCOUNTS.map((acc) => {
+        {combinedAccounts.map((acc) => {
           const isExtreme = acc.networkRiskScore > 0.7;
+          const isActiveMule = acc.accountId === activeCase?.primaryMule;
 
           return (
             <div
               key={acc.accountId}
               onClick={() => handleAccountClick(acc.accountId)}
-              className="p-3.5 rounded-lg bg-[#070F1E] border border-white/[0.06] hover:border-amber-500/50 hover:bg-[#0A162B] transition-all cursor-pointer group flex flex-col justify-between select-none"
+              className={`p-3.5 rounded-lg border transition-all cursor-pointer group flex flex-col justify-between select-none ${
+                isActiveMule
+                  ? 'border-red-500/80 bg-[#160608] ring-1 ring-red-500/40 hover:bg-[#1f090c]'
+                  : 'bg-[#070F1E] border-white/[0.06] hover:border-amber-500/50 hover:bg-[#0A162B]'
+              }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-xs font-mono font-bold text-white group-hover:text-amber-300">
-                    {acc.accountId}
-                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-mono font-bold text-white group-hover:text-amber-300">
+                      {acc.accountId}
+                    </span>
+                    {isActiveMule && (
+                      <span className="text-[8px] font-mono font-bold text-amber-300 bg-amber-500/20 px-1 py-0.2 rounded border border-amber-500/40">
+                        DEMO MULE
+                      </span>
+                    )}
+                  </div>
                   <span
                     className={`text-[9.5px] font-mono font-bold px-1.5 py-0.2 rounded border ${
                       isExtreme

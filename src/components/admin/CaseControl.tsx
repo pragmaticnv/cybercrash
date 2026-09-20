@@ -4,6 +4,7 @@ import {
   RECENT_CASE_STREAM, 
   AdminCaseItem 
 } from '../../data/adminDemoData';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 import { 
   FolderLock, 
   AlertCircle, 
@@ -24,6 +25,30 @@ export const CaseControl: React.FC<CaseControlProps> = ({
   onSelectCase, 
   onOpenAssignCase 
 }) => {
+  const { activeCase, prediction } = useActiveCaseStore();
+
+  const combinedCases = React.useMemo(() => {
+    let list: AdminCaseItem[] = [...RECENT_CASE_STREAM];
+    if (activeCase) {
+      const dynamicCase: AdminCaseItem = {
+        id: activeCase.id,
+        fraudType: activeCase.type || 'Investment Scam',
+        assignedAgency: activeCase.assignedTo || 'Cyber Crime Division',
+        priority: 'CRITICAL',
+        reportedAmount: activeCase.amount || '₹1,50,000',
+        state: activeCase.state || 'Goa',
+        currentStatus: 'ACTIVE',
+        createdTime: 'Just now (LIVE DEMO)',
+        predictionStatus: `ML Zone: ${prediction?.predictedZone || 'GA_Z05'} (${Math.round((prediction?.confidenceScore || 0.88) * 100)}%)`,
+        predictedZone: prediction?.predictedZone || 'GA_Z05',
+        confidence: `${Math.round((prediction?.confidenceScore || 0.88) * 100)}%`,
+        victimName: activeCase.victim?.name || 'Complainant',
+        primaryMule: activeCase.primaryMule
+      };
+      list = [dynamicCase, ...list.filter(c => c.id !== activeCase.id)];
+    }
+    return list;
+  }, [activeCase, prediction]);
   return (
     <div className="rounded-2xl bg-[rgba(10,16,25,0.75)] border border-white/[0.08] p-5 backdrop-blur-md flex flex-col justify-between hover:border-white/[0.12] transition-all">
       {/* Module Header */}
@@ -116,21 +141,28 @@ export const CaseControl: React.FC<CaseControlProps> = ({
         </div>
 
         <div className="space-y-2">
-          {RECENT_CASE_STREAM.map((c) => {
+          {combinedCases.map((c) => {
             const isCritical = c.priority === 'CRITICAL';
             const isHigh = c.priority === 'HIGH';
+            const isActiveDemo = c.id === activeCase?.id;
 
             return (
               <div
                 key={c.id}
                 onClick={() => onSelectCase(c)}
-                className="p-3 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:bg-white/[0.05] hover:border-cyan-500/30 cursor-pointer transition-all flex items-center justify-between group"
+                className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center justify-between group ${
+                  isActiveDemo
+                    ? 'border-red-500/80 bg-[#160608] ring-1 ring-red-500/40 hover:bg-[#1f090c]'
+                    : 'bg-white/[0.02] border-white/[0.06] hover:bg-white/[0.05] hover:border-cyan-500/30'
+                }`}
               >
                 {/* Left side info */}
                 <div className="flex items-center gap-3">
                   <div
                     className={`w-2 h-8 rounded-full ${
-                      isCritical
+                      isActiveDemo
+                        ? 'bg-red-500 shadow-[0_0_12px_rgba(239,68,68,0.8)]'
+                        : isCritical
                         ? 'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.5)]'
                         : isHigh
                         ? 'bg-amber-400'
@@ -142,6 +174,11 @@ export const CaseControl: React.FC<CaseControlProps> = ({
                       <span className="text-[12.5px] font-mono font-bold text-white group-hover:text-cyan-300 transition-colors">
                         {c.id}
                       </span>
+                      {isActiveDemo && (
+                        <span className="text-[8.5px] font-mono font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.2 rounded border border-amber-500/40 animate-pulse">
+                          ACTIVE DEMO CASE
+                        </span>
+                      )}
                       <span className="text-[12px] text-[#CBD5E1] font-medium">
                         {c.fraudType}
                       </span>

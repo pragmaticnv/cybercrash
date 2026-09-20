@@ -1,0 +1,37 @@
+state_code,state_ut,latitude,longitude,type,source_type,source_system,coordinate_note,source_url
+AN,Andaman and Nicobar Islands,11.7401,92.6586,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+AP,Andhra Pradesh,15.9129,79.74,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+AR,Arunachal Pradesh,27.1004,93.6166,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+AS,Assam,26.2006,92.9376,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+BR,Bihar,25.0961,85.3131,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+CH,Chandigarh,30.7333,76.7794,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+CG,Chhattisgarh,21.2787,81.8661,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+DN,Dadra and Nagar Haveli and Daman and Diu,20.1809,73.0169,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+DL,Delhi,28.7041,77.1025,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+GA,Goa,15.2993,74.124,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+GJ,Gujarat,22.2587,71.1924,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+HR,Haryana,29.0588,76.0856,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+HP,Himachal Pradesh,31.1048,77.1734,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+JK,Jammu and Kashmir,33.7782,76.5762,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+JH,Jharkhand,23.6102,85.2799,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+KA,Karnataka,15.3173,75.7139,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+KL,Kerala,10.8505,76.2711,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+LA,Ladakh,34.1526,77.5771,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+LD,Lakshadweep,10.5667,72.6417,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+MP,Madhya Pradesh,22.9734,78.6569,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+MH,Maharashtra,19.7515,75.7139,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+MN,Manipur,24.6637,93.9063,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+ML,Meghalaya,25.467,91.3662,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+MZ,Mizoram,23.1645,92.9376,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+NL,Nagaland,26.1584,94.5624,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+OD,Odisha,20.9517,85.0985,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+PY,Puducherry,11.9416,79.8083,UT,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+PB,Punjab,31.1471,75.3412,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+RJ,Rajasthan,27.0238,74.2179,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+SK,Sikkim,27.533,88.5122,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+TN,Tamil Nadu,11.1271,78.6569,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+TS,Telangana,18.1124,79.0193,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+TR,Tripura,23.9408,91.9882,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+UP,Uttar Pradesh,26.8467,80.9462,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+UK,Uttarakhand,30.0668,79.0193,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts
+WB,West Bengal,22.9868,87.855,State,REAL_ADMINISTRATIVE_REFERENCE,Government_of_India_IGOD,Approximate reference centroid for mapping; not an official boundary polygon.,https://igod.gov.in/districts

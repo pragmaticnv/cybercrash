@@ -1,13 +1,23 @@
 import { HistoricalCase } from '../types/case';
 import { MOCK_HISTORICAL_CASES } from '../data/mockInvestigation';
+import { apiFetch } from './apiClient';
 
 export async function fetchHistoricalCases(accountId?: string): Promise<HistoricalCase[]> {
-  await new Promise((resolve) => setTimeout(resolve, 50));
-  if (!accountId) {
-    return [...MOCK_HISTORICAL_CASES];
+  if (accountId) {
+    try {
+      const data = await apiFetch<HistoricalCase[]>(`/accounts/${encodeURIComponent(accountId)}/history`);
+      if (Array.isArray(data) && data.length > 0) {
+        return data;
+      }
+    } catch (err) {
+      console.warn(`[ML Backend] Fallback used for historical cases of ${accountId}:`, err);
+    }
+
+    const filtered = MOCK_HISTORICAL_CASES.filter(
+      (hc) => hc.accountInvolved?.toLowerCase() === accountId.toLowerCase()
+    );
+    if (filtered.length > 0) return filtered;
   }
-  const filtered = MOCK_HISTORICAL_CASES.filter(
-    (hc) => hc.accountInvolved?.toLowerCase() === accountId.toLowerCase()
-  );
-  return filtered.length > 0 ? filtered : [...MOCK_HISTORICAL_CASES];
+
+  return [...MOCK_HISTORICAL_CASES];
 }

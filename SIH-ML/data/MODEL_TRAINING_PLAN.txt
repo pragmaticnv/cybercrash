@@ -1,0 +1,25 @@
+SIH Cyber Hotspot — Dataset V2 / Model Training Plan
+
+Prediction unit:
+One row = one cybercrime case + one candidate geographic zone.
+
+Target:
+actual_cashout_in_zone
+1 = a future observed cash-out occurred in this zone
+0 = it did not.
+
+Split:
+70% oldest cases = train
+15% next cases = validation
+15% newest cases = test
+
+Leakage rule:
+Do not use actual cash-out fields as model inputs.
+Historical location features are calculated only from withdrawals strictly before complaint_time.
+
+Recommended first model:
+XGBoost classifier if installed; otherwise HistGradientBoostingClassifier or RandomForestClassifier.
+
+Recommended evaluation:
+Precision, Recall, F1, PR-AUC, Recall@5 and Recall@10.
+Do not headline plain accuracy because the target is highly imbalanced.

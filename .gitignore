@@ -3,6 +3,16 @@ node_modules/
 .pnp
 .pnp.js
 
+# Python & ML
+.venv/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Large Generated Datasets exceeding GitHub 100MB limit
+*location_prediction_ml_dataset*.csv
+
 # Production build
 dist/
 build/

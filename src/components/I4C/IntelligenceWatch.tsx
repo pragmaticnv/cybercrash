@@ -3,6 +3,7 @@ import { ShieldAlert, Zap, ArrowUpRight, Crosshair, Network, TrendingUp, AlertTr
 import { useI4CStore } from '../../store/useI4CStore';
 import { i4cIntelligenceAlerts } from '../../data/i4cMockData';
 import { I4CIntelligenceAlert } from '../../types/i4c';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 
 export const IntelligenceWatch: React.FC = () => {
   const {
@@ -11,6 +12,25 @@ export const IntelligenceWatch: React.FC = () => {
     openNetworkById,
     setSelectedFraudType
   } = useI4CStore();
+  const { activeCase, prediction, i4cAlert } = useActiveCaseStore();
+
+  const allAlerts = React.useMemo(() => {
+    const list: I4CIntelligenceAlert[] = [];
+    if (i4cAlert && activeCase) {
+      list.push({
+        id: i4cAlert.id || `ALERT-${activeCase.id}`,
+        category: (i4cAlert.category as any) || 'PREDICTION UPDATE',
+        title: `[${activeCase.id}] ${i4cAlert.title}`,
+        severity: (i4cAlert.severity as any) || 'CRITICAL',
+        timestamp: i4cAlert.timestamp || 'JUST NOW',
+        description: i4cAlert.description,
+        targetType: (i4cAlert.targetType as any) || 'hotspot',
+        targetId: i4cAlert.targetId || prediction?.predictedZone || 'ZONE-ACTIVE',
+        confidence: i4cAlert.confidence || (prediction?.confidenceScore ? Math.round(prediction.confidenceScore * 100) : 88)
+      });
+    }
+    return [...list, ...i4cIntelligenceAlerts.filter(a => a.id !== i4cAlert?.id)];
+  }, [i4cAlert, activeCase, prediction]);
 
   const handleAlertClick = (alert: I4CIntelligenceAlert) => {
     if (alert.targetType === 'hotspot') {
@@ -64,13 +84,13 @@ export const IntelligenceWatch: React.FC = () => {
           </h2>
         </div>
         <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
-          5 ACTIVE SIGNALS
+          {allAlerts.length} ACTIVE SIGNALS
         </span>
       </div>
 
       {/* Alert Feed List */}
       <div className="flex-1 overflow-y-auto divide-y divide-white/[0.06] p-2 space-y-2">
-        {i4cIntelligenceAlerts.map((alert) => (
+        {allAlerts.map((alert) => (
           <div
             key={alert.id}
             onClick={() => handleAlertClick(alert)}

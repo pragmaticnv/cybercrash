@@ -1,11 +1,18 @@
 import React from 'react';
 import { ArrowUpRight, ArrowDownLeft, AlertCircle, CreditCard, ChevronRight } from 'lucide-react';
 import { useBankStore } from '../../store/useBankStore';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 import { BANK_TRANSACTIONS } from '../../data/bank/bankTransactions';
 import { BankTransaction } from '../../types/bank';
 
 export const SuspiciousTransactions: React.FC = () => {
   const { setSelectedTransaction, openDrawer } = useBankStore();
+  const { activeCase, bankTransactions } = useActiveCaseStore();
+
+  const combinedTransactions = React.useMemo(() => {
+    const dynamicIds = new Set((bankTransactions || []).map((t) => t.transactionId));
+    return [...(bankTransactions || []), ...BANK_TRANSACTIONS.filter((t) => !dynamicIds.has(t.transactionId))];
+  }, [bankTransactions]);
 
   const handleTxClick = (tx: BankTransaction) => {
     setSelectedTransaction(tx);
@@ -36,8 +43,11 @@ export const SuspiciousTransactions: React.FC = () => {
 
       {/* Transaction List */}
       <div className="space-y-2">
-        {BANK_TRANSACTIONS.map((tx) => {
+        {combinedTransactions.map((tx) => {
           const isCredit = tx.transactionDirection === 'CREDIT';
+          const isActiveCaseTx = tx.caseId === activeCase?.id ||
+                                 tx.sourceAccount === activeCase?.primaryMule ||
+                                 tx.destinationAccount === activeCase?.primaryMule;
 
           return (
             <div
@@ -60,6 +70,11 @@ export const SuspiciousTransactions: React.FC = () => {
                     <span className="text-xs font-mono font-bold text-white group-hover:text-amber-300">
                       {tx.transactionId}
                     </span>
+                    {isActiveCaseTx && (
+                      <span className="text-[9px] font-mono font-bold text-amber-300 bg-amber-500/20 px-1.5 py-0.2 rounded border border-amber-500/40 animate-pulse">
+                        DEMO CASE
+                      </span>
+                    )}
                     <span className="text-[9px] font-mono font-bold px-1.5 py-0.2 rounded bg-white/[0.06] text-slate-300">
                       {tx.channel}
                     </span>

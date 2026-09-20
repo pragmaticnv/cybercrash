@@ -2,14 +2,21 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldAlert, AlertTriangle, ArrowRight, CheckCircle, Activity, CreditCard } from 'lucide-react';
 import { useBankStore } from '../../store/useBankStore';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
 import { BANK_ALERTS } from '../../data/bank/bankAlerts';
 import { BankAlert } from '../../types/bank';
 
 export const AlertList: React.FC = () => {
   const navigate = useNavigate();
   const { severityFilter, statusFilter, setSelectedAccountId, setSelectedAlert } = useBankStore();
+  const { activeCase, bankAlerts } = useActiveCaseStore();
 
-  const filteredAlerts = BANK_ALERTS.filter((alert) => {
+  const combinedAlerts = React.useMemo(() => {
+    const dynamicIds = new Set((bankAlerts || []).map((a) => a.alertId));
+    return [...(bankAlerts || []), ...BANK_ALERTS.filter((a) => !dynamicIds.has(a.alertId))];
+  }, [bankAlerts]);
+
+  const filteredAlerts = combinedAlerts.filter((alert) => {
     if (severityFilter !== 'ALL' && alert.severity !== severityFilter) return false;
     if (statusFilter !== 'ALL' && alert.status !== statusFilter) return false;
     return true;
@@ -48,12 +55,16 @@ export const AlertList: React.FC = () => {
         {filteredAlerts.map((alert) => {
           const isCritical = alert.severity === 'CRITICAL';
           const isHigh = alert.severity === 'HIGH';
+          const isActiveMule = alert.accountId === activeCase?.primaryMule ||
+                               alert.alertId.includes(activeCase?.id || '---');
 
           return (
             <div
               key={alert.alertId}
               className={`p-3.5 rounded-lg border transition-all select-none ${
-                isCritical
+                isActiveMule
+                  ? 'border-red-500/80 bg-[#160608] ring-1 ring-red-500/40 hover:bg-[#1f090c]'
+                  : isCritical
                   ? 'bg-[#0E0608] border-red-500/40 hover:border-red-500/70 hover:bg-[#14080B]'
                   : isHigh
                   ? 'bg-[#0E0C06] border-amber-500/40 hover:border-amber-500/70 hover:bg-[#141008]'
@@ -74,6 +85,11 @@ export const AlertList: React.FC = () => {
                   >
                     {alert.severity} RISK
                   </span>
+                  {isActiveMule && (
+                    <span className="text-[9px] font-mono font-bold text-amber-300 bg-amber-500/20 px-2 py-0.5 rounded border border-amber-500/40 animate-pulse">
+                      ACTIVE CASE TARGET
+                    </span>
+                  )}
                   <span className="text-xs font-mono font-bold text-white tracking-wider">
                     {alert.accountId}
                   </span>

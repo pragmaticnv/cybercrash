@@ -7,11 +7,29 @@ import { MapLayers } from './MapLayers';
 import { I4CStateSummary, I4CHotspot } from '../../types/i4c';
 import { ArrowRight, Crosshair, ShieldAlert, Sparkles, Navigation, Globe, Eye } from 'lucide-react';
 import { GOOGLE_MAP_TILE_URLS } from '../../config/maps';
+import { useActiveCaseStore } from '../../store/useActiveCaseStore';
+
+function getComplaintCoords(location?: any): [number, number] {
+  if (!location) return [15.4989, 73.8278];
+  if (typeof location === 'object' && location.lat && location.lng) {
+    return [location.lat, location.lng];
+  }
+  const l = String(location).toLowerCase();
+  if (l.includes('goa') || l.includes('panaji')) return [15.4989, 73.8278];
+  if (l.includes('punjab') || l.includes('amritsar')) return [31.6340, 74.8723];
+  if (l.includes('tamil nadu') || l.includes('chennai')) return [13.0827, 80.2707];
+  if (l.includes('delhi')) return [28.6139, 77.2090];
+  if (l.includes('maharashtra') || l.includes('mumbai')) return [19.0760, 72.8777];
+  if (l.includes('karnataka') || l.includes('bengaluru')) return [12.9716, 77.5946];
+  return [15.4989, 73.8278];
+}
 
 // Subcomponent to project SVG curved bezier flow lines directly on top of Leaflet
 const CrossStateFlowOverlay: React.FC = () => {
   const map = useMap();
   const [, setTick] = useState(0);
+  const { activeMapLayers, openNetworkById } = useI4CStore();
+  const { activeCase, prediction } = useActiveCaseStore();
 
   useEffect(() => {
     const handleMove = () => setTick((t) => t + 1);
@@ -23,8 +41,30 @@ const CrossStateFlowOverlay: React.FC = () => {
     };
   }, [map]);
 
-  const { activeMapLayers, openNetworkById } = useI4CStore();
   if (!activeMapLayers.includes('network_flows')) return null;
+
+  const combinedFlows = [...i4cStateFlows];
+  if (activeCase && prediction?.centerCoordinates) {
+    const from = getComplaintCoords(activeCase.complaintLocation);
+    const to: [number, number] = [
+      prediction.centerCoordinates.lat || 21.1702,
+      prediction.centerCoordinates.lng || 72.8311
+    ];
+    const fromName = typeof activeCase.complaintLocation === 'object' ? activeCase.complaintLocation.city : (activeCase.state || 'Origin');
+    const toName = prediction.clusterName || prediction.predictedZone || 'Predicted Destination';
+
+    combinedFlows.unshift({
+      id: `active-case-flow-${activeCase.id}`,
+      networkId: 'NET-CRASH-01',
+      fromState: fromName,
+      toState: toName,
+      fromCoords: from,
+      toCoords: to,
+      amount: `${activeCase.amount || '₹1,50,000'} (LIVE)`,
+      txCount: 4,
+      color: '#EF4444'
+    });
+  }
 
   return (
     <svg className="absolute inset-0 w-full h-full pointer-events-none z-[450]">
@@ -39,7 +79,7 @@ const CrossStateFlowOverlay: React.FC = () => {
         </linearGradient>
       </defs>
 
-      {i4cStateFlows.map((flow) => {
+      {combinedFlows.map((flow) => {
         const p1 = map.latLngToContainerPoint(L.latLng(flow.fromCoords[0], flow.fromCoords[1]));
         const p2 = map.latLngToContainerPoint(L.latLng(flow.toCoords[0], flow.toCoords[1]));
 
@@ -92,6 +132,7 @@ export const NationalMap: React.FC = () => {
     openHotspotDrawer,
     selectedFraudType
   } = useI4CStore();
+  const { activeCase, prediction } = useActiveCaseStore();
 
   const [baseTheme, setBaseTheme] = useState<'tactical' | 'satellite' | 'roadmap'>('tactical');
 
@@ -100,9 +141,48 @@ export const NationalMap: React.FC = () => {
     ? i4cStatesData.filter((s) => s.topFraudType === selectedFraudType || s.fraudBreakdown.some((b) => b.type === selectedFraudType))
     : i4cStatesData;
 
+  const combinedHotspots = React.useMemo(() => {
+    let list = [...i4cHotspots];
+    if (activeCase && prediction?.centerCoordinates) {
+      const zoneId = prediction.predictedZone || 'GA_Z05';
+      const city = activeCase.complaintLocation?.city || activeCase.state || 'Panaji';
+      const state = activeCase.complaintLocation?.state || activeCase.state || 'Goa';
+      const conf = prediction.confidenceScore ? Math.round(prediction.confidenceScore > 1 ? prediction.confidenceScore : prediction.confidenceScore * 100) : 88;
+
+      list = [
+        {
+          zoneId: zoneId,
+          city: city,
+          state: state,
+          stateCode: activeCase.stateCode || 'GA',
+          lat: prediction.centerCoordinates.lat || 15.5925,
+          lng: prediction.centerCoordinates.lng || 73.8135,
+          locationRisk: 'Critical' as const,
+          dominantFraudType: activeCase.type || 'Investment Scam',
+          modelConfidence: conf,
+          estimatedWindow: prediction.timeWindow || '18:00 – 21:00',
+          associatedCasesCount: 1,
+          associatedCaseIds: [activeCase.id],
+          associatedMuleAccountsCount: 3,
+          associatedMules: [activeCase.primaryMule],
+          historicalCashOuts: 4,
+          atmDensity: 'Very High' as const,
+          recentActivitySummary: `Live high-probability extraction vector for active case ${activeCase.id}.`,
+          supportingFactors: [
+            'Target Mule Proximity Vector',
+            'Inter-State Rapid Outbound Relay',
+            'High Density Commercial ATM Cluster'
+          ]
+        },
+        ...list.filter(h => h.zoneId !== zoneId)
+      ];
+    }
+    return list;
+  }, [activeCase, prediction]);
+
   const filteredHotspots = selectedFraudType
-    ? i4cHotspots.filter((h) => h.dominantFraudType.includes(selectedFraudType))
-    : i4cHotspots;
+    ? combinedHotspots.filter((h) => h.dominantFraudType.includes(selectedFraudType))
+    : combinedHotspots;
 
   return (
     <div className="relative w-full h-[520px] lg:h-[560px] bg-[#02060D] rounded-xl overflow-hidden border border-white/[0.08] shadow-2xl flex flex-col">

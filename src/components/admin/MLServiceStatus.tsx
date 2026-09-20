@@ -1,15 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { ML_SERVICES, MLServiceItem } from '../../data/adminDemoData';
 import { Cpu, CheckCircle2, Zap, Brain, Sparkles, Activity } from 'lucide-react';
+import { apiFetch } from '../../api/apiClient';
 
 export const MLServiceStatus: React.FC = () => {
-  const [lastInferenceSec, setLastInferenceSec] = useState<number>(2.4);
+  const [lastInferenceSec, setLastInferenceSec] = useState<number>(1.2);
+  const [services, setServices] = useState<MLServiceItem[]>(ML_SERVICES);
+  const [modelVersion, setModelVersion] = useState<string>('v2.0-PRODUCTION');
+  const [isLive, setIsLive] = useState<boolean>(false);
 
   useEffect(() => {
+    async function loadTelemetry() {
+      try {
+        const data = await apiFetch<any>('/admin/ml-status');
+        if (data?.services && Array.isArray(data.services)) {
+          setServices(data.services);
+          setModelVersion(data.version || 'v2.0-PRODUCTION');
+          setIsLive(true);
+        }
+      } catch (e) {
+        // Fallback to static services
+        setIsLive(false);
+      }
+    }
+    loadTelemetry();
+
     const timer = setInterval(() => {
       setLastInferenceSec((prev) => {
-        if (prev > 4.5) return 0.8;
-        return parseFloat((prev + 0.3).toFixed(1));
+        if (prev > 3.8) return 0.6;
+        return parseFloat((prev + 0.2).toFixed(1));
       });
     }, 1000);
     return () => clearInterval(timer);
@@ -28,7 +47,7 @@ export const MLServiceStatus: React.FC = () => {
               INTELLIGENCE ENGINE
             </h2>
             <span className="text-[10px] font-mono text-[#94A3B8] tracking-wider uppercase">
-              ML Inference Pipeline & Geolocation Predictor
+              ML Inference Pipeline & Geolocation Predictor {isLive && '· LIVE SYNC'}
             </span>
           </div>
         </div>
@@ -45,7 +64,7 @@ export const MLServiceStatus: React.FC = () => {
 
       {/* Services List */}
       <div className="divide-y divide-white/[0.04] my-3">
-        {ML_SERVICES.map((svc, i) => (
+        {services.map((svc, i) => (
           <div key={i} className="py-2.5 flex items-center justify-between group">
             <div className="flex items-center gap-3">
               <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_6px_rgba(52,211,153,0.7)]" />
@@ -86,7 +105,7 @@ export const MLServiceStatus: React.FC = () => {
         <div className="flex items-center gap-2">
           <span>MODEL VERSION:</span>
           <span className="text-white font-bold bg-white/[0.05] px-1.5 py-0.5 rounded border border-white/[0.08]">
-            v1.0-DEMO
+            {modelVersion}
           </span>
         </div>
         <div className="flex items-center gap-1.5 text-cyan-400">

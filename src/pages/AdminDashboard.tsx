@@ -18,6 +18,7 @@ import { FullAuditModal } from '../components/admin/FullAuditModal';
 import { SystemStatusModal } from '../components/admin/SystemStatusModal';
 import { AdminCaseItem, RECENT_CASE_STREAM } from '../data/adminDemoData';
 import { Shield, Sparkles, Terminal, Activity, Sliders } from 'lucide-react';
+import { ActiveCaseBanner } from '../components/Common/ActiveCaseBanner';
 
 export const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
@@ -51,6 +52,11 @@ export const AdminDashboard: React.FC = () => {
 
       {/* 2. Top Command Bar */}
       <AdminTopBar onOpenSystemStatus={() => setIsSystemStatusModalOpen(true)} />
+
+      {/* Synchronized Multi-Agency Active Case Selector */}
+      <div className="pl-16">
+        <ActiveCaseBanner currentPortal="admin" />
+      </div>
 
       {/* 3. Left Control Console Navigation Rail */}
       <AdminNavRail 

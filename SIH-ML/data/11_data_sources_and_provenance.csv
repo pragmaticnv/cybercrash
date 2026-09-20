@@ -1,0 +1,13 @@
+dataset,source_type,source_system,notes,source
+01_cybercrime_cases.csv,SYNTHETIC_PROTOTYPE,NCRP_CFCFRMS_CASE_FEED_SIMULATION,Privacy-safe synthetic cases; prediction_time = complaint_time + 30 minutes.,
+02_accounts.csv,SYNTHETIC_PROTOTYPE,AUTHORIZED_BANK_FI_FEED_SIMULATION,Synthetic account master; no real customer data.,
+03_transactions.csv,SYNTHETIC_PROTOTYPE,AUTHORIZED_BANK_FI_TRANSACTION_FEED_SIMULATION,Synthetic transaction network.,
+04_withdrawals.csv,SYNTHETIC_PROTOTYPE,AUTHORIZED_BANK_FI_ATM_FEED_SIMULATION,Synthetic withdrawal events linked only to synthetic ATM reference IDs.,
+05_atm_locations.csv,SYNTHETIC_PROTOTYPE,SYNTHETIC_ATM_REFERENCE_LAYER,"20,016 synthetic ATM reference points across 36 states/UTs and 144 zones. Bank names are realistic display/operator labels; locations are not an official ATM inventory.",
+06_case_outcomes.csv,SYNTHETIC_PROTOTYPE,LEA_BANK_FI_OUTCOME_SIMULATION,Synthetic ground truth; positive cash-out is strictly after prediction_time and references a withdrawal event.,
+07_geographic_zones.csv,MIXED_REFERENCE,LGD/CENSUS_REFERENCE_PLUS_SYNTHETIC_SUBZONES,India-wide geographic framework with 144 zones.,
+08_account_features.csv,SYNTHETIC_DERIVED,ACCOUNT_TRANSACTION_GRAPH_DERIVED,Derived from synthetic account/transaction network.,
+09_location_prediction_ml_dataset.csv,SYNTHETIC_DERIVED,PROJECT_FEATURE_PIPELINE,1.44M case-zone rows; prediction point = complaint_time + 30 minutes; target is future cash-out zone; candidate features are pre-prediction only.,
+10_india_states_ut_reference.csv,REAL_REFERENCE,NATIONAL_PORTAL_OF_INDIA,State/UT reference framework; used only for geography/reference.,
+05_atm_locations.csv,SYNTHETIC_PROTOTYPE,,"20,016 synthetic ATM points; realistic Indian bank display/operator labels; not an official ATM inventory.",Synthetic ATM reference population
+07_geographic_zones.csv,SYNTHETIC_PROTOTYPE,,"288 synthetic subzones, exactly 8 for each of all 36 States/UTs.",Synthetic geographic subzones

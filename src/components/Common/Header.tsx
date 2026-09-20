@@ -1,7 +1,9 @@
 import React from 'react';
-import { Search, Shield, Bell, User, Lock, Activity } from 'lucide-react';
+import { Search, Shield, Bell, User, Lock, Activity, Plus } from 'lucide-react';
 import { useInvestigationStore } from '../../store/useInvestigationStore';
 import { useNavigate } from 'react-router-dom';
+
+import { BackendStatusBadge } from './BackendStatusBadge';
 
 export const Header: React.FC = () => {
   const { searchQuery, setSearchQuery } = useInvestigationStore();
@@ -71,6 +73,19 @@ export const Header: React.FC = () => {
 
       {/* Right: LEA Officer Status & Controls */}
       <div className="flex items-center gap-3">
+        {/* ML Engine Status Badge */}
+        <BackendStatusBadge />
+
+        {/* Global New Case Action Button */}
+        <button
+          onClick={() => navigate('/investigation/CASE_007001?newCase=true')}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white text-xs font-mono font-bold tracking-wider uppercase shadow-[0_0_12px_rgba(6,182,212,0.35)] transition-all cursor-pointer border border-cyan-400/40"
+          title="Open New Case Intake Workflow"
+        >
+          <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+          <span>NEW CASE</span>
+        </button>
+
         {/* LEA Secure Pill */}
         <div className="hidden md:flex items-center gap-2 px-3 py-1 rounded-md bg-[#091526] border border-cyan-500/20 text-xs text-cyan-300">
           <Shield className="w-3.5 h-3.5 text-cyan-400" />

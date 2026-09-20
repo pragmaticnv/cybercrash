@@ -7,12 +7,16 @@ import { RiskSignalsSummary } from '../components/Bank/RiskSignalsSummary';
 import { HighRiskAccountsList } from '../components/Bank/HighRiskAccountsList';
 import { ActivityStream } from '../components/Bank/ActivityStream';
 import { TransactionDrawer } from '../components/Bank/drawers/TransactionDrawer';
+import { ActiveCaseBanner } from '../components/Common/ActiveCaseBanner';
 
 export const BankHome: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#02060D] text-slate-100 flex flex-col font-sans selection:bg-amber-500/30 selection:text-amber-200">
       {/* Bank Header */}
       <BankHeader />
+
+      {/* Synchronized Multi-Agency Case Selector Banner */}
+      <ActiveCaseBanner currentPortal="bank" />
 
       {/* Filter Bar */}
       <BankFilterBar />

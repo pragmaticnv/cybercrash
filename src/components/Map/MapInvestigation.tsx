@@ -48,7 +48,7 @@ export const MapInvestigation: React.FC<MapInvestigationProps> = ({ prediction, 
   } else if (selectedBaseLayer === 'carto-dark') {
     activeTileUrl = GOOGLE_MAP_TILE_URLS.cartoDark;
     activeTileClass = '';
-    activeAttribution = '&copy; CARTO &copy; OpenStreetMap';
+    activeAttribution = '&copy; Esri Dark Canvas &copy; OpenStreetMap';
     maxZoomLevel = 19;
   }
 

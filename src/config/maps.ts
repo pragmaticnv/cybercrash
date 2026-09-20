@@ -1,18 +1,19 @@
 export const GOOGLE_MAPS_API_KEY = 'AIzaSyCcgJ62YOjIUS2W2hWlyTqq76Cofb7tk-s';
 
 export const GOOGLE_MAP_TILE_URLS = {
-  // Tactical Dark (CartoDB Dark with cyber contrast filter)
-  tacticalDark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  // Tactical Dark (Google Maps Roadmap inverted with cyber dark filter - zero watermark)
+  tacticalDark: `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=${GOOGLE_MAPS_API_KEY}`,
   
-  // 4K High-Res Satellite / Aerial imagery (Esri World Imagery)
-  satellite: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+  // 4K High-Res Google Satellite with crisp street and locality hybrid labels
+  satellite: `https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}&key=${GOOGLE_MAPS_API_KEY}`,
   
-  // Official Roadmap (OpenStreetMap HD)
-  roadmap: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+  // Official Clean Google Roadmap HD
+  roadmap: `https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&key=${GOOGLE_MAPS_API_KEY}`,
   
-  // Hybrid Terrain & Roads (Esri World Topographic)
-  hybrid: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+  // Google Terrain HD
+  hybrid: `https://mt1.google.com/vt/lyrs=p&x={x}&y={y}&z={z}&key=${GOOGLE_MAPS_API_KEY}`,
   
-  // Minimal CartoDB Dark
-  cartoDark: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+  // Minimal Cyber Dark Canvas (Esri World Dark Gray Base - 100% watermark-free dark map)
+  cartoDark: 'https://server.arcgisonline.com/arcgis/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}',
 };
+

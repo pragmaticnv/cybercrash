@@ -72,6 +72,11 @@ class SimilarCaseEngine:
 
         print("Loading historical case profiles...")
 
+        if not DATA_PATH.exists():
+            print(f"Dataset {DATA_PATH.name} not found. Running with empty historical profiles.")
+            self.case_profiles = pd.DataFrame()
+            return
+
         df = pd.read_csv(
             DATA_PATH,
             usecols=USECOLS

@@ -9,7 +9,7 @@ from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
-from case_analysis import analyze_case
+# from case_analysis import analyze_case
 from demo_cases import DEMO_CASES
 from new_case_prediction import (
     NewCaseRequest,
@@ -17,7 +17,7 @@ from new_case_prediction import (
     predict_new_case_hotspots,
     trace_new_case_network,
 )
-from prediction_engine import predict_hotspots
+# from prediction_engine import predict_hotspots
 from similar_cases import find_similar_cases
 
 # ============================================================

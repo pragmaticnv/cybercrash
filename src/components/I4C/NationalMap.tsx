@@ -245,7 +245,7 @@ export const NationalMap: React.FC = () => {
                 : 'text-slate-400 hover:text-white'
             }`}
           >
-            CartoDB Dark
+            Minimal Dark
           </button>
           <button
             onClick={() => setBaseTheme('tactical')}
@@ -337,7 +337,7 @@ export const NationalMap: React.FC = () => {
             subdomains={['a', 'b', 'c', 'd']}
             className={baseTheme === 'tactical' ? 'tactical-dark-tiles' : ''}
             maxZoom={20}
-            attribution="&copy; OpenStreetMap &copy; CartoDB"
+            attribution="&copy; Google Maps &copy; Esri"
           />
 
           {/* D3/SVG Flow Overlay for Cross-State Suspicious Fund Movements */}

@@ -234,17 +234,43 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
 
   return (
     <div className="w-full bg-[#050C18] border-b border-cyan-500/20 text-white select-none transition-all">
-      {/* Top Bar Strip: Clean Unboxed Intake Toggle + Run Analysis */}
-      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 py-2 flex items-center justify-between gap-3 text-xs font-mono">
-        {/* Left: Quick Intake Specification Toggle */}
-        <div className="flex items-center gap-3">
+      {/* Top Bar Strip: Clean Unboxed Demo Selector + Intake Toggle + Run Analysis */}
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
+        {/* Left: Unboxed Demo Selector & Intake Spec */}
+        <div className="flex items-center flex-wrap gap-4">
+          {/* Unboxed Demo Case Selector */}
+          <div className="flex items-center gap-2">
+            <span className="text-cyan-400 font-bold uppercase tracking-wider">
+              DEMO CASE:
+            </span>
+            <select
+              value={selectedDemoKey}
+              onChange={(e) => handleSelectDemoCase(e.target.value)}
+              className="bg-transparent text-cyan-200 font-mono text-xs focus:outline-none cursor-pointer hover:text-white transition-colors"
+            >
+              <option value="" className="bg-[#0A162B] text-slate-400">-- Choose a Demo Case --</option>
+              <option value="CASE_007001" className="bg-[#0A162B] text-cyan-300">CASE_007001 (Active Case · Goa)</option>
+              {demoKeys.map((key) => {
+                const c = demoCases[key];
+                return (
+                  <option key={key} value={key} className="bg-[#0A162B] text-cyan-200">
+                    {key} — {c.fraud_type} (₹{Number(c.reported_amount).toLocaleString()} · {c.complaint_state})
+                  </option>
+                );
+              })}
+            </select>
+          </div>
+
+          <span className="text-white/20">|</span>
+
+          {/* Quick Intake Specification Toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="flex items-center gap-1.5 text-cyan-300 hover:text-white transition-colors cursor-pointer group"
           >
             <Plus className="w-3.5 h-3.5 text-cyan-400 stroke-[2.5] group-hover:rotate-90 transition-transform" />
-            <span className="font-bold uppercase tracking-wider">CUSTOM CASE INTAKE SPECIFICATION</span>
-            <span className="text-slate-500 font-normal">({transactions.length} transactions)</span>
+            <span className="font-bold uppercase tracking-wider">CUSTOM CASE INTAKE</span>
+            <span className="text-slate-500 font-normal">({transactions.length} txns)</span>
             {isOpen ? <ChevronUp className="w-3.5 h-3.5 text-slate-400 ml-0.5" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />}
           </button>
         </div>

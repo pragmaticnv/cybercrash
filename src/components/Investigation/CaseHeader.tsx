@@ -35,36 +35,27 @@ export const CaseHeader: React.FC<CaseHeaderProps> = ({ caseData }) => {
         <div className="h-5 w-[1px] bg-white/[0.1] hidden sm:block" />
 
         {/* Case ID & Type */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2.5">
           <span className="font-mono text-sm font-bold text-white tracking-wider flex items-center gap-1.5">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
             {caseData.id}
           </span>
-          <span className="text-xs text-slate-500">·</span>
-          <span className="text-xs font-medium text-slate-300">{caseData.type}</span>
+          <span className="text-xs text-slate-400 font-medium">·</span>
+          <span className="text-xs font-medium text-slate-200">{caseData.type}</span>
         </div>
 
-        <span className="text-slate-600 hidden sm:inline">|</span>
-
-        {/* Amount - Unboxed */}
-        <span className="font-mono text-sm font-bold text-emerald-400">
+        {/* Amount */}
+        <div className="font-mono text-sm font-bold text-white bg-white/[0.04] border border-white/[0.08] px-2.5 py-0.5 rounded">
           {caseData.amount}
-        </span>
+        </div>
 
-        <span className="text-slate-600 hidden sm:inline">|</span>
+        {/* Priority Badge */}
+        <PriorityBadge priority={caseData.priority} />
 
-        {/* Priority - Unboxed */}
-        <span className="flex items-center gap-1.5 font-mono text-xs font-bold text-red-400 uppercase tracking-wide">
-          <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
-          {caseData.priority}
-        </span>
-
-        <span className="text-slate-600 hidden sm:inline">|</span>
-
-        {/* Primary Mule - Unboxed */}
-        <div className="flex items-center gap-1 text-xs font-mono">
-          <span className="text-slate-400 text-[11px]">PRIMARY MULE:</span>
-          <span className="font-bold text-amber-300">{caseData.primaryMule}</span>
+        {/* Primary Mule */}
+        <div className="flex items-center gap-1.5 text-xs font-mono bg-red-950/40 border border-red-500/30 text-red-300 px-2.5 py-0.5 rounded">
+          <span className="text-slate-400 text-[10.5px]">PRIMARY MULE:</span>
+          <span className="font-bold text-red-400">{caseData.primaryMule}</span>
         </div>
       </div>
 

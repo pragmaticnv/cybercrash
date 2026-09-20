@@ -234,26 +234,28 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
 
   return (
     <div className="w-full bg-[#050C18] border-b border-cyan-500/20 text-white select-none transition-all">
-      {/* Top Bar Strip: Clean Unboxed Demo Selector + Intake Toggle + Run Analysis */}
-      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 py-2 flex flex-wrap items-center justify-between gap-4 text-xs font-mono">
-        {/* Left: Unboxed Demo Selector & Intake Spec */}
-        <div className="flex items-center flex-wrap gap-4">
-          {/* Unboxed Demo Case Selector */}
+      {/* Top Bar Strip: Demo Selector + Intake Toggle + Analyze Button */}
+      <div className="max-w-[1536px] mx-auto px-4 lg:px-8 py-2.5 flex flex-wrap items-center justify-between gap-3">
+        {/* Left: Demo Cases Dropdown */}
+        <div className="flex items-center flex-wrap gap-3">
           <div className="flex items-center gap-2">
-            <span className="text-cyan-400 font-bold uppercase tracking-wider">
-              DEMO CASE:
+            <span className="text-cyan-400 font-mono text-xs font-bold uppercase tracking-wider flex items-center gap-1.5">
+              <FolderCheck className="w-3.5 h-3.5" />
+              DEMO CASES:
             </span>
+
             <select
               value={selectedDemoKey}
               onChange={(e) => handleSelectDemoCase(e.target.value)}
-              className="bg-transparent text-cyan-200 font-mono text-xs focus:outline-none cursor-pointer hover:text-white transition-colors"
+              className="bg-[#0A162B] border border-cyan-500/40 text-cyan-200 font-mono text-xs px-3 py-1.5 rounded-lg focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 cursor-pointer"
             >
-              <option value="" className="bg-[#0A162B] text-slate-400">-- Choose a Demo Case --</option>
-              <option value="CASE_007001" className="bg-[#0A162B] text-cyan-300">CASE_007001 (Active Case · Goa)</option>
+              <option value="">-- Choose a Demo Case --</option>
+              {/* Keep existing CASE_007001 */}
+              <option value="CASE_007001">CASE_007001 (Existing Active Case · Goa)</option>
               {demoKeys.map((key) => {
                 const c = demoCases[key];
                 return (
-                  <option key={key} value={key} className="bg-[#0A162B] text-cyan-200">
+                  <option key={key} value={key}>
                     {key} — {c.fraud_type} (₹{Number(c.reported_amount).toLocaleString()} · {c.complaint_state})
                   </option>
                 );
@@ -261,36 +263,42 @@ export const CaseIntakeBar: React.FC<CaseIntakeBarProps> = ({
             </select>
           </div>
 
-          <span className="text-white/20">|</span>
+          <span className="text-slate-600 hidden sm:inline">|</span>
 
-          {/* Quick Intake Specification Toggle */}
+          {/* New Case / Intake Toggle */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="flex items-center gap-1.5 text-cyan-300 hover:text-white transition-colors cursor-pointer group"
+            className={`flex items-center gap-2 px-3.5 py-1.5 rounded-lg text-xs font-mono font-bold transition-all cursor-pointer border ${
+              isOpen
+                ? 'bg-cyan-500/25 text-cyan-200 border-cyan-400 shadow-[0_0_15px_rgba(56,189,248,0.3)]'
+                : 'bg-gradient-to-r from-cyan-950/80 to-blue-950/80 hover:from-cyan-900 hover:to-blue-900 text-cyan-300 border-cyan-500/50 shadow-[0_0_10px_rgba(6,182,212,0.2)]'
+            }`}
           >
-            <Plus className="w-3.5 h-3.5 text-cyan-400 stroke-[2.5] group-hover:rotate-90 transition-transform" />
-            <span className="font-bold uppercase tracking-wider">CUSTOM CASE INTAKE</span>
-            <span className="text-slate-500 font-normal">({transactions.length} txns)</span>
-            {isOpen ? <ChevronUp className="w-3.5 h-3.5 text-slate-400 ml-0.5" /> : <ChevronDown className="w-3.5 h-3.5 text-slate-400 ml-0.5" />}
+            <Plus className="w-3.5 h-3.5 text-cyan-400 stroke-[2.5]" />
+            <span>+ NEW CASE INTAKE</span>
+            <span className="ml-0.5 text-[10px] px-1.5 py-0.2 rounded bg-cyan-900/70 text-cyan-300 border border-cyan-500/40">
+              {transactions.length} TXNS
+            </span>
+            {isOpen ? <ChevronUp className="w-3.5 h-3.5 ml-1" /> : <ChevronDown className="w-3.5 h-3.5 ml-1" />}
           </button>
         </div>
 
-        {/* Right: Run Analysis Action */}
+        {/* Right: Primary "Analyze Case" Action Button */}
         <div className="flex items-center gap-3">
           <button
             onClick={handleAnalyzeCase}
             disabled={analyzing}
-            className="flex items-center gap-1.5 px-3 py-1 rounded bg-red-600/80 hover:bg-red-500 text-white font-mono text-xs font-bold uppercase tracking-wider transition-all cursor-pointer disabled:opacity-50"
+            className="flex items-center gap-2 px-4 py-1.5 rounded-lg bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 disabled:opacity-50 text-white font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_15px_rgba(225,29,72,0.3)] transition-all cursor-pointer disabled:cursor-not-allowed"
           >
             {analyzing ? (
               <>
                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                <span>ANALYZING...</span>
+                <span>ANALYZING CASE...</span>
               </>
             ) : (
               <>
-                <Play className="w-3 h-3 fill-current" />
-                <span>RUN ANALYSIS</span>
+                <Play className="w-3.5 h-3.5 fill-current" />
+                <span>ANALYZE CASE</span>
               </>
             )}
           </button>
